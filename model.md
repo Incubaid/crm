@@ -56,6 +56,18 @@ comment
 - content (is markdown)
 - owner (link to 1 contact which is users)
 
+link
+- uid
+- url
+- descr (markdown optional)
+- labels = text e.g. '''color:green level:important'''
+- comment_uid
+- contact_uid
+- deal_uid
+- project_uid
+- organization_uid
+- task_uid
+
 task
 - uid
 - title
