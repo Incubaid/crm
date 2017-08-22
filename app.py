@@ -5,10 +5,11 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 
 from models import db
-from models import Telephone, Contact, Company, Organization, Deal, Project, Sprint, Task, Comment, Message
+from models import Telephone, Contact, Company, Organization, Deal, Link, Project, Sprint, Task, Comment, Message
 
 
-dbmodels = [Telephone, Contact, Company, Organization,  Deal, Project, Sprint, Task, Comment, Message]
+dbmodels = [Telephone, Contact, Company, Organization,
+            Deal, Link, Project, Sprint, Task, Comment, Message]
 DBDIR = os.path.join(os.getcwd(), "db")
 
 
@@ -17,16 +18,16 @@ if not os.path.exists(DBDIR):
 
 development = True
 
-DBPATHDEV = os.path.join(os.getcwd(), "db", "development.db") 
-DBPATHPROD = os.path.join(os.getcwd(), "db", "production.db") 
+DBPATHDEV = os.path.join(os.getcwd(), "db", "development.db")
+DBPATHPROD = os.path.join(os.getcwd(), "db", "production.db")
 DBPATH = DBPATHDEV
 
 if development is False:
-    DBPATH = DBPATHPROD 
+    DBPATH = DBPATHPROD
 
 
 config = {
-    "SQLALCHEMY_DATABASE_URI":"sqlite:///{}".format(DBPATH),
+    "SQLALCHEMY_DATABASE_URI": "sqlite:///{}".format(DBPATH),
     "SQLALCHEMY_ECHO": True,
     "SQLALCHEMY_RECORD_QUERIES": True,
 }
@@ -40,28 +41,31 @@ migrate = Migrate(app, db)
 db.session.autocommit = True
 
 
-
 def do_fixtures():
     global db
     t1 = Telephone(number="01145533120")
     db.session.add(t1)
-    u1 = Contact(firstname="ahmed", lastname="thabet", email="thabeta@dmdm.com")
+    u1 = Contact(firstname="ahmed", lastname="thabet",
+                 email="thabeta@dmdm.com")
     u1.telephones = [t1]
     db.session.add(u1)
-    
+
     t2 = Telephone(number="01145533120")
     db.session.add(t2)
-    u2 = Contact(firstname="notahmed", lastname="thabet", email="notthabeta@dmdm.com")
+    u2 = Contact(firstname="notahmed", lastname="thabet",
+                 email="notthabeta@dmdm.com")
     u2.telephones = [t2]
     db.session.add(u2)
 
-    c1 = Company(name="decompany", description="dmdm inc", email="monster@dmd.inc")
+    c1 = Company(name="decompany", description="dmdm inc",
+                 email="monster@dmd.inc")
     c1.telephones.append(t1)
 
     db.session.add(c1)
 
-    o1 = Organization(name="dmdmit", description="change the world", email="dmdmit@dmdm.org")
-    o1.users.append(u2)    
+    o1 = Organization(
+        name="dmdmit", description="change the world", email="dmdmit@dmdm.org")
+    o1.users.append(u2)
 
     db.session.add(o1)
 
@@ -87,7 +91,6 @@ def hello():
 
 if __name__ == "__main__":
 
-
     try:
         os.remove(DBPATH)
     except:
@@ -96,13 +99,12 @@ if __name__ == "__main__":
     try:
         db.create_all(app=app)
         db.session.commit()
-    except Exception as e: # db already exists
+    except Exception as e:  # db already exists
         raise
     try:
         do_fixtures()
     except Exception as e:
         raise
-
 
     admin = Admin(app, name="CRM")
     for m in dbmodels:
