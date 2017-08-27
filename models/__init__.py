@@ -4,8 +4,30 @@ from enum import Enum
 
 db = SQLAlchemy()  # init later in app.py
 
+from flask_admin.model import typefmt
+MY_DEFAULT_FORMATTERS = dict(typefmt.BASE_FORMATTERS)
+MY_DEFAULT_FORMATTERS.update({
+    type(None): typefmt.null_formatter,
 
-class Telephone(db.Model):
+})
+
+
+class AdminLinksMixin:
+    ADMIN_EDIT_LINK = "/admin/{modelname}/edit/?id={modelid}&url=/admin/{modelname}/"
+    ADMIN_VIEW_LINK = "/admin/{modelname}/details/?id={modelid}&url=/admin/{modelname}/"
+
+    def admin_edit_link(self):
+        modelname = self.__class__.__name__.lower()
+        # if modelname in "Telephone"
+        return AdminLinksMixin.ADMIN_EDIT_LINK.format(modelname=modelname, modelid=self.id)
+
+    def admin_view_link(self):
+        modelname = self.__class__.__name__.lower()
+
+        return AdminLinksMixin.ADMIN_VIEW_LINK.format(modelname=modelname, modelid=self.id)
+
+
+class Telephone(db.Model, AdminLinksMixin):
     __tablename__ = "telephones"
     id = db.Column('telephone_id', db.Integer, primary_key=True)
     number = db.Column(db.String(10))  # how long is phoneumber
@@ -16,7 +38,7 @@ class Telephone(db.Model):
         return self.number
 
 
-class Contact(db.Model):
+class Contact(db.Model, AdminLinksMixin):
     __tablename__ = "contacts"
     id = db.Column('contact_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
@@ -57,7 +79,7 @@ class Contact(db.Model):
         return "{} {}".format(self.firstname, self.lastname)
 
 
-class Company(db.Model):
+class Company(db.Model, AdminLinksMixin):
     __tablename__ = "companies"
     id = db.Column('company_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
@@ -89,7 +111,7 @@ class Company(db.Model):
 
 
 #  manytomany through table.
-class ContactsOrganizations(db.Model):
+class ContactsOrganizations(db.Model, AdminLinksMixin):
     __tablename__ = 'contacts_organizations'
     id = db.Column(db.Integer(), primary_key=True)
     contact_id = db.Column(db.Integer(), db.ForeignKey(
@@ -98,7 +120,7 @@ class ContactsOrganizations(db.Model):
         'organizations.organization_id'))  # , ondelete='CASCADE'))
 
 
-class Organization(db.Model):
+class Organization(db.Model, AdminLinksMixin):
     __tablename__ = "organizations"
     id = db.Column('organization_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
@@ -145,7 +167,7 @@ class DealCurrency(Enum):
     USD, EUR, AED, GBP = range(4)
 
 
-class Deal(db.Model):
+class Deal(db.Model, AdminLinksMixin):
     __tablename__ = "deals"
     id = db.Column('deal_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
@@ -190,7 +212,7 @@ class ContactsProjects(db.Model):
         'projects.project_id'))  # , ondelete='CASCADE'))
 
 
-class Project(db.Model):
+class Project(db.Model, AdminLinksMixin):
     __tablename__ = "projects"
     id = db.Column('project_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
@@ -243,7 +265,7 @@ class ContactsSprints(db.Model):
         return self.name
 
 
-class Sprint(db.Model):
+class Sprint(db.Model, AdminLinksMixin):
     __tablename__ = "sprints"
     id = db.Column('sprint_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
@@ -291,7 +313,7 @@ class Sprint(db.Model):
         return self.name
 
 
-class Comment(db.Model):
+class Comment(db.Model, AdminLinksMixin):
     __tablename__ = "comments"
     id = db.Column('comment_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
@@ -320,7 +342,7 @@ class Comment(db.Model):
         return self.name
 
 
-class Link(db.Model):
+class Link(db.Model, AdminLinksMixin):
     __tablename__ = "links"
     id = db.Column('link_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
@@ -355,7 +377,7 @@ class TaskPriority(Enum):
     MINOR, NORMAL, URGENT, CRITICAL = range(4)
 
 
-class Task(db.Model):
+class Task(db.Model, AdminLinksMixin):
     __tablename__ = "tasks"
     id = db.Column('task_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
@@ -393,7 +415,7 @@ class MessageChannel(Enum):
     TELEGRAM, EMAIL, SMS, INTERCOM = range(4)
 
 
-class Message(db.Model):
+class Message(db.Model, AdminLinksMixin):
     __tablename__ = "messages"
     id = db.Column('comment_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
