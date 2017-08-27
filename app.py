@@ -3,8 +3,9 @@ from flask import Flask
 from flask_migrate import Migrate
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-
+from flask_graphql import GraphQLView
 from models import db
+from models.schema import schema
 from models import Telephone, Contact, Company, Organization, Deal, Link, Project, Sprint, Task, Comment, Message
 
 
@@ -105,7 +106,8 @@ if __name__ == "__main__":
         do_fixtures()
     except Exception as e:
         raise
-
+    app.add_url_rule(
+        '/graphql', view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True))
     admin = Admin(app, name="CRM")
     for m in dbmodels:
         admin.add_view(ModelView(m, db.session))
