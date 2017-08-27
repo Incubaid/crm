@@ -1,13 +1,14 @@
+
+import sys
 import os
 from flask import Flask
 from flask_migrate import Migrate
 from flask_admin import Admin
-from flask_admin.contrib.sqla import ModelView
 from flask_graphql import GraphQLView
 from models import db
-from models.schema import schema
+from schema import schema
 from models import Telephone, Contact, Company, Organization, Deal, Link, Project, Sprint, Task, Comment, Message
-
+from views import *
 
 dbmodels = [Telephone, Contact, Company, Organization,
             Deal, Link, Project, Sprint, Task, Comment, Message]
@@ -34,6 +35,7 @@ config = {
 }
 
 app = Flask(__name__)
+app.jinja_env.globals.update(getattr=getattr, hasattr=hasattr, type=type)
 app.secret_key = "dmdmkey"
 app.config = {**app.config, **config}
 db.app = app
@@ -82,6 +84,14 @@ def do_fixtures():
 
     o1.comments.append(com1)
     db.session.add(com1, com2)
+
+    p1 = Project(name="proj1", description="dmdmproj", comments=[com1, com2])
+    t1 = Task(title="task1", content="fix dmdm",
+              remarks="someremarks")
+
+    u1.tasks.append(t1)
+    db.session.add(p1, t1)
+
     db.session.commit()
 
 
@@ -108,7 +118,10 @@ if __name__ == "__main__":
         raise
     app.add_url_rule(
         '/graphql', view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True))
-    admin = Admin(app, name="CRM")
+    admin = Admin(app, name="CRM", template_mode="bootstrap3")
+
     for m in dbmodels:
-        admin.add_view(ModelView(m, db.session))
+        viewname = m.__name__ + "ModelView"
+        viewcls = getattr(sys.modules[__name__], viewname)
+        admin.add_view(viewcls(m, db.session))
     app.run(debug=True)

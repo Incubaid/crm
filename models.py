@@ -4,13 +4,6 @@ from enum import Enum
 
 db = SQLAlchemy()  # init later in app.py
 
-from flask_admin.model import typefmt
-MY_DEFAULT_FORMATTERS = dict(typefmt.BASE_FORMATTERS)
-MY_DEFAULT_FORMATTERS.update({
-    type(None): typefmt.null_formatter,
-
-})
-
 
 class AdminLinksMixin:
     ADMIN_EDIT_LINK = "/admin/{modelname}/edit/?id={modelid}&url=/admin/{modelname}/"
@@ -45,8 +38,8 @@ class Contact(db.Model, AdminLinksMixin):
     firstname = db.Column(db.String(15))
     lastname = db.Column(db.String(15))
     email = db.Column(db.String(30))
-    message_channels = db.Column(db.String(10))
     description = db.Column(db.Text())  # should be markdown.
+    message_channels = db.Column(db.String(10))
 
     # timestamps
     created_at = db.Column(
@@ -145,7 +138,7 @@ class Organization(db.Model, AdminLinksMixin):
     messages = db.relationship("Message", backref="organization")
     sprints = db.relationship("Sprint", backref="organization")
     promoter = db.relationship("Contact", backref="promotedorganizations")
-    gauridan = db.relationship("Contact", backref="gaurdianedorganizations")
+    gaurdian = db.relationship("Contact", backref="gaurdianedorganizations")
     parent_id = db.Column(db.Integer, db.ForeignKey(
         "organizations.organization_id"))
     owner = db.relationship('Organization', primaryjoin=(
@@ -240,7 +233,7 @@ class Project(db.Model, AdminLinksMixin):
 
     contact_id = db.Column(db.Integer, db.ForeignKey("contacts.contact_id"))
     promoter = db.relationship("Contact", backref="promotedprojects")
-    gauridan = db.relationship("Contact", backref="gaurdiansprojects")
+    gaurdian = db.relationship("Contact", backref="gaurdiansprojects")
 
     # parent organization
     parent_id = db.Column(db.Integer, db.ForeignKey(
@@ -250,6 +243,8 @@ class Project(db.Model, AdminLinksMixin):
     def percentage_done():
         pass
 
+    def __str__(self):
+        return self.name
 # manytomany through table.
 
 
@@ -292,7 +287,7 @@ class Sprint(db.Model, AdminLinksMixin):
 
     contact_id = db.Column(db.Integer, db.ForeignKey("contacts.contact_id"))
     promoter = db.relationship("Contact", backref="promotedsprints")
-    gauridan = db.relationship("Contact", backref="gaurdiansprints")
+    gaurdian = db.relationship("Contact", backref="gaurdiansprints")
 
     # parent organization
     parent = db.relationship('Organization', backref='childsprints')
@@ -386,7 +381,7 @@ class Task(db.Model, AdminLinksMixin):
     remarks = db.Column(db.Text())  # should be markdown.
     content = db.Column(db.Text())  # should be markdown.
     type = db.Column(db.Enum(TaskType), default=TaskType.FEATURE)
-    priortiy = db.Column(db.Enum(TaskPriority), default=TaskPriority.MINOR)
+    priority = db.Column(db.Enum(TaskPriority), default=TaskPriority.MINOR)
 
     # time_done means time be spent on that task.
     eta = db.Column(db.TIMESTAMP, default=datetime.utcnow, nullable=False)
@@ -405,7 +400,7 @@ class Task(db.Model, AdminLinksMixin):
     messages = db.relationship("Message", backref="task")
 
     def __str__(self):
-        return self.name
+        return self.title
 
     def percent_completed(self):
         return "0%"
