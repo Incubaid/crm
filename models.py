@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from enum import Enum
 
 db = SQLAlchemy()  # init later in app.py
+db.session.autocommit = True
 
 
 class AdminLinksMixin:
@@ -37,7 +38,7 @@ class Contact(db.Model, AdminLinksMixin):
     uid = db.Column(db.String(4))
     firstname = db.Column(db.String(15))
     lastname = db.Column(db.String(15))
-    email = db.Column(db.String(30))
+    email = db.Column(db.String(255))
     description = db.Column(db.Text())  # should be markdown.
     message_channels = db.Column(db.String(10))
 
@@ -76,9 +77,9 @@ class Company(db.Model, AdminLinksMixin):
     __tablename__ = "companies"
     id = db.Column('company_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
-    name = db.Column(db.String(10))
-    description = db.Column(db.String(100))  # should be markdown.
-    email = db.Column(db.String(10))
+    name = db.Column(db.String(255))
+    description = db.Column(db.Text())  # should be markdown.
+    email = db.Column(db.String(255))
 
     isuser = db.Column(db.Boolean, default=False)
 
@@ -118,9 +119,9 @@ class Organization(db.Model, AdminLinksMixin):
     __tablename__ = "organizations"
     id = db.Column('organization_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
-    name = db.Column(db.String(10))
-    description = db.Column(db.String(100))  # should be markdown.
-    email = db.Column(db.String(10))
+    name = db.Column(db.String(255))
+    description = db.Column(db.Text())  # should be markdown.
+    email = db.Column(db.String(255))
     # timestamps
     created_at = db.Column(
         db.TIMESTAMP, default=datetime.utcnow, nullable=False)
@@ -167,8 +168,8 @@ class Deal(db.Model, AdminLinksMixin):
     __tablename__ = "deals"
     id = db.Column('deal_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
-    name = db.Column(db.String(10))
-    remarks = db.Column(db.String(100))  # should be markdown.
+    name = db.Column(db.String(255))
+    remarks = db.Column(db.Text())  # should be markdown.
     amount = db.Column(db.Integer)  # default to int.
     currency = db.Column(db.Enum(DealCurrency), default=DealCurrency.EUR)
     deal_type = db.Column(db.Enum(DealType), default=DealType.HOSTER)
@@ -214,7 +215,7 @@ class Project(db.Model, AdminLinksMixin):
     id = db.Column('project_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
     name = db.Column(db.String(10))
-    description = db.Column(db.String(100))  # should be markdown.
+    description = db.Column(db.Text())  # should be markdown.
 
     start_date = db.Column(db.TIMESTAMP)
     deadline = db.Column(db.TIMESTAMP)
@@ -271,8 +272,8 @@ class Sprint(db.Model, AdminLinksMixin):
     __tablename__ = "sprints"
     id = db.Column('sprint_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
-    name = db.Column(db.String(10))
-    description = db.Column(db.String(100))  # should be markdown.
+    name = db.Column(db.String(255))
+    description = db.Column(db.Text())  # should be markdown.
     start_date = db.Column(db.TIMESTAMP)
     deadline = db.Column(db.TIMESTAMP)
     # timestamps
@@ -322,7 +323,7 @@ class Comment(db.Model, AdminLinksMixin):
     __tablename__ = "comments"
     id = db.Column('comment_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
-    name = db.Column(db.String(10))
+    name = db.Column(db.String(255))
     remarks = db.Column(db.Text())  # should be markdown.
     content = db.Column(db.Text())  # should be markdown.
 
@@ -424,9 +425,9 @@ class Message(db.Model, AdminLinksMixin):
     __tablename__ = "messages"
     id = db.Column('comment_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
-    title = db.Column(db.String(10))
-    content = db.Column(db.String(100))  # should be markdown.
-    channel = db.Column(db.String(100))  # should be markdown.
+    title = db.Column(db.String(255))
+    content = db.Column(db.Text())  # should be markdown.
+    channel = db.Column(db.String(255))  # should be markdown.
     time_tosend = db.Column(db.TIMESTAMP)
     time_sent = db.Column(db.TIMESTAMP)
 

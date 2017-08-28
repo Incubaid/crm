@@ -10,7 +10,6 @@ def format_instrumented_list(view, context, model, name):
     out = ""
 
     if isinstance(value, InstrumentedList):
-        print("\n\n////////NAME ", name, " VALUE: ", value, "\n\n")
         for x in value:
             if hasattr(x, "admin_view_link"):
                 out += Markup("<a href='{}'>{}</a> ".format(
@@ -25,18 +24,16 @@ def format_comments(view, context, model, name):
     out = ""
 
     if isinstance(value, InstrumentedList):
-        print("\n\n////////NAME ", name, " VALUE: ", value, "\n\n")
         for x in value:
             if hasattr(x, "admin_view_link"):
-                out += Markup("<a href='{}'>{} {}</a><br /><br /> ".format(
-                    getattr(x, "admin_view_link")(), x, x.content))
+                out += Markup("{commenttitle} {commentcontent}<a href='{commentadminlink}'> Read more...</a><br /><br /> ".format(
+                    commentadminlink=getattr(x, "admin_view_link")(), commenttitle=x.name, commentcontent=x.content))
             else:
                 out += str(x)
     return out
 
 formatters = dict(list(zip(["telephones", "users", "contacts", "organizations", "projects",  "deals", "sprints",
-                            "links", "comments"
-                            "tasks", "messages"], cycle([format_instrumented_list]))), comments=format_comments)
+                            "links", "tasks", "messages"], cycle([format_instrumented_list]))), comments=format_comments)
 
 
 class EnhancedModelView(ModelView):
@@ -90,7 +87,7 @@ class LinkModelView(EnhancedModelView):
 
 class TaskModelView(EnhancedModelView):
     column_details_list = ('title', 'description', 'remarks', 'content', 'type', 'priority', 'eta', 'time_done',
-                           'contact', 'company', 'deal', 'organization', 'project', 'sprint', 'comments', 'messages')
+                           'assignee', 'company', 'deal', 'organization', 'project', 'sprint', 'comments', 'messages')
 
 
 class MessageModelView(EnhancedModelView):
