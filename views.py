@@ -19,9 +19,24 @@ def format_instrumented_list(view, context, model, name):
                 out += str(x)
     return out
 
-formatters = dict(list(zip(["telephones", "comments", "contacts", "projects", "deals", "sprints",
-                            "links", "comments",
-                            "tasks", "messages"], cycle([format_instrumented_list]))))
+
+def format_comments(view, context, model, name):
+    value = getattr(model, name)
+    out = ""
+
+    if isinstance(value, InstrumentedList):
+        print("\n\n////////NAME ", name, " VALUE: ", value, "\n\n")
+        for x in value:
+            if hasattr(x, "admin_view_link"):
+                out += Markup("<a href='{}'>{} {}</a><br /><br /> ".format(
+                    getattr(x, "admin_view_link")(), x, x.content))
+            else:
+                out += str(x)
+    return out
+
+formatters = dict(list(zip(["telephones", "users", "contacts", "organizations", "projects",  "deals", "sprints",
+                            "links", "comments"
+                            "tasks", "messages"], cycle([format_instrumented_list]))), comments=format_comments)
 
 
 class EnhancedModelView(ModelView):
@@ -30,12 +45,12 @@ class EnhancedModelView(ModelView):
 
 
 class TelephoneModelView(EnhancedModelView):
-    column_details_list = ('number', 'contact')
+    column_details_list = ('number', 'contact', 'company')
 
 
 class ContactModelView(EnhancedModelView):
-    column_details_list = ('firstname', 'lastname', 'email', 'description', 'telephones',
-                           'organizations', 'deals', 'comments', 'tasks', 'messages', 'links', 'owner', 'ownerbackup')
+    column_details_list = ('firstname', 'lastname', 'email', 'description', 'telephones', 'message_channels',
+                           'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
 
 
 class CompanyModelView(EnhancedModelView):
@@ -45,17 +60,17 @@ class CompanyModelView(EnhancedModelView):
 
 class OrganizationModelView(EnhancedModelView):
     column_details_list = ('name', 'email', 'description', 'users', 'tasks', 'comments',
-                           'links', 'messages', 'sprints', 'promoter', 'gaurdian', 'parent', 'owner')
+                           'links', 'messages', 'sprints', 'promoter', 'gaurdian', 'owner')
 
 
 class DealModelView(EnhancedModelView):
     column_details_list = ('name', 'remarks', 'amount', 'currency', 'deal_type',
-                           'deal_state', 'tasks', 'comments', 'messages', 'links', 'contact', 'owner', 'ownerbackup')
+                           'deal_state', 'tasks', 'comments', 'messages', 'links', 'contact', 'company' 'owner', 'ownerbackup')
 
 
 class ProjectModelView(EnhancedModelView):
     column_details_list = ('name', 'description', 'start_date', 'deadline', 'comments',
-                           'links', 'tasks', 'sprint', 'messages', 'users', 'promoter', 'gaurdian')
+                           'links', 'tasks', 'sprint', 'messages', 'users', 'promoter', 'gaurdian', 'parent')
 
 
 class SprintModelView(EnhancedModelView):
@@ -64,18 +79,18 @@ class SprintModelView(EnhancedModelView):
 
 
 class CommentModelView(EnhancedModelView):
-    column_details_list = ('name', 'remarks', 'content', 'company', 'organization', 'task', 'project',
+    column_details_list = ('name', 'remarks', 'content', 'company', 'contact', 'organization', 'task', 'project',
                            'link', 'deal', 'sprint')
 
 
 class LinkModelView(EnhancedModelView):
     column_details_list = ('url', 'labels', 'contact', 'organization', 'task', 'project',
-                           'deal', 'sprint')
+                           'deal', 'sprint', 'comments')
 
 
 class TaskModelView(EnhancedModelView):
     column_details_list = ('title', 'description', 'remarks', 'content', 'type', 'priority', 'eta', 'time_done',
-                           'company', 'deal', 'organization', 'project', 'sprint', 'comments', 'messages')
+                           'contact', 'company', 'deal', 'organization', 'project', 'sprint', 'comments', 'messages')
 
 
 class MessageModelView(EnhancedModelView):

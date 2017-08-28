@@ -61,12 +61,12 @@ class Contact(db.Model, AdminLinksMixin):
 
     owner_id = db.Column(db.Integer, db.ForeignKey("contacts.contact_id"))
     owner = db.relationship('Contact', primaryjoin=(
-        'Contact.owner_id==Contact.id'), backref='ownedusers', remote_side=id)
+        'Contact.owner_id==Contact.id'), backref='ownedusers', remote_side=id, uselist=False)
 
     ownerbackup_id = db.Column(
         db.Integer, db.ForeignKey("contacts.contact_id"))
     ownerbackup = db.relationship('Contact', primaryjoin=(
-        'Contact.ownerbackup_id==Contact.id'), backref='backupownedusers', remote_side=id)
+        'Contact.ownerbackup_id==Contact.id'), backref='backupownedusers', remote_side=id, uselist=False)
 
     def __str__(self):
         return "{} {}".format(self.firstname, self.lastname)
@@ -96,8 +96,9 @@ class Company(db.Model, AdminLinksMixin):
     comments = db.relationship("Comment", backref="company")
 
     contact_id = db.Column(db.Integer, db.ForeignKey("contacts.contact_id"))
-    owner = db.relationship("Contact", backref="ownedcompanies")
-    ownerbackup = db.relationship("Contact", backref="backupownedcompanies")
+    owner = db.relationship("Contact", backref="ownedcompanies", uselist=False)
+    ownerbackup = db.relationship(
+        "Contact", backref="backupownedcompanies", uselist=False)
 
     def __str__(self):
         return self.name
@@ -131,18 +132,20 @@ class Organization(db.Model, AdminLinksMixin):
     tasks = db.relationship("Task", backref="organization")
 
     comments = db.relationship("Comment", backref="organization")
-    users = db.relationship("Contact", secondary="contacts_organizations",
-                            backref=db.backref("organizations"), lazy="dynamic")
+    # users = db.relationship("Contact", secondary="contacts_organizations",
+    # backref=db.backref("organizations"), lazy="dynamic")
 
     links = db.relationship("Link", backref="organization")
     messages = db.relationship("Message", backref="organization")
     sprints = db.relationship("Sprint", backref="organization")
-    promoter = db.relationship("Contact", backref="promotedorganizations")
-    gaurdian = db.relationship("Contact", backref="gaurdianedorganizations")
+    promoter = db.relationship(
+        "Contact", backref="promotedorganizations", uselist=False)
+    gaurdian = db.relationship(
+        "Contact", backref="gaurdianedorganizations", uselist=False)
     parent_id = db.Column(db.Integer, db.ForeignKey(
         "organizations.organization_id"))
     owner = db.relationship('Organization', primaryjoin=(
-        'Organization.parent_id==Organization.id'), backref='ownedusers', remote_side=id)
+        'Organization.parent_id==Organization.id'), backref='ownedusers', remote_side=id, uselist=False)
 
     def __str__(self):
         return self.name
@@ -188,8 +191,9 @@ class Deal(db.Model, AdminLinksMixin):
     messages = db.relationship("Message", backref="deal")
     links = db.relationship("Link", backref="deal")
     contact_id = db.Column(db.Integer, db.ForeignKey("contacts.contact_id"))
-    owner = db.relationship("Contact", backref="owneddeals")
-    ownerbackup = db.relationship("Contact", backref="backupowneddeals")
+    owner = db.relationship("Contact", backref="owneddeals", uselist=False)
+    ownerbackup = db.relationship(
+        "Contact", backref="backupowneddeals", uselist=False)
 
     def __str__(self):
         return self.name
@@ -232,13 +236,16 @@ class Project(db.Model, AdminLinksMixin):
                             backref=db.backref("projects"), lazy="dynamic")
 
     contact_id = db.Column(db.Integer, db.ForeignKey("contacts.contact_id"))
-    promoter = db.relationship("Contact", backref="promotedprojects")
-    gaurdian = db.relationship("Contact", backref="gaurdiansprojects")
+    promoter = db.relationship(
+        "Contact", backref="promotedprojects", uselist=False)
+    gaurdian = db.relationship(
+        "Contact", backref="gaurdiansprojects", uselist=False)
 
     # parent organization
     parent_id = db.Column(db.Integer, db.ForeignKey(
         "organizations.organization_id"))
-    parent = db.relationship('Organization', backref='childprojects')
+    parent = db.relationship(
+        'Organization', backref='childprojects', uselist=False)
 
     def percentage_done():
         pass
@@ -286,11 +293,14 @@ class Sprint(db.Model, AdminLinksMixin):
     messages = db.relationship("Message", backref="sprint")
 
     contact_id = db.Column(db.Integer, db.ForeignKey("contacts.contact_id"))
-    promoter = db.relationship("Contact", backref="promotedsprints")
-    gaurdian = db.relationship("Contact", backref="gaurdiansprints")
+    promoter = db.relationship(
+        "Contact", backref="promotedsprints", uselist=False)
+    gaurdian = db.relationship(
+        "Contact", backref="gaurdiansprints", uselist=False)
 
     # parent organization
-    parent = db.relationship('Organization', backref='childsprints')
+    parent = db.relationship(
+        'Organization', backref='childsprints', uselist=False)
 
     def percentage_done():
         pass
