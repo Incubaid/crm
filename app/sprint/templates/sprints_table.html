@@ -1,0 +1,69 @@
+{% load markdown_filters %}
+
+   <table>
+     <thead>
+         <tr>
+              <th class="original">Name</th>
+              <th class="original">Start date</th>
+             <th class="original">Deadline</th>
+
+              <th class="original">Percent completed</th>
+              <th class="original">Max hours per person</th>
+             <th class="original">Average hours per person</th>
+             <th class="original">Hours open</th>
+             {% if 'project' not in exclude %}
+             <th class="original">Project</th>
+             {% endif %}
+              {% if 'organization' not in exclude %}
+             <th class="original">Organization</th>
+             {% endif %}
+             <th class="original">Owner</th>
+
+
+         </tr>
+         </thead>
+     <tbody>
+     {% for entry in sprints %}
+     <tr class="form-row row1 has_original dynamic-phone_numbers">
+          <td class="form-row row1">
+              <a href="{{sprint_root_path}}/{{entry.uid}}/review">{{entry.name}}</a>
+              <a class="related-widget-wrapper-link change-related" title="Edit selected sprint" href="{{sprint_root_path}}/{{entry.uid}}"><img src="/static/admin/img/icon-changelink.svg" alt="Edit sprint"></a>
+
+          </td>
+          <td class="form-row row1"> {{ entry.start_date }}</td>
+          <td class="form-row row1"> {{ entry.deadline }}</td>
+          <td class="form-row row1"> {{ entry.percent_completed }}</td>
+          <td class="form-row row1"> {{ entry.hoursopen_person_max }}</td>
+          <td class="form-row row1"> {{ entry.hoursopen_person_avg }}</td>
+          <td class="form-row row1"> {{ entry.hours_open }}</td>
+
+        {% if 'project' not in exclude %}
+            <td class="form-row row1">
+                <div class="related-widget-wrapper">
+                    <a href="{{project_root_path}}/{{entry.project.uid}}/review">{{entry.project.name}}</a>
+                    <a clas s="related-widget-wrapper-link change-related" data-href-template="" title="Edit selected project" href="{{project_root_path}}/{{entry.owner.uid}}/change"><img src="/static/admin/img/icon-changelink.svg" alt="Edit project"></a>
+                </div>
+            </td>
+         {% endif %}
+
+         {% if 'organization' not in exclude %}
+          <td class="form-row row1">
+                <div class="related-widget-wrapper">
+                    <a href="{{organization_root_path}}/{{entry.organization.uid}}/review">{{entry.organization.name}}</a>
+                    <a clas s="related-widget-wrapper-link change-related" data-href-template="" title="Edit selected organization" href="{{organization_root_path}}/{{entry.organization.uid}}/change"><img src="/static/admin/img/icon-changelink.svg" alt="Edit organization"></a>
+                </div>
+            </td>
+         {% endif %}
+
+
+            <td class="form-row row1">
+                <div class="related-widget-wrapper">
+                    <a href="{{contact_root_path}}/{{entry.owner.uid}}/review">{{entry.owner.name}}</a>
+                    <a clas s="related-widget-wrapper-link change-related" data-href-template="" title="Edit selected contact" href="{{contact_root_path}}/{{entry.owner.uid}}/change"><img src="/static/admin/img/icon-changelink.svg" alt="Edit contact"></a>
+                </div>
+            </td>
+
+
+        </tr>
+       {% endfor %}
+   </table>

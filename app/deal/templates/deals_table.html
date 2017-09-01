@@ -1,0 +1,86 @@
+{% if deals %}
+   <table>
+     <thead>
+         <tr>
+             <th class="original">UID</th>
+           <th class="original">Name</th>
+              {% if 'contact' not in excludes %}
+             <th class="original">Contact</th>
+             {% endif %}
+             {% if 'company' not in excludes %}
+             <th class="original">Company</th>
+             {% endif %}
+             <th class="original">Type</th>
+             <th class="original">State</th>
+             <th class="original">Amount</th>
+             <th class="original">Owner</th>
+             <th class="original">Owner backup</th>
+         </tr>
+
+         </thead>
+     <tbody>
+     {% for deal in deals %}
+        <tr class="form-row row1 has_original dynamic-phone_numbers">
+             <td class="form-row row1">
+                  <a href="{{deal_root_path}}/{{deal.uid}}/review"> {{deal.uid}}</a> <a class="related-widget-wrapper-link change-related" data-href-template="" title="Change selected deal" href="{{deal_root_path}}/{{deal.uid}}/change"><img src="/static/admin/img/icon-changelink.svg" alt="Edit deal"></a>
+              </td>
+
+       <td class="form-row row1">
+           <div class="related-widget-wrapper">
+                    {{deal.name}}
+                    </div>
+
+              </td>
+            {% if 'contact' not in excludes %}
+            <td class="form-row row1">
+                <div class="related-widget-wrapper">
+                  <a href="{{contact_root_path}}/{{deal.contact.uid}}/review">{{deal.contact.name}}</a>
+                    <a class="related-widget-wrapper-link change-related" data-href-template="" title="Edit selected contact" href="{{contact_root_path}}/{{deal.contact.uid}}/change"><img src="/static/admin/img/icon-changelink.svg" alt="Edit contact"></a>
+
+                </div>
+              </td>
+            {% endif %}
+            {% if 'company' not in excludes %}
+              <td class="form-row row1">
+                <div class="related-widget-wrapper">
+                  <a href="{{company_root_path}}/{{deal.company.uid}}/review">{{deal.company.name}}</a>
+                    <a class="related-widget-wrapper-link change-related" data-href-template="" title="Edit selected company" href="{{company_root_path}}/{{deal.company.uid}}/change"><img src="/static/admin/img/icon-changelink.svg" alt="Edit compnay"></a>
+                </div>
+              </td>
+            {% endif %}
+            <td class="form-row row1">
+                 {{deal.type}}
+
+              </td>
+            <td class="form-row row1">
+                  {{deal.state}}
+
+              </td>
+            <td class="form-row row1">
+                  {{deal.amount}} {{deal.currency}}
+
+              </td>
+            <td class="form-row row1">
+                <div class="related-widget-wrapper">
+                    {% if deal.owner %}
+                <a href="{{contact_root_path}}/{{deal.owner.uid}}/review">{{deal.owner.name}}</a>
+                <a class="related-widget-wrapper-link change-related" data-href-template="" title="Edit selected contact" href="{{contact_root_path}}/{{deal.owner.uid}}/change"><img src="/static/admin/img/icon-changelink.svg" alt="Edit contact"></a>
+                {% else %}
+                    --
+                    {% endif %}
+                </div>
+              </td>
+            <td class="form-row row1">
+        <div class="related-widget-wrapper">
+             {% if deal.owner_backup %}
+                <a href="{{contact_root_path}}/{{deal.owner_backup.uid}}/review">{{deal.owner_backup.name}}</a>
+                <a class="related-widget-wrapper-link change-related" data-href-template="" title="Edit selected contact" href="{{contact_root_path}}/{{deal.owner_backup.uid}}/change"><img src="/static/admin/img/icon-changelink.svg" alt="Edit contact"></a>
+                </div>
+             {% else %}
+                --
+                {% endif %}
+            </td>
+        </tr>
+       {% endfor %}
+   </table>
+{% endif %}

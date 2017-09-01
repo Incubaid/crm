@@ -1,0 +1,156 @@
+<html>
+    <head>
+        <script>
+    $(document).ready(function() {
+    
+
+      $(function ()
+    {
+        $("#wizard").steps({
+            headerTag: "h2",
+            bodyTag: "section",
+            transitionEffect: "slideLeft",
+            onStepChanging:function(event, currentIndex, newIndex){
+   if( currentIndex ==0 )
+   {
+             
+
+         alert(currentIndex); 
+   $('#empolyee_main').submit();
+   
+   }
+else if( currentIndex ==1)
+{
+              alert(currentIndex);
+
+    
+    $('#empolyee_adminstrative').submit();
+    
+}
+
+else if( currentIndex ==2 )
+{
+     alert(currentIndex);
+$('#empolyee_stay').submit();
+ 
+            
+            
+ }   
+ else if( currentIndex ==3)
+{
+     alert(currentIndex);
+$('#empolyee_dependents').submit();
+ 
+            
+            
+ }
+ if( currentIndex ==4 )
+{
+     alert(currentIndex);
+$('#empolyee_insurance').submit();
+ 
+            
+            
+ }
+ if( currentIndex == 5)
+{
+     alert(currentIndex);
+$('#empolyee_security').submit();
+ 
+            
+            
+ }
+         return true;
+          
+    }, 
+    
+    
+     
+            labels: {
+                current: "الخطوة الحالية:",
+                pagination: "الترقيم",
+                finish: "حفظ بيانات الموظف",
+                next: "التالي",
+                previous: "السابق",
+                loading: "جاري التحميل ..."
+            }
+         });
+        $('.default-date-picker').datepicker({
+        format: 'mm-dd-yyyy',
+        language: 'ar',
+    });
+    });
+    
+    
+
+    
+
+      
+      $('#empolyee_main').submit(function(event){
+   
+         event.preventDefault();
+         $.ajax({url:"/employees/new_employee/",
+             
+             dataType: 'json',
+             data: $('form#empolyee_main').serialize(),
+             success: function(data) {
+           
+           $('#employee_id').val(data.message);
+           $('#employee_id1').val(data.message);   
+            $('#employee_id2').val(data.message);  
+           $('#employee_id3').val(data.message); 
+            $('#employee_id4').val(data.message); 
+            //$('#employee_id5').val(data.message);   
+                
+
+    }}
+           );  
+       
+  });
+ 
+
+ 
+ 
+  $('#empolyee_stay').ajaxForm(function() { 
+                alert("Thank you for your comment!"); 
+            }); 
+     $('#empolyee_dependents').ajaxForm(function() { 
+                alert("Thank you for your comment!"); 
+            }); 
+               $('#empolyee_insurance').ajaxForm(function() { 
+                alert("Thank you for your comment!"); 
+            }); 
+               $('#empolyee_security').ajaxForm(function() { 
+                alert("Thank you for your comment!"); 
+            });           
+            
+ 
+  $('#empolyee_adminstrative').submit(function(event){
+   
+         event.preventDefault();
+         $.ajax({url:"/employees/save_employment_administrative/",
+             
+             dataType: 'json',
+             data: $('form#empolyee_adminstrative').serialize(),
+             success: function(data) {
+            
+             alert("كود الموظف " + data.message);
+             }}
+         );  
+          
+  });
+ 
+ 
+  });
+  
+    
+    
+    
+    
+    
+    
+    
+    
+</script>
+    </head>
+</html>

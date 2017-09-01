@@ -1,0 +1,159 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+{% load markdown_filters %}
+{% block extrahead %}{{ block.super }}
+<script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+{{ media }}
+{% endblock %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}" />{% endblock %}
+
+{% block coltype %}colM{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-form{% endblock %}
+
+{% if not is_popup %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+&rsaquo; {% if has_change_permission %}<a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %}
+&rsaquo; {% if add %}{% blocktrans with name=opts.verbose_name %}Add {{ name }}{% endblocktrans %}{% else %}{{ original|truncatewords:"18" }}{% endif %}
+</div>
+{% endblock %}
+{% endif %}
+
+{% block content %}<div id="content-main">
+{% block object-tools %}
+{% if change %}{% if not is_popup %}
+  <ul class="object-tools">
+    {% block object-tools-items %}
+    <li>
+        {% url opts|admin_urlname:'history' original.pk|admin_urlquote as history_url %}
+        <a href="{% add_preserved_filters history_url %}" class="historylink">{% trans "History" %}</a>
+    </li>
+    {% if has_absolute_url %}<li><a href="{{ absolute_url }}" class="viewsitelink">{% trans "View on site" %}</a></li>{% endif %}
+    {% endblock %}
+  </ul>
+{% endif %}{% endif %}
+{% endblock %}
+<form {% if has_file_field %}enctype="multipart/form-data" {% endif %}action="{{ form_url }}" method="post" id="{{ opts.model_name }}_form" novalidate>{% csrf_token %}{% block form_top %}{% endblock %}
+<div>
+{% if is_popup %}<input type="hidden" name="{{ is_popup_var }}" value="1" />{% endif %}
+{% if to_field %}<input type="hidden" name="{{ to_field_var }}" value="{{ to_field }}" />{% endif %}
+{% if save_on_top %}{% block submit_buttons_top %}{% submit_row %}{% endblock %}{% endif %}
+{% if errors %}
+    <p class="errornote">
+    {% if errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+    </p>
+    {{ adminform.form.non_field_errors }}
+{% endif %}
+
+{% block field_sets %}
+
+    <fieldset class="module aligned ">
+        <h2>Sprint Info </h2>
+         <div class="form-row field-uid">
+            <div>
+                    <label>Uid:</label>
+                        <input disabled type="text" value="{{sprint.uid}}" class="vTextField" maxlength="30">
+            </div>
+
+        </div>
+
+        <div class="form-row">
+                <div>
+                    <label> Name </label>
+                    <div class="related-widget-wrapper">
+                       <input disabled type="text" value="{{sprint.name}}" class="vTextField" maxlength="30">
+                    </div>
+                </div>
+        </div>
+
+        <div class="form-row">
+                    <br>
+                        <label> Description: </label>
+                        <br/></br>
+                        <div class="markdownx-preview"> {{sprint.description|markdownify|safe}}</div>
+                    </div>
+
+
+
+            <div class="form-row row1">
+                <div>
+                <label> StartDate: </label>
+                 <input disabled type="text" value="{{sprint.start_date}}" class="vTextField" maxlength="30">
+                </div>
+              </div>
+
+            <div class="form-row row1">
+                <div>
+                <label> Deadline: </label>
+                 <input disabled type="text" value="{{sprint.deadline}}" class="vTextField" maxlength="30">
+                </div>
+              </div>
+
+
+            <div class="form-row row1">
+                <div>
+                <label> Owner: </label>
+                 <a href="{{contact_root_path}}/{{sprint.owner.uid}}/review">{{sprint.owner.name}}</a>
+                    <a class="related-widget-wrapper-link change-related" title="Edit contact" href="{{contact_root_path}}/{{sprint.owner.uid}}"><img src="/static/admin/img/icon-changelink.svg" alt="Edit contact"></a>
+                </div>
+              </div>
+
+        <div class="form-row row1">
+                <div>
+                <label> Project: </label>
+                 <a href="{{project_root_path}}/{{sprint.project.uid}}/review">{{sprint.project.name}}</a>
+                 <a class="related-widget-wrapper-link change-related" title="Edit project" href="{{project_root_path}}/{{sprint.project.uid}}"><img src="/static/admin/img/icon-changelink.svg" alt="Edit project"></a>
+                </div>
+        </div>
+
+        <div class="form-row row1">
+                <div>
+                <label> Organization: </label>
+                 <a href="{{organization_root_path}}/{{sprint.organization.uid}}/review">{{sprint.organization.name}}</a>
+                 <a class="related-widget-wrapper-link change-related" title="Edit organization" href="{{organization_root_path}}/{{sprint.organization.uid}}"><img src="/static/admin/img/icon-changelink.svg" alt="Edit organization"></a>
+                </div>
+        </div>
+</fieldset>
+     <fieldset class="module aligned ">
+        <h2> Sprint Tasks </h2>
+
+         {% include 'tasks_table.html' with tasks=sprint.tasks.all exclude='sprint' %}
+
+     </fieldset>
+
+    {% endblock %}
+
+{% block after_field_sets %}{% endblock %}
+
+{% block inline_field_sets %}
+{% for inline_admin_formset in inline_admin_formsets %}
+    {% include inline_admin_formset.opts.template %}
+{% endfor %}
+{% endblock %}
+
+{% block after_related_objects %}{% endblock %}
+
+
+{% block admin_change_form_document_ready %}
+    <script type="text/javascript"
+            id="django-admin-form-add-constants"
+            src="{% static 'admin/js/change_form.js' %}"
+            {% if adminform and add %}
+                data-model-name="{{ opts.model_name }}"
+            {% endif %}>
+    </script>
+{% endblock %}
+
+{# JavaScript for prepopulated fields #}
+{% prepopulated_fields_js %}
+
+</div>
+
+
+</form></div>
+
+{% endblock %}

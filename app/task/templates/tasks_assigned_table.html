@@ -1,0 +1,133 @@
+{% load markdown_filters %}
+{% if tasks %}
+   <table>
+     <thead>
+         <tr>
+              <th class="original">UID</th>
+              <th class="original">Title</th>
+           <th class="original">Type</th>
+             <th class="original">Urgency</th>
+
+             {% if  'deal' not in excludes %}
+
+             <th class="original">Deal</th>
+             {% endif %}
+
+             {% if  'project' not in excludes %}
+              <th class="original">Project</th>
+             {% endif %}
+
+             {% if 'organization' not in excludes %}
+             <th class="original">Organization</th>
+             {% endif %}
+
+             {% if 'sprint' not in excludes %}
+             <th class="original">Sprint</th>
+             {%endif %}
+
+
+             <th class="original">Total percent completed</th>
+
+             <th class="original">Time to do</th>
+
+             <th class="original">Time done</th>
+
+             <th class="original">Owner</th>
+         </tr>
+
+         </thead>
+     <tbody>
+     {% for assignment in tasks reversed %}
+     <tr class="form-row row1 has_original dynamic-phone_numbers">
+         <td class="form-row row1">
+            <div class="related-widget-wrapper">
+                    <a href="{{task_root_path}}/{{assignment.task.uid}}/review">{{assignment.task.uid}}</a>
+                    <a class="related-widget-wrapper-link change-related" title="Edit selected task" href="{{task_root_path}}/{{assignment.task.uid}}"><img src="/static/admin/img/icon-changelink.svg" alt="Edit Task"></a>
+             </div>
+         </td>
+
+         <td class="form-row row1">
+             {{assignment.task.title}}
+         </td>
+
+         <td class="form-row row1">
+            {{assignment.task.type}}
+         </td>
+
+        <td class="form-row row1">
+             {{assignment.task.urgency}}
+        </td>
+
+        {% if  'deal' not in excludes %}
+        <td class="form-row row1">
+             {% if assignment.task.deal %}
+                        <a href="{{deal_root_path}}/{{assignment.task.deal.uid}}/review">{{assignment.task.deal.name}}</a>
+                        <a class="related-widget-wrapper-link change-related" title="Edit selected deal" href="{{deal_root_path}}/{{assignment.task.deal.uid}}"><img src="/static/admin/img/icon-changelink.svg" alt="Edit deal"></a>
+            {% else  %}
+                    --
+             {% endif %}
+         </td>
+         {% endif %}
+
+
+        {% if  'project' not in excludes %}
+         <td class="form-row row1">
+         {% if assignment.task.project %}
+                    <a href="{{project_root_path}}/{{assignment.task.project.uid}}/review">{{assignment.task.project.name}}</a>
+                    <a class="related-widget-wrapper-link change-related" title="Edit selected project" href="{{project_root_path}}/{{assignment.task.project.uid}}/change"><img src="/static/admin/img/icon-changelink.svg" alt="Edit deal"></a>
+        {% else  %}
+                --
+         {% endif %}
+     </td>
+         {% endif %}
+
+         {% if  'organization' not in excludes %}
+         <td class="form-row row1">
+        {% if assignment.task.organization %}
+                    <a href="{{organization_root_path}}/{{assignment.task.organization.uid}}/review">{{assignment.task.organization.name}}</a>
+                    <a class="related-widget-wrapper-link change-related" title="Edit selected organization" href="{{organization_root_path}}/{{assignment.task.organization.uid}}/change"><img src="/static/admin/img/icon-changelink.svg" alt="Edit organization"></a>
+        {% else  %}
+                --
+         {% endif %}
+     </td>
+         {% endif %}
+
+         {% if  'sprint' not in excludes %}
+          <td class="form-row row1">
+        {% if assignment.task.sprint %}
+                    <a href="{{sprint_root_path}}/{{assignment.task.sprint.uid}}/review">{{assignment.task.sprint.name}}</a>
+                    <a class="related-widget-wrapper-link change-related" data-href-template="" title="Edit selected sprint" href="{{sprint_root_path}}/{{assignment.task.sprint.uid}}/change"><img src="/static/admin/img/icon-changelink.svg" alt="Edit sprint"></a>
+        {% else  %}
+                --
+         {% endif %}
+     </td>
+        {% endif %}
+           <td class="form-row row1">
+                {{assignment.task.percent_completed}} &nbsp; %
+           </td>
+
+
+          <td class="form-row row1">
+                {{assignment.task.time_todo}}
+           </td>
+
+         <td class="form-row row1">
+                {{assignment.task.time_done}}
+           </td>
+
+
+            <td class="form-row row1">
+                <div class="related-widget-wrapper">
+                <a href="{{contact_root_path}}/{{assignment.task.owner.uid}}/review">{{assignment.task.owner.name}}</a>
+                    {% if assignment.task.owner %}
+                <a clas s="related-widget-wrapper-link change-related" data-href-template="" title="Edit selected contact" href="{{contact_root_path}}/{{assignment.task.owner.uid}}/change"><img src="/static/admin/img/icon-changelink.svg" alt="Edit contact"></a>
+                    {% else %}
+                    ---
+                    {% endif %}
+                </div>
+              </td>
+        </tr>
+       {% endfor %}
+   </table>
+
+{% endif %}

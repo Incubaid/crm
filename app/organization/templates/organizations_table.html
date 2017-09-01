@@ -1,0 +1,63 @@
+{% if organizations %}
+<table>
+     <thead>
+         <tr>
+             <th class="original">UID</th>
+              <th class="original">Name</th>
+             <th class="original">Promoter</th>
+              <th class="original">Guardian</th>
+              <th class="original">Parent</th>
+         </tr>
+
+         </thead>
+     <tbody>
+     {% for organization in organizations %}
+
+     <tr class="form-row row1 has_original dynamic-phone_numbers">
+             <td class="form-row row1">
+                  <a href="{{organization_root_path}}/{{organization.uid}}/review"> {{organization.uid}}</a> <a class="related-widget-wrapper-link change-related" data-href-template="" title="Change selected organization" href="{{organization_root_path}}/{{organization.uid}}/change"><img src="/static/admin/img/icon-changelink.svg" alt="Edit organization"></a>
+              </td>
+
+         <td class="form-row row1">
+         {{organization.name}}
+         </td>
+
+         <td class="form-row row1">
+                <div class="related-widget-wrapper">
+                    {% if organization.promoter %}
+                <a href="{{contact_root_path}}/{{organization.promoter.uid}}/review">{{organization.promoter.name}}</a>
+                <a class="related-widget-wrapper-link change-related" data-href-template="" title="Edit selected contact" href="{{contact_root_path}}/{{organization.promoter.uid}}/change"><img src="/static/admin/img/icon-changelink.svg" alt="Edit contact"></a>
+                {% else %}
+                    --
+                    {% endif %}
+                </div>
+              </td>
+
+          <td class="form-row row1">
+                <div class="related-widget-wrapper">
+                    {% if organization.guardian %}
+                <a href="{{contact_root_path}}/{{organization.guardian.uid}}/review">{{organization.guardian.name}}</a>
+                <a class="related-widget-wrapper-link change-related" data-href-template="" title="Edit selected contact" href="{{contact_root_path}}/{{organization.guardian.uid}}/change"><img src="/static/admin/img/icon-changelink.svg" alt="Edit contact"></a>
+                {% else %}
+                    --
+                    {% endif %}
+                </div>
+              </td>
+
+          <td class="form-row row1">
+                <div class="related-widget-wrapper">
+                    {% if organization.parent %}
+                <a href="{{organization_root_path}}/{{organization.parent.uid}}/review">{{organization.parent.name}}</a>
+                <a class="related-widget-wrapper-link change-related" data-href-template="" title="Edit selected organization" href="{{organization_root_path}}/{{organization.parent.uid}}/change"><img src="/static/admin/img/icon-changelink.svg" alt="Edit organization"></a>
+                {% else %}
+                    --
+                    {% endif %}
+                </div>
+              </td>
+
+
+     </tr>
+       {% endfor %}
+   </table>
+
+{% endif %}

@@ -1,0 +1,36 @@
+{% if projects %}
+   <table>
+     <thead>
+         <tr>
+              <th class="original">Name</th>
+             <th class="original">Start date</th>
+             <th class="original">Deadline</th>
+             <th class="original">Percent completed</th>
+         </tr>
+
+         </thead>
+     <tbody>
+     {% for project in projects %}
+     <tr class="form-row row1 has_original dynamic-phone_numbers">
+
+     <td class="form-row row1">
+         <a href="/admin/project/project/{{project.uid}}/review">{{project.name}}</a>
+        <a class="related-widget-wrapper-link change-related" data-href-template="" title="Change selected contact" href="/admin/project/project/{{project.uid}}/change"><img src="/static/admin/img/icon-changelink.svg" alt="Change"></a>
+     </td>
+         <td>
+             {{project.start_date}}
+         </td>
+
+          <td>
+             {{project.deadline}}
+         </td>
+
+          <td>
+             {{project.percent_completed}}
+         </td>
+     </tr>
+       {% endfor %}
+   </table>
+
+
+{% endif %}

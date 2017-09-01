@@ -1,0 +1,114 @@
+{% load markdown_filters %}
+
+{% if links %}
+   <table>
+     <thead>
+         <tr>
+             <th class="original">UID</th>
+              <th class="original">URL</th>
+             
+
+             {% if 'deal' not in excludes %}
+             <th class="original">Deal</th>
+             {% endif %}
+
+             {% if 'project' not in excludes %}
+              <th class="original">Project</th>
+             {% endif %}
+
+             {% if 'organization' not in excludes %}
+             <th class="original">Organization</th>
+             {% endif %}
+
+             {% if 'task' not in excludes %}
+             <th class="original">Task</th>
+             {%endif %}
+
+              {% if 'comment' not in excludes %}
+             <th class="original">Comment</th>
+             {%endif %}
+
+            <th class="original">Contact</th>
+         </tr>
+     
+
+
+         </thead>
+     <tbody>
+     {% for entry in links %}
+     <tr class="form-row row1 has_original dynamic-phone_numbers">
+         <td class="form-row row1"><a href="{{link_root_path}}/{{entry.uid}}/review">{{entry.uid}}</a>
+        <a class="related-widget-wrapper-link change-related" title="Edit selected link" href="{{link_root_path}}/{{entry.uid}}"><img src="/static/admin/img/icon-changelink.svg" alt="Edit link"></a>
+
+         </td>
+         <td><a href="{{entry.url|safe}}">{{entry.url|safe}}</a>
+</td>
+
+         {% if 'deal' not in excludes %}
+        <td class="form-row row1">
+             {% if entry.deal %}
+                        <a href="{{deal_root_path}}/{{entry.deal.uid}}/review">{{entry.deal.name}}</a>
+                        <a class="related-widget-wrapper-link change-related" title="Edit selected deal" href="{{deal_root_path}}/{{entry.deal.uid}}"><img src="/static/admin/img/icon-changelink.svg" alt="Edit deal"></a>
+            {% else  %}
+                    --
+             {% endif %}
+         </td>
+         {% endif %}
+
+
+         {% if 'project' not in excludes %}
+         <td class="form-row row1">
+         {% if entry.project %}
+                    <a href="{{project_root_path}}/{{entry.project.uid}}/review">{{entry.project.name}}</a>
+                    <a class="related-widget-wrapper-link change-related" title="Edit selected project" href="{{project_root_path}}/{{entry.project.uid}}/change"><img src="/static/admin/img/icon-changelink.svg" alt="Edit deal"></a>
+        {% else  %}
+                --
+         {% endif %}
+     </td>
+         {% endif %}
+
+         {% if 'organization' not in excludes %}
+         <td class="form-row row1">
+        {% if entry.organization %}
+                    <a href="{{organization_root_path}}/{{entry.organization.uid}}/review">{{entry.organization.name}}</a>
+                    <a class="related-widget-wrapper-link change-related" title="Edit selected organization" href="{{organization_root_path}}/{{entry.organization.uid}}/change"><img src="/static/admin/img/icon-changelink.svg" alt="Edit organization"></a>
+        {% else  %}
+                --
+         {% endif %}
+     </td>
+         {% endif %}
+
+         {% if 'task' not in excludes %}
+          <td class="form-row row1">
+        {% if entry.task %}
+                    <a href="{{task_root_path}}/{{entry.task.uid}}/review">{{entry.task.name}}</a>
+                    <a class="related-widget-wrapper-link change-related" data-href-template="" title="Edit selected sprint" href="{{sprint_root_path}}/{{entry.task.uid}}/change"><img src="/static/admin/img/icon-changelink.svg" alt="Edit sprint"></a>
+        {% else  %}
+                --
+         {% endif %}
+     </td>
+        {% endif %}
+
+          {% if 'comment' not in excludes %}
+          <td class="form-row row1">
+        {% if entry.comment %}
+                    <a href="{{comment_root_path}}/{{entry.comment.uid}}/review">{{entry.comment.uid}}</a>
+                    <a class="related-widget-wrapper-link change-related" data-href-template="" title="Edit selected comment" href="{{comment_root_path}}/{{entry.comment.uid}}/change"><img src="/static/admin/img/icon-changelink.svg" alt="Edit comment"></a>
+        {% else  %}
+                --
+         {% endif %}
+     </td>
+        {% endif %}
+
+
+
+            <td class="form-row row1">
+                <div class="related-widget-wrapper">
+                <a href="{{contact_root_path}}/{{entry.contact.uid}}/review">{{entry.contact.name}}</a>
+                <a clas s="related-widget-wrapper-link change-related" data-href-template="" title="Edit selected contact" href="{{contact_root_path}}/{{entry.contact.uid}}/change"><img src="/static/admin/img/icon-changelink.svg" alt="Edit contact"></a>
+                </div>
+              </td>
+        </tr>
+       {% endfor %}
+   </table>
+{% endif %}

@@ -1,0 +1,113 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="ThemeBucket">
+		<link rel="shortcut icon" href="{% static 'images/favicon.png' %}' %}">
+		<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		{% load i18n %}
+		<title>{% block Page_title %}Home{% endblock %}</title>
+
+		<!--Core CSS -->
+		<link href="{% static 'bs3/css/bootstrap.css' %}" rel="stylesheet">
+		<link href="{% static 'bs3/css/bootstrap-rtl.css' %}" rel="stylesheet">
+		<link href="{% static 'css/bootstrap-reset.css' %}" rel="stylesheet">
+		<link href="{% static 'font-awesome/css/font-awesome.css' %}" rel="stylesheet" />
+		<link href="{% static 'js/advanced-datatable/css/demo_page.css' %}" rel="stylesheet" />
+		<link href="{% static 'js/advanced-datatable/css/demo_table.css' %}" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="{% static 'css/dataTables.tableTools.css' %}">
+		<link rel="stylesheet" href="{% static 'js/data-tables/DT_bootstrap.css' %}" />
+
+		<!-- Custom styles for this template -->
+		<link href="{% static 'css/style.css' %}" rel="stylesheet">
+		<link href="{% static 'css/style-responsive.css' %}" rel="stylesheet" />
+
+		<!-- Just for debugging purposes. Don't actually copy this line! -->
+		<!--[if lt IE 9]>
+		<script src="js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!--[if lt IE 9]>
+		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+		<script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+		<![endif]-->
+
+		{% block extra_head %}{% endblock %}
+
+	</head>
+
+	<body>
+
+		<section id="container" >
+			<!--header start-->
+			<header class="header fixed-top clearfix">
+				<!--logo start-->
+
+				<!--logo end-->
+
+				<div class="top-nav clearfix">
+
+					<!--search & user info start-->
+					<ul class="nav pull-left top-menu">
+
+						<!-- user login dropdown start-->
+						<li class="dropdown">
+							<a data-toggle="dropdown" class="dropdown-toggle" href="#"> <img alt="" src="{% static 'images/avatar1_small.jpg' %}"> <span class="username"> {{request.user.username}}</span> <b class="caret"></b> </a>
+							<ul class="dropdown-menu extended logout">
+								<li>
+									<a href="/accounts/logout/"> Logout  <i class="fa fa-key"></i></a>
+								</li>
+							</ul>
+						</li>
+						<!-- user login dropdown end -->
+					</ul>
+					<!--search & user info end-->
+				</div>
+			</header>
+
+			<!--sidebar end-->
+			<!--main content start-->
+			<section id="main-content">
+				<section class="wrapper">
+					<!-- page start-->
+					<div class="row">
+						<div class="col-sm-12">
+							<section class="panel">
+								{% block content %}
+								{% endblock %}
+							</section>
+						</div>
+					</div>
+					<!-- page end-->
+				</section>
+			</section>
+			<!--main content end-->
+
+		</section>
+
+		<script src="{% static 'js/jquery.js' %}"></script>
+		<script src="{% static 'bs3/js/bootstrap.min.js' %}"></script>
+		<script src="{% static 'js/jquery-ui-1.9.2.custom.min.js' %}"></script>
+		<script class="include" type="text/javascript" src="{% static 'js/jquery.dcjqaccordion.2.7.js' %}"></script>
+		<script src="{% static 'js/jquery.scrollTo.min.js' %}"></script>
+		<script src="{% static 'js/jQuery-slimScroll-1.3.0/jquery.slimscroll.js' %}"></script>
+		<script src="{% static 'js/jquery.nicescroll.js' %}"></script>
+		<script src="{% static 'js/jquery-steps/jquery.steps.js' %}"></script>
+
+		<!--common script init for all pages-->
+		<script type="text/javascript" language="javascript" src="{% static 'js/advanced-datatable/js/jquery.dataTables.js' %}"></script>
+		<script type="text/javascript" src="{% static 'js/data-tables/DT_bootstrap.js' %}"></script>
+		<script type="text/javascript" src="{% static 'js/dataTables.tableTools.js' %}"></script>
+
+		<script src="{% static 'js/scripts.js' %}"></script>
+		<script src="{% static 'js/dynamic_table_init.js' %}"></script>
+
+	</body>
+	<footer>
+	</footer>
+</html>
