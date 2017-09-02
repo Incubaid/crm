@@ -8,6 +8,14 @@ fake = Faker()
 def do_fixtures():
     global db
 
+    def newlink():
+        labels = "critical, minor, urgent, fixed, inprogress"
+        l = Link(url=fake.url(), labels=labels)
+        l.comments = [newcomment() for i in range(2)]
+        db.session.add(l)
+
+        return l
+
     def newuser():
         phonenumber = fake.phone_number()
         firstname = fake.first_name()
@@ -21,6 +29,7 @@ def do_fixtures():
         u.comments = [newcomment() for i in range(2)]
         u.tasks = [newtask() for i in range(2)]
         u.messages = [newmsg() for i in range(2)]
+        u.links = [newlink() for i in range(3)]
         db.session.add(u)
         return u
 
@@ -51,6 +60,7 @@ def do_fixtures():
         org.tasks = [newtask() for i in range(5)]
         org.messages = [newmsg() for i in range(20)]
 
+        org.links = [newlink() for i in range(3)]
         db.session.add(org)
         return org
 
@@ -60,9 +70,26 @@ def do_fixtures():
         proj = Project(name=projname, description=projdesc)
         proj.comments = [newcomment() for i in range(5)]
         proj.tasks = [newtask() for i in range(5)]
-        proj.messages = [newmsg() for i in range(20)]
+        proj.messages = [newmsg() for i in range(5)]
+        proj.links = [newlink() for i in range(3)]
+
         db.session.add(proj)
         return proj
+
+    def newsprint():
+        sprintname = fake.name() + "sprint"
+        sprintdesc = fake.paragraph()
+        sprint.users = [newuser() for i in range(2)]
+        sprint.org = neworg()
+        sprint.tasks = [newtask() for i in range(5)]
+        sprint.comments = [newcomment() for i in range(5)]
+        sprint.messages = [newmsg() for i in range(5)]
+        sprint.project = newproj()
+        sprint.links = [newlink() for i in range(3)]
+
+        db.session.add(sprint)
+
+        return sprint
 
     def newdeal():
 
@@ -72,6 +99,7 @@ def do_fixtures():
         deal.comments = [newcomment() for i in range(5)]
         deal.tasks = [newtask() for i in range(5)]
         deal.messages = [newmsg() for i in range(5)]
+        deal.links = [newlink() for i in range(3)]
         db.session.add(deal)
         return deal
 

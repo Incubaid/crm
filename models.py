@@ -40,7 +40,7 @@ class Contact(db.Model, AdminLinksMixin):
     lastname = db.Column(db.String(15))
     email = db.Column(db.String(255))
     description = db.Column(db.Text())  # should be markdown.
-    message_channels = db.Column(db.String(10))
+    message_channels = db.Column(db.String(10), default="E1,S2:T1")
 
     # timestamps
     created_at = db.Column(
@@ -371,7 +371,7 @@ class Link(db.Model, AdminLinksMixin):
     comments = db.relationship("Comment", backref="link")
 
     def __str__(self):
-        return self.name
+        return self.url
 
 
 class TaskType(Enum):
@@ -408,6 +408,7 @@ class Task(db.Model, AdminLinksMixin):
     sprint_id = db.Column(db.Integer, db.ForeignKey("sprints.sprint_id"))
     comments = db.relationship("Comment", backref="task")
     messages = db.relationship("Message", backref="task")
+    links = db.relationship("Link", backref="task")
 
     def __str__(self):
         return self.title
