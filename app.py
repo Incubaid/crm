@@ -23,6 +23,7 @@ development = True
 
 DBPATHDEV = os.path.join(os.getcwd(), "db", "development.db")
 DBPATHPROD = os.path.join(os.getcwd(), "db", "production.db")
+FIXTURES = os.getenv("BOOTSTRAPWITHFIXTURES", False)
 DBPATH = DBPATHDEV
 
 if development is False:
@@ -45,21 +46,21 @@ migrate = Migrate(app, db)
 
 
 if __name__ == "__main__":
+    if FIXTURES:
+        try:
+            os.remove(DBPATH)
+        except:
+            pass
 
-    try:
-        os.remove(DBPATH)
-    except:
-        pass
-
-    try:
-        db.create_all(app=app)
-        db.session.commit()
-    except Exception as e:  # db already exists
-        raise
-    try:
-        do_fixtures()
-    except Exception as e:
-        raise
+        try:
+            db.create_all(app=app)
+            db.session.commit()
+        except Exception as e:  # db already exists
+            raise
+        try:
+            do_fixtures()
+        except Exception as e:
+            raise
     app.add_url_rule(
         '/graphql', view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True))
     admin = Admin(app, name="CRM", template_mode="bootstrap3")

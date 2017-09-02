@@ -32,6 +32,7 @@ def format_comments(view, context, model, name):
                 out += str(x)
     return out
 
+
 formatters = dict(list(zip(["telephones", "users", "contacts", "organizations", "projects",  "deals", "sprints",
                             "links", "tasks", "messages"], cycle([format_instrumented_list]))), comments=format_comments)
 
@@ -62,7 +63,7 @@ class OrganizationModelView(EnhancedModelView):
 
 class DealModelView(EnhancedModelView):
     column_details_list = ('name', 'remarks', 'amount', 'currency', 'deal_type',
-                           'deal_state', 'tasks', 'comments', 'messages', 'links', 'contact', 'company' 'owner', 'ownerbackup')
+                           'deal_state', 'tasks', 'comments', 'messages', 'links', 'contact', 'company', 'owner', 'ownerbackup')
 
 
 class ProjectModelView(EnhancedModelView):

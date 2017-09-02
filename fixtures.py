@@ -1,79 +1,103 @@
 from models import db
 from models import Telephone, Contact, Company, Organization, Deal, Link, Project, Sprint, Task, Comment, Message
+from faker import Faker
+
+fake = Faker()
 
 
 def do_fixtures():
     global db
-    t1 = Telephone(number="01145533120")
-    db.session.add(t1)
-    u1 = Contact(firstname="ahmed", lastname="thabet",
-                 email="thabeta@dmdm.com")
-    u1.telephones = [t1]
-    db.session.add(u1)
 
-    t2 = Telephone(number="01145533120")
-    db.session.add(t2)
-    u2 = Contact(firstname="dom", lastname="xander",
-                 email="fast5@dmdm.com")
-    u2.telephones = [t2]
-    db.session.add(u2)
+    def newuser():
+        phonenumber = fake.phone_number()
+        firstname = fake.first_name()
+        lastname = fake.last_name()
+        phoneobj = Telephone(number=phonenumber)
+        email = fake.email()
+        u = Contact(firstname=firstname, lastname=lastname, email=email)
+        u.telephones = [phoneobj]
+        db.session.add(phoneobj)
 
-    t3 = Telephone(number="010221331892")
-    u3 = Contact(firstname="frodo", lastname="hobbit",
-                 email="fordo@hobbits.land")
-    u3.telephones = [t3]
+        u.comments = [newcomment() for i in range(2)]
+        u.tasks = [newtask() for i in range(2)]
+        u.messages = [newmsg() for i in range(2)]
+        db.session.add(u)
+        return u
 
-    db.session.add(t3)
-    db.session.add(u3)
+    def newcompany():
+        companyname = fake.company()
+        companyemail = fake.company_email()
+        description = fake.catch_phrase()
+        company = Company(name=companyname, email=companyemail,
+                          description=description)
+        companyphone = Telephone(number=fake.phone_number())
+        company.telephones = [companyphone]
+        company.owner = newuser()
+        db.session.add(company)
+        company.comments = [newcomment() for i in range(5)]
+        company.messages = [newmsg() for i in range(20)]
 
-    c1 = Company(name="pureevil", description="pureevil inc",
-                 email="monster@dmd.inc")
-    c1.telephones.append(t1)
+        db.session.add(companyphone)
+        return company
 
-    db.session.add(c1)
-    t4 = Telephone(number="010221331892")
+    def neworg():
+        orgname = fake.company() + "org"
+        orgemail = fake.company_email()
+        description = fake.catch_phrase()
 
-    c2 = Company(name="monsters", description="monsters inc",
-                 email="monsters@no.inc")
-    c2.telephones.append(t2)
+        org = Organization(name=orgname, email=orgemail,
+                           description=description)
+        org.comments = [newcomment() for i in range(5)]
+        org.tasks = [newtask() for i in range(5)]
+        org.messages = [newmsg() for i in range(20)]
 
-    db.session.add(c2)
+        db.session.add(org)
+        return org
 
-    o1 = Organization(
-        name="dmdmit", description="change the world", email="dmdmit@dmdm.org")
-    o1.users.append(u2)
+    def newproj():
+        projname = fake.name() + "proj"
+        projdesc = fake.paragraph()
+        proj = Project(name=projname, description=projdesc)
+        proj.comments = [newcomment() for i in range(5)]
+        proj.tasks = [newtask() for i in range(5)]
+        proj.messages = [newmsg() for i in range(20)]
+        db.session.add(proj)
+        return proj
 
-    db.session.add(o1)
+    def newdeal():
 
-    d1 = Deal(name="cairodeal", amount=10000)
-    d1.company = c1
-    u1.deals.append(d1)
-    d2 = Deal(name="dubaideal", amount=50000)
-    d2.company = c1
-    u2.deals.append(d2)
+        dealname = fake.name() + "deal"
+        dealamount = 5000
+        deal = Deal(name=dealname, amount=dealamount)
+        deal.comments = [newcomment() for i in range(5)]
+        deal.tasks = [newtask() for i in range(5)]
+        deal.messages = [newmsg() for i in range(5)]
+        db.session.add(deal)
+        return deal
 
-    com1 = Comment(name="a very first comment",
-                   content="Works for me prettty long one")
-    com2 = Comment(name="second comment", content="LGTM")
-    com3 = Comment(name="third comment", content="Can you please update that?")
-    com4 = Comment(name="fourth comment", content="Nope won't work.")
-    com5 = Comment(name="fifth comment", content="gibberish dmdmdm")
-    u1.comments.append(com1)
-    d1.comments.append(com2)
-    u1.comments.append(com3)
-    u2.comments.append(com4)
-    u1.comments.append(com5)
+    def newcomment():
+        com = Comment(name=fake.sentence(4),
+                      content=fake.paragraph())
+        db.session.add(com)
+        return com
 
-    o1.comments.append(com1)
-    db.session.add(com1, com2)
+    def newtask():
+        t = Task(title=fake.sentence(5), content=fake.paragraph(),
+                 remarks=fake.paragraph())
+        t.comments = [newcomment() for i in range(10)]
+        db.session.add(t)
+        return t
 
-    p1 = Project(name="proj1", description="dmdmproj", comments=[com1, com2])
-    t1 = Task(title="task1", content="fix dmdm",
-              remarks="someremarks")
-    t2 = Task(title="task1", content="fix dmdm",
-              remarks="someremarks")
-    u1.tasks.append(t1)
-    u1.tasks.append(t2)
+    def newmsg():
+        m = Message(title=fake.sentence(5), content=fake.paragraph())
+        db.session.add(m)
+        return m
 
-    db.session.add(p1, t1)
+    for i in range(5):
+        u = newuser()
+
+        com = newcompany()
+        proj = newproj()
+        org = neworg()
+
     db.session.commit()

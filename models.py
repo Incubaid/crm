@@ -191,7 +191,6 @@ class Deal(db.Model, AdminLinksMixin):
     comments = db.relationship("Comment", backref="deal")
     messages = db.relationship("Message", backref="deal")
     links = db.relationship("Link", backref="deal")
-    contact_id = db.Column(db.Integer, db.ForeignKey("contacts.contact_id"))
     owner = db.relationship("Contact", backref="owneddeals", uselist=False)
     ownerbackup = db.relationship(
         "Contact", backref="backupowneddeals", uselist=False)
