@@ -190,10 +190,11 @@ class TaskModelView(EnhancedModelView):
                        'type', 'priority', 'eta', 'time_done',
                        'assignee', 'company', 'organization', 'project', 'sprint', 'deal',
                        'remarks')
-    column_list = ('title', 'description', 'assignee',
+    column_list = ('title', 'description', 'assignee', 'eta', 'priority', 'time_done',
                    'organization', 'company', 'project', 'sprint', 'deal')
     column_searchable_list = ('title', 'description',
                               'content', 'type', 'priority', 'eta')
+    column_sortable_list = ('eta', 'priority')
 
 
 class MessageModelView(EnhancedModelView):
