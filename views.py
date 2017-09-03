@@ -49,7 +49,7 @@ def format_comments(view, context, model, name):
     return Markup(out)
 
 
-formatters = dict(list(zip(["telephones", "users", "contacts", "organizations", "projects",  "deals", "sprints",
+formatters = dict(list(zip(["telephones", "emails", "users", "contacts", "organizations", "projects",  "deals", "sprints",
                             "links", "tasks", "messages"], cycle([format_instrumented_list]))), comments=format_comments, url=format_url)
 
 formatters = {**formatters, **
@@ -67,27 +67,42 @@ class TelephoneModelView(EnhancedModelView):
     column_searchable_list = ('number',)
 
 
+class EmailModelView(EnhancedModelView):
+    column_filters = column_list = column_details_list = (
+        'contact', 'company', 'organization')
+    column_searchable_list = ('email',)
+
+
 class ContactModelView(EnhancedModelView):
-    column_filters = column_details_list = ('firstname', 'lastname', 'email', 'description', 'telephones', 'message_channels',
+    column_filters = column_details_list = ('firstname', 'lastname', 'emails', 'description', 'telephones', 'message_channels',
                                             'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
 
     column_list = column_filters = (
-        'firstname', 'lastname', 'email', 'description', 'telephones', 'message_channels',)
-    column_searchable_list = ('firstname', 'lastname', 'email')
+        'firstname', 'lastname', 'emails', 'description', 'telephones', 'message_channels',)
+    column_searchable_list = ('firstname', 'lastname',)
+
+    form_widget_args = {
+        'created_at': {
+            'readonly': True,
+        },
+        'updated_at': {
+            'readonly': True,
+        },
+    }
 
 
 class CompanyModelView(EnhancedModelView):
-    column_filters = column_details_list = ('name', 'description', 'email', 'telephones',
+    column_filters = column_details_list = ('name', 'description', 'emails', 'telephones',
                                             'deals', 'messages', 'tasks', 'comments', 'owner', 'ownerbackup')
-    column_searchable_list = ('name', 'description', 'email')
-    column_list = ('name', 'description', 'email', 'telephones')
+    column_searchable_list = ('name', 'description',)
+    column_list = ('name', 'description', 'emails', 'telephones')
 
 
 class OrganizationModelView(EnhancedModelView):
-    column_filters = column_details_list = ('name', 'email', 'description', 'users', 'tasks', 'comments',
+    column_filters = column_details_list = ('name', 'emails', 'description', 'users', 'tasks', 'comments',
                                             'links', 'messages', 'sprints', 'promoter', 'gaurdian', 'owner')
-    column_list = ('name', 'email', 'description', 'owner')
-    column_searchable_list = ('name', 'email', 'description',)
+    column_list = ('name', 'emails', 'description', 'owner')
+    column_searchable_list = ('name', 'description',)
 
 
 class DealModelView(EnhancedModelView):

@@ -7,11 +7,11 @@ from flask_admin import Admin
 from flask_graphql import GraphQLView
 from models import db
 from schema import schema
-from models import Telephone, Contact, Company, Organization, Deal, Link, Project, Sprint, Task, Comment, Message
+from models import Telephone, Email, Contact, Company, Organization, Deal, Link, Project, Sprint, Task, Comment, Message
 from views import *
 from fixtures import do_fixtures
 
-dbmodels = [Telephone, Contact, Company, Organization,
+dbmodels = [Telephone, Email, Contact, Company, Organization,
             Deal, Link, Project, Sprint, Task, Comment, Message]
 DBDIR = os.path.join(os.getcwd(), "db")
 

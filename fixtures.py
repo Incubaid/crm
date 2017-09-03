@@ -1,5 +1,5 @@
 from models import db
-from models import Telephone, Contact, Company, Organization, Deal, Link, Project, Sprint, Task, Comment, Message
+from models import Telephone, Email, Contact, Company, Organization, Deal, Link, Project, Sprint, Task, Comment, Message
 from faker import Faker
 
 fake = Faker()
@@ -7,6 +7,11 @@ fake = Faker()
 
 def do_fixtures():
     global db
+
+    def newemail():
+        em = Email(email=fake.email())
+        db.session.add(em)
+        return em
 
     def newlink():
         labels = "critical, minor, urgent, fixed, inprogress"
@@ -21,9 +26,10 @@ def do_fixtures():
         firstname = fake.first_name()
         lastname = fake.last_name()
         phoneobj = Telephone(number=phonenumber)
-        email = fake.email()
-        u = Contact(firstname=firstname, lastname=lastname, email=email)
+        email = newemail()
+        u = Contact(firstname=firstname, lastname=lastname)
         u.telephones = [phoneobj]
+        u.emails = [email]
         db.session.add(phoneobj)
 
         u.comments = [newcomment() for i in range(2)]
@@ -35,12 +41,13 @@ def do_fixtures():
 
     def newcompany():
         companyname = fake.company()
-        companyemail = fake.company_email()
+        companyemail = newemail()
         description = fake.catch_phrase()
-        company = Company(name=companyname, email=companyemail,
+        company = Company(name=companyname,
                           description=description)
         companyphone = Telephone(number=fake.phone_number())
         company.telephones = [companyphone]
+        company.emails = [companyemail]
         company.owner = newuser()
         db.session.add(company)
         company.comments = [newcomment() for i in range(5)]
@@ -51,11 +58,12 @@ def do_fixtures():
 
     def neworg():
         orgname = fake.company() + "org"
-        orgemail = fake.company_email()
+        orgemail = newemail()
         description = fake.catch_phrase()
 
-        org = Organization(name=orgname, email=orgemail,
+        org = Organization(name=orgname,
                            description=description)
+        org.emails = [orgemail]
         org.comments = [newcomment() for i in range(5)]
         org.tasks = [newtask() for i in range(5)]
         org.messages = [newmsg() for i in range(20)]

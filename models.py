@@ -32,13 +32,25 @@ class Telephone(db.Model, AdminLinksMixin):
         return self.number
 
 
+class Email(db.Model, AdminLinksMixin):
+    __tablename__ = "emails"
+    id = db.Column('email_id', db.Integer, primary_key=True)
+    email = db.Column(db.String(255))  # how long is phoneumber
+    contact_id = db.Column(db.Integer, db.ForeignKey("contacts.contact_id"))
+    company_id = db.Column(db.Integer, db.ForeignKey("companies.company_id"))
+    organization_id = db.Column(
+        db.Integer, db.ForeignKey("organizations.organization_id"))
+
+    def __str__(self):
+        return self.email
+
+
 class Contact(db.Model, AdminLinksMixin):
     __tablename__ = "contacts"
     id = db.Column('contact_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
     firstname = db.Column(db.String(15))
     lastname = db.Column(db.String(15))
-    email = db.Column(db.String(255))
     description = db.Column(db.Text())  # should be markdown.
     message_channels = db.Column(db.String(10), default="E1,S2:T1")
 
@@ -51,6 +63,8 @@ class Contact(db.Model, AdminLinksMixin):
 
     # relations
     telephones = db.relationship("Telephone", backref="contact")
+    emails = db.relationship("Email", backref="contact")
+
     organization_id = db.Column(
         db.Integer, db.ForeignKey("organizations.organization_id"))
 
@@ -79,8 +93,6 @@ class Company(db.Model, AdminLinksMixin):
     uid = db.Column(db.String(4))
     name = db.Column(db.String(255))
     description = db.Column(db.Text())  # should be markdown.
-    email = db.Column(db.String(255))
-
     isuser = db.Column(db.Boolean, default=False)
 
     # timestamps
@@ -91,6 +103,7 @@ class Company(db.Model, AdminLinksMixin):
 
     # relations
     telephones = db.relationship("Telephone", backref="company")
+    emails = db.relationship("Email", backref="company")
     deals = db.relationship("Deal", backref="company")
     messages = db.relationship("Message", backref="company")
     tasks = db.relationship("Task", backref="company")
@@ -121,7 +134,6 @@ class Organization(db.Model, AdminLinksMixin):
     uid = db.Column(db.String(4))
     name = db.Column(db.String(255))
     description = db.Column(db.Text())  # should be markdown.
-    email = db.Column(db.String(255))
     # timestamps
     created_at = db.Column(
         db.TIMESTAMP, default=datetime.utcnow, nullable=False)
@@ -129,9 +141,9 @@ class Organization(db.Model, AdminLinksMixin):
                            onupdate=datetime.utcnow, nullable=False)
 
 #     #relations
+    emails = db.relationship("Email", backref="organization")
     users = db.relationship("Contact", backref="organization")
     tasks = db.relationship("Task", backref="organization")
-
     comments = db.relationship("Comment", backref="organization")
     # users = db.relationship("Contact", secondary="contacts_organizations",
     # backref=db.backref("organizations"), lazy="dynamic")
