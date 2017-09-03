@@ -11,7 +11,7 @@
 - If you have database already just execute `python3 app.py`
 
 ## Admin Panel
-After starting the application you can access the admin panel from http://localhost:5000/admin
+After starting the application you can access the admin panel from http://localhost:5000
 
 ## GraphQL
 graphQL editor is accessible from http://localhost:5000/graphql
