@@ -24,7 +24,7 @@ class AdminLinksMixin:
 class Telephone(db.Model, AdminLinksMixin):
     __tablename__ = "telephones"
     id = db.Column('telephone_id', db.Integer, primary_key=True)
-    number = db.Column(db.String(10))  # how long is phoneumber
+    number = db.Column(db.String(20))  # how long is phoneumber
     contact_id = db.Column(db.Integer, db.ForeignKey("contacts.contact_id"))
     company_id = db.Column(db.Integer, db.ForeignKey("companies.company_id"))
 
@@ -437,7 +437,7 @@ class Message(db.Model, AdminLinksMixin):
     __tablename__ = "messages"
     id = db.Column('comment_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
-    title = db.Column(db.String(255))
+    title = db.Column(db.String(255), default="title")
     content = db.Column(db.Text())  # should be markdown.
     channel = db.Column(db.String(255))  # should be markdown.
     time_tosend = db.Column(db.TIMESTAMP)

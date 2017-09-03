@@ -87,6 +87,7 @@ def do_fixtures():
     def newsprint():
         sprintname = fake.name() + "sprint"
         sprintdesc = fake.paragraph()
+        sprint = Sprint(name=sprintname, description=sprintdesc)
         sprint.users = [newuser() for i in range(2)]
         sprint.org = neworg()
         sprint.tasks = [newtask() for i in range(5)]
@@ -138,5 +139,6 @@ def do_fixtures():
         proj = newproj()
         org = neworg()
         deal = newdeal()
+        sprint = newsprint()
 
     db.session.commit()
