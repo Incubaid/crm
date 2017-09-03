@@ -90,7 +90,8 @@ class ContactModelView(EnhancedModelView):
                        'message_channels', 'owner', 'ownerbackup')
 
     column_searchable_list = ('firstname', 'lastname',)
-
+    column_list = ('firstname', 'lastname', 'emails',
+                   'telephones', 'description')
     inline_models = [TelephoneModel, EmailModel, TaskModel]
 
 

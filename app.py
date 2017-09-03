@@ -47,21 +47,21 @@ migrate = Migrate(app, db)
 
 
 if __name__ == "__main__":
-    if FIXTURES:
-        try:
-            os.remove(DBPATH)
-        except:
-            pass
+    try:
+        os.remove(DBPATH)
+    except:
+        pass
 
-        try:
-            db.create_all(app=app)
-            db.session.commit()
-        except Exception as e:  # db already exists
-            raise
-        try:
+    try:
+        db.create_all(app=app)
+        db.session.commit()
+    except Exception as e:  # db already exists
+        raise
+    try:
+        if FIXTURES:
             do_fixtures()
-        except Exception as e:
-            raise
+    except Exception as e:
+        raise
     app.add_url_rule(
         '/graphql', view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True))
     admin = Admin(app, name="CRM", template_mode="bootstrap3", url="/")
