@@ -89,7 +89,7 @@ class EmailModelView(EnhancedModelView):
 class ContactModelView(EnhancedModelView):
     form_rules = column_filters = column_details_list = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'message_channels',
                                                          'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
-    form_edit_rules = ('firstname', 'lastname', 'description', 'emails', 'telephones',
+    form_edit_rules = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'tasks',
                        'message_channels', 'owner', 'ownerbackup')
 
     column_searchable_list = ('firstname', 'lastname',)
@@ -101,7 +101,7 @@ class CompanyModelView(EnhancedModelView):
     form_rules = column_filters = column_details_list = ('name', 'description', 'emails', 'telephones',
                                                          'deals', 'messages', 'tasks', 'comments', 'owner', 'ownerbackup')
 
-    form_edit_rules = ('name', 'description', 'emails', 'telephones', 'messages',
+    form_edit_rules = ('name', 'description', 'emails', 'telephones', 'messages', 'tasks',
                        'owner', 'ownerbackup')
 
     column_searchable_list = ('name', 'description',)
@@ -115,8 +115,8 @@ class OrganizationModelView(EnhancedModelView):
                                                          'promoter', 'gaurdian', 'owner',
                                                          'sprints', 'tasks', 'users', 'messages', 'comments',
                                                          'links',)
-    form_edit_rules = ('name', 'description', 'emails', 'messages',
-                       'promoter', 'gaurdian', 'owner',)
+    form_edit_rules = ('name', 'description', 'emails',
+                       'promoter', 'gaurdian', 'owner', 'tasks', 'messages')
     column_list = ('name', 'emails', 'description', 'owner')
     column_searchable_list = ('name', 'description',)
     inline_models = [EmailModel, MessageModel, TaskModel]
@@ -128,7 +128,7 @@ class DealModelView(EnhancedModelView):
                                                          'tasks', 'remarks', 'messages', 'comments',
                                                          'links', )
     form_edit_rules = ('name',  'amount', 'currency', 'deal_type', 'deal_state',
-                       'contact', 'company', 'owner', 'ownerbackup', 'messages')
+                       'contact', 'company', 'owner', 'ownerbackup', 'tasks', 'messages')
 
     columns_list = ('name', 'amount', 'currency', 'deal_type', 'deal_state')
     column_searchable_list = (
@@ -144,7 +144,7 @@ class ProjectModelView(EnhancedModelView):
     edit_form_rules = ('name', 'description',
                        'start_date', 'deadline',
                        'promoter', 'gaurdian',
-                       'users', 'messages')
+                       'users', 'tasks', 'messages')
 
     column_list = ('name', 'description', 'start_date', 'deadline', )
     column_searchable_list = ('name', 'description', 'start_date', 'deadline')
@@ -157,7 +157,7 @@ class SprintModelView(EnhancedModelView):
                                                          'promoter', 'gaurdian', 'parent', 'users',
                                                          'comments', 'links', 'messages', )
     form_edit_rules = ('name', 'description', 'start_date', 'deadline',
-                       'promoter', 'gaurdian', 'parent', 'users', 'messages')
+                       'promoter', 'gaurdian', 'parent', 'users', 'tasks', 'messages')
     column_list = ('name', 'description', 'start_date', 'deadline')
     column_searchable_list = ('name', 'description', 'start_date', 'deadline')
 
