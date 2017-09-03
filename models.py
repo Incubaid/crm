@@ -7,8 +7,8 @@ db.session.autocommit = True
 
 
 class AdminLinksMixin:
-    ADMIN_EDIT_LINK = "/admin/{modelname}/edit/?id={modelid}&url=/admin/{modelname}/"
-    ADMIN_VIEW_LINK = "/admin/{modelname}/details/?id={modelid}&url=/admin/{modelname}/"
+    ADMIN_EDIT_LINK = "/{modelname}/edit/?id={modelid}&url=/{modelname}/"
+    ADMIN_VIEW_LINK = "/{modelname}/details/?id={modelid}&url=/{modelname}/"
 
     def admin_edit_link(self):
         modelname = self.__class__.__name__.lower()

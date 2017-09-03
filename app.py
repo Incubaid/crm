@@ -63,7 +63,7 @@ if __name__ == "__main__":
             raise
     app.add_url_rule(
         '/graphql', view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True))
-    admin = Admin(app, name="CRM", template_mode="bootstrap3")
+    admin = Admin(app, name="CRM", template_mode="bootstrap3", url="/")
 
     for m in dbmodels:
         viewname = m.__name__ + "ModelView"
