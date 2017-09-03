@@ -34,24 +34,21 @@
     <table class="table table-hover table-bordered searchable">
 
     {% for c, name in details_columns %}
-      <tr>
+      {% set attr = getattr(model, c) %}
+      {% if attr or (hasattr(attr, 'length') and attr|length > 0) %}
+       <tr>
         <td>
           <b>{{ name }}</b>
         </td>
         <td>
-        {% if get_value(model, c) %}
-        {{ get_value(model, c) }}
-        {% else %}
-        Nothing to show yet.
-        {% endif %}
-        {% set attr = getattr(model, c) %}
-        <!-- {{type(attr)}} -->
         {% if hasattr(attr, "admin_view_link") %}
-             <a href="{{ getattr(model, c).admin_view_link() }}">View</a>
-             <a href="{{ getattr(model, c).admin_edit_link() }}">Edit</a>
+             <a href="{{ getattr(model, c).admin_view_link() }}">{{get_value(model, c)}}</a>
+        {% else %} 
+        {{ get_value(model, c) }}
         {% endif %}
         </td>
       </tr>
+      {% endif %}
     {% endfor %}
     </table>
   {% endblock %}
