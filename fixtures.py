@@ -108,7 +108,9 @@ def do_fixtures():
         deal.tasks = [newtask() for i in range(5)]
         deal.messages = [newmsg() for i in range(5)]
         deal.links = [newlink() for i in range(3)]
+        deal.company = newcompany()
         db.session.add(deal)
+
         return deal
 
     def newcomment():
@@ -135,5 +137,6 @@ def do_fixtures():
         com = newcompany()
         proj = newproj()
         org = neworg()
+        deal = newdeal()
 
     db.session.commit()
