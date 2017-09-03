@@ -10,21 +10,18 @@ from models import Telephone as TelephoneModel, Email as EmailModel, Contact as 
 def format_instrumented_list(view, context, model, name):
     value = getattr(model, name)
     out = ""
-    try:
-        if isinstance(value, InstrumentedList):
-            out = "<ul>"
-            for x in value:
-                if hasattr(x, "admin_view_link"):
-                    out += "<li><a href='{}'>{}</a></li>".format(
-                        getattr(x, "admin_view_link")(), x)
-                else:
-                    out += str(x)
-            out += "</ul>"
-        return Markup(out)
-    except Exception as e:
-        print('***', e)
-        import ipdb
-        ipdb.set_trace()
+    if isinstance(value, InstrumentedList):
+        out = "<ul>"
+        for x in value:
+            if x is None:  # items can be created from empty forms in the form. let's fix that in the model
+                continue
+            if hasattr(x, "admin_view_link"):
+                out += "<li><a href='{}'>{}</a></li>".format(
+                    getattr(x, "admin_view_link")(), x)
+            else:
+                out += str(x)
+        out += "</ul>"
+    return Markup(out)
 
 
 def format_url(view, context, model, name):

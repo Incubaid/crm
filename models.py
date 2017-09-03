@@ -24,7 +24,7 @@ class AdminLinksMixin:
 class Telephone(db.Model, AdminLinksMixin):
     __tablename__ = "telephones"
     id = db.Column('telephone_id', db.Integer, primary_key=True)
-    number = db.Column(db.String(20))  # how long is phoneumber
+    number = db.Column(db.String(20), nullable=False)  # how long is phoneumber
     contact_id = db.Column(db.Integer, db.ForeignKey("contacts.contact_id"))
     company_id = db.Column(db.Integer, db.ForeignKey("companies.company_id"))
 
@@ -35,7 +35,7 @@ class Telephone(db.Model, AdminLinksMixin):
 class Email(db.Model, AdminLinksMixin):
     __tablename__ = "emails"
     id = db.Column('email_id', db.Integer, primary_key=True)
-    email = db.Column(db.String(255))  # how long is phoneumber
+    email = db.Column(db.String(255), nullable=False)  # how long is phoneumber
     contact_id = db.Column(db.Integer, db.ForeignKey("contacts.contact_id"))
     company_id = db.Column(db.Integer, db.ForeignKey("companies.company_id"))
     organization_id = db.Column(
@@ -49,7 +49,7 @@ class Contact(db.Model, AdminLinksMixin):
     __tablename__ = "contacts"
     id = db.Column('contact_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
-    firstname = db.Column(db.String(15))
+    firstname = db.Column(db.String(15), nullable=False)
     lastname = db.Column(db.String(15))
     description = db.Column(db.Text())  # should be markdown.
     message_channels = db.Column(db.String(10), default="E1,S2:T1")
@@ -91,7 +91,7 @@ class Company(db.Model, AdminLinksMixin):
     __tablename__ = "companies"
     id = db.Column('company_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
-    name = db.Column(db.String(255))
+    name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text())  # should be markdown.
     isuser = db.Column(db.Boolean, default=False)
 
@@ -132,7 +132,7 @@ class Organization(db.Model, AdminLinksMixin):
     __tablename__ = "organizations"
     id = db.Column('organization_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
-    name = db.Column(db.String(255))
+    name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text())  # should be markdown.
     # timestamps
     created_at = db.Column(
@@ -180,7 +180,7 @@ class Deal(db.Model, AdminLinksMixin):
     __tablename__ = "deals"
     id = db.Column('deal_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
-    name = db.Column(db.String(255))
+    name = db.Column(db.String(255), nullable=False)
     remarks = db.Column(db.Text())  # should be markdown.
     amount = db.Column(db.Integer)  # default to int.
     currency = db.Column(db.Enum(DealCurrency), default=DealCurrency.EUR)
@@ -225,7 +225,7 @@ class Project(db.Model, AdminLinksMixin):
     __tablename__ = "projects"
     id = db.Column('project_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
-    name = db.Column(db.String(10))
+    name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text())  # should be markdown.
 
     start_date = db.Column(db.TIMESTAMP)
@@ -283,7 +283,7 @@ class Sprint(db.Model, AdminLinksMixin):
     __tablename__ = "sprints"
     id = db.Column('sprint_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
-    name = db.Column(db.String(255))
+    name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text())  # should be markdown.
     start_date = db.Column(db.TIMESTAMP)
     deadline = db.Column(db.TIMESTAMP)
@@ -334,7 +334,7 @@ class Comment(db.Model, AdminLinksMixin):
     __tablename__ = "comments"
     id = db.Column('comment_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
-    name = db.Column(db.String(255))
+    name = db.Column(db.String(255), nullable=False)
     remarks = db.Column(db.Text())  # should be markdown.
     content = db.Column(db.Text())  # should be markdown.
 
@@ -363,7 +363,7 @@ class Link(db.Model, AdminLinksMixin):
     __tablename__ = "links"
     id = db.Column('link_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
-    url = db.Column(db.String(255))
+    url = db.Column(db.String(255), nullable=False)
     labels = db.Column(db.Text())  # should be markdown.
 
     # timestamps
@@ -398,7 +398,7 @@ class Task(db.Model, AdminLinksMixin):
     __tablename__ = "tasks"
     id = db.Column('task_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
-    title = db.Column(db.String(255))
+    title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text())  # should be markdown.
     remarks = db.Column(db.Text())  # should be markdown.
     content = db.Column(db.Text())  # should be markdown.
@@ -437,7 +437,7 @@ class Message(db.Model, AdminLinksMixin):
     __tablename__ = "messages"
     id = db.Column('comment_id', db.Integer, primary_key=True)
     uid = db.Column(db.String(4))
-    title = db.Column(db.String(255), default="title")
+    title = db.Column(db.String(255), nullable=False)
     content = db.Column(db.Text())  # should be markdown.
     channel = db.Column(db.String(255))  # should be markdown.
     time_tosend = db.Column(db.TIMESTAMP)
