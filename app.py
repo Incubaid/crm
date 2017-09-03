@@ -11,8 +11,9 @@ from models import Telephone, Email, Contact, Company, Organization, Deal, Link,
 from views import *
 from fixtures import do_fixtures
 
-dbmodels = [Telephone, Email, Contact, Company, Organization,
-            Deal, Link, Project, Sprint, Task, Comment, Message]
+dbmodels = [Company, Contact, Organization, Deal, Project, Sprint, Task, ]
+extramodels = [Telephone, Email,
+               Link, Comment, Message]
 DBDIR = os.path.join(os.getcwd(), "db")
 
 
@@ -69,4 +70,8 @@ if __name__ == "__main__":
         viewname = m.__name__ + "ModelView"
         viewcls = getattr(sys.modules[__name__], viewname)
         admin.add_view(viewcls(m, db.session))
+    for m in extramodels:
+        viewname = m.__name__ + "ModelView"
+        viewcls = getattr(sys.modules[__name__], viewname)
+        admin.add_view(viewcls(m, db.session, category="Extra"))
     app.run(debug=True)
