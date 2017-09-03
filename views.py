@@ -74,7 +74,7 @@ class EmailModelView(EnhancedModelView):
 
 
 class ContactModelView(EnhancedModelView):
-    column_filters = column_details_list = ('firstname', 'lastname', 'emails', 'description', 'telephones', 'message_channels',
+    column_filters = column_details_list = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'message_channels',
                                             'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
 
     column_list = column_filters = (
@@ -99,15 +99,19 @@ class CompanyModelView(EnhancedModelView):
 
 
 class OrganizationModelView(EnhancedModelView):
-    column_filters = column_details_list = ('name', 'emails', 'description', 'users', 'tasks', 'comments',
-                                            'links', 'messages', 'sprints', 'promoter', 'gaurdian', 'owner')
+    column_filters = column_details_list = ('name', 'description', 'emails',
+                                            'promoter', 'gaurdian', 'owner',
+                                            'sprints', 'tasks', 'users', 'messages', 'comments',
+                                            'links',)
     column_list = ('name', 'emails', 'description', 'owner')
     column_searchable_list = ('name', 'description',)
 
 
 class DealModelView(EnhancedModelView):
-    column_filters = column_details_list = ('name', 'remarks', 'amount', 'currency', 'deal_type',
-                                            'deal_state', 'tasks', 'comments', 'messages', 'links', 'contact', 'company', 'owner', 'ownerbackup')
+    column_filters = column_details_list = ('name',  'amount', 'currency', 'deal_type', 'deal_state',
+                                            'contact', 'company', 'owner', 'ownerbackup',
+                                            'tasks', 'remarks', 'messages', 'comments',
+                                            'links', )
 
     columns_list = ('name', 'amount', 'currency', 'deal_type', 'deal_state')
     column_searchable_list = (
@@ -115,46 +119,54 @@ class DealModelView(EnhancedModelView):
 
 
 class ProjectModelView(EnhancedModelView):
-    column_filters = column_details_list = ('name', 'description', 'start_date', 'deadline', 'comments',
-                                            'links', 'tasks', 'sprint', 'messages', 'users', 'promoter', 'gaurdian', 'parent')
+    column_filters = column_details_list = ('name', 'description', 'start_date', 'deadline',
+                                            'promoter', 'sprint', 'tasks', 'gaurdian',
+                                            'users', 'comments', 'messages', 'links',)
 
     column_list = ('name', 'description', 'start_date', 'deadline', )
     column_searchable_list = ('name', 'description', 'start_date', 'deadline')
 
 
 class SprintModelView(EnhancedModelView):
-    column_filters = column_details_list = ('name', 'description', 'start_date', 'deadline', 'comments',
-                                            'links', 'tasks', 'messages', 'users', 'promoter', 'gaurdian', 'parent')
+    column_filters = column_details_list = ('name', 'description', 'start_date', 'deadline',
+                                            'promoter', 'gaurdian', 'parent', 'users',
+                                            'comments', 'links', 'tasks', 'messages', )
+
     column_list = ('name', 'description', 'start_date', 'deadline')
     column_searchable_list = ('name', 'description', 'start_date', 'deadline')
 
 
 class CommentModelView(EnhancedModelView):
-    column_filters = column_details_list = ('name', 'remarks', 'content', 'company', 'contact', 'organization', 'task', 'project',
-                                            'link', 'deal', 'sprint')
+    column_filters = column_details_list = ('name', 'content',
+                                            'company', 'contact', 'organization', 'project', 'sprint', 'task',
+                                            'link', 'deal', 'sprint', 'remarks')
     column_list = ('name', 'content')
     column_searchable_list = ('name', 'content')
 
 
 class LinkModelView(EnhancedModelView):
-    column_filters = column_details_list = ('url', 'labels', 'contact', 'organization', 'task', 'project',
-                                            'deal', 'sprint', 'comments')
+    column_filters = column_details_list = ('url', 'contact', 'organization', 'task', 'project',
+                                            'deal', 'sprint', 'labels', 'comments')
     column_list = ('url', 'labels')
     column_searchable_list = ('url', 'labels')
 
 
 class TaskModelView(EnhancedModelView):
-    column_filters = column_details_list = ('title', 'description', 'remarks', 'content', 'type', 'priority', 'eta', 'time_done',
-                                            'assignee', 'company', 'deal', 'organization', 'project', 'sprint', 'comments', 'messages')
+    column_filters = column_details_list = ('title', 'description', 'content',
+                                            'type', 'priority', 'eta', 'time_done',
+                                            'assignee', 'company', 'organization', 'project', 'sprint', 'deal',
+                                            'comments', 'messages', 'remarks')
+
     column_list = ('title', 'description', 'assignee',
-                   'organization', 'deal', 'project', 'sprint')
+                   'organization', 'company', 'project', 'sprint', 'deal')
     column_searchable_list = ('title', 'description',
                               'content', 'type', 'priority', 'eta')
 
 
 class MessageModelView(EnhancedModelView):
     column_filters = column_details_list = ('title', 'content', 'channel', 'time_tosend', 'time_sent',
-                                            'company', 'contact', 'deal', 'organization', 'task', 'project', 'sprint')
+                                            'company', 'contact', 'organization', 'project', 'sprint', 'deal', 'task')
+
     column_list = ('title', 'content', 'channel', 'time_tosend', 'time_sent',
                    'company', 'contact', 'deal', 'organizaton', 'task', 'project', 'sprint')
     column_searchable_list = ('title', 'content', 'channel')
