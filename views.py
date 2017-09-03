@@ -3,6 +3,7 @@ from flask_admin.contrib.sqla import ModelView
 from sqlalchemy.orm.collections import InstrumentedList
 from flask_admin.model import typefmt
 from jinja2 import Markup
+from datetime import datetime
 
 
 def format_instrumented_list(view, context, model, name):
@@ -26,6 +27,12 @@ def format_url(view, context, model, name):
     return Markup("<a href='{url}'>{url}</a>".format(url=value))
 
 
+def format_datetime(view, context, model, name):
+    value = getattr(model, name)
+    if isinstance(value, datetime):
+        return value.strftime("%Y-%m-%d")
+
+
 def format_comments(view, context, model, name):
     value = getattr(model, name)
     out = ""
@@ -44,6 +51,9 @@ def format_comments(view, context, model, name):
 
 formatters = dict(list(zip(["telephones", "users", "contacts", "organizations", "projects",  "deals", "sprints",
                             "links", "tasks", "messages"], cycle([format_instrumented_list]))), comments=format_comments, url=format_url)
+
+formatters = {**formatters, **
+              dict(list(zip(["created_at", "updated_at", "closed_at", "start_date", "deadline", "eta"], cycle([format_datetime]))))}
 
 
 class EnhancedModelView(ModelView):
