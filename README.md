@@ -8,6 +8,7 @@
 ## Start Application
 - If you want to bootstrap it with some test fixtures 
     `bash runappwithfixtures.sh` which is equivalent to `BOOTSTRAPWITHFIXTURES=TRUE python3 app.py`
+- Set `RESETDB=1` remove existing db.
 - If you have database already just execute `python3 app.py`
 
 ## Admin Panel
