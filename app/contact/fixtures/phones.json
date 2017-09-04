@@ -1,0 +1,18 @@
+[
+{
+    "model": "contact.contactphone",
+    "pk": 1,
+    "fields": {
+        "phone": "+201224250594",
+        "contact": "0ae6"
+    }
+},
+{
+    "model": "contact.contactphone",
+    "pk": 2,
+    "fields": {
+        "phone": "01224250595",
+        "contact": "714c"
+    }
+}
+]

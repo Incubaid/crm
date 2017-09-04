@@ -1,0 +1,10 @@
+[
+{
+    "model": "message.messagecontact",
+    "pk": 1,
+    "fields": {
+        "message": "5ad7",
+        "contact": "0ae6"
+    }
+}
+]

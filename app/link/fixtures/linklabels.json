@@ -1,0 +1,18 @@
+[
+{
+    "model": "link.linklabel",
+    "pk": 1,
+    "fields": {
+        "link": "4312",
+        "label": "label1"
+    }
+},
+{
+    "model": "link.linklabel",
+    "pk": 2,
+    "fields": {
+        "link": "4312",
+        "label": "label2"
+    }
+}
+]

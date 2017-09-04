@@ -1,0 +1,20 @@
+[
+{
+    "model": "task.task",
+    "pk": "9e71",
+    "fields": {
+        "title": "task",
+        "type": "feature",
+        "description": "",
+        "urgency": "critical",
+        "deal": "18ab",
+        "project": null,
+        "organization": null,
+        "sprint": "d03e",
+        "owner": "0ae6",
+        "time_todo": 0.0,
+        "created_at": "2017-09-03T16:52:09.410Z",
+        "modified_at": "2017-09-03T16:52:09.410Z"
+    }
+}
+]

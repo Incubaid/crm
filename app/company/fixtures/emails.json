@@ -1,0 +1,10 @@
+[
+{
+    "model": "company.companyemail",
+    "pk": 1,
+    "fields": {
+        "email": "info@greenitglobe.com",
+        "company": "b1ea"
+    }
+}
+]

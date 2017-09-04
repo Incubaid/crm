@@ -1,0 +1,32 @@
+[
+{
+    "model": "contact.contact",
+    "pk": "0ae6",
+    "fields": {
+        "first_name": "Hamdy",
+        "last_name": "Farag",
+        "description": "**Job** :  Software engineer",
+        "created_at": "2017-09-03T12:34:59.041Z",
+        "modified_at": "2017-09-03T12:34:59.041Z",
+        "owner": null,
+        "owner_backup": null,
+        "isuser": true,
+        "telegram": "hamdy_farag"
+    }
+},
+{
+    "model": "contact.contact",
+    "pk": "714c",
+    "fields": {
+        "first_name": "Peter",
+        "last_name": "Freeman",
+        "description": "**Job**: Accountant",
+        "created_at": "2017-09-03T16:31:31.228Z",
+        "modified_at": "2017-09-03T16:31:31.228Z",
+        "owner": "0ae6",
+        "owner_backup": null,
+        "isuser": true,
+        "telegram": "peter_p"
+    }
+}
+]

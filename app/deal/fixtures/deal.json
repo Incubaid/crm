@@ -1,0 +1,22 @@
+[
+{
+    "model": "deal.deal",
+    "pk": "18ab",
+    "fields": {
+        "name": "Deal1",
+        "contact": "0ae6",
+        "company": "b1ea",
+        "type": "ito",
+        "state": "new",
+        "remarks": "",
+        "amount": 10.0,
+        "currency": "USD",
+        "created_at": "2017-09-03T16:39:08.836Z",
+        "modified_at": "2017-09-03T16:39:08.836Z",
+        "closed_date": "2017-09-03",
+        "owner": "714c",
+        "owner_backup": null,
+        "issuer": false
+    }
+}
+]
