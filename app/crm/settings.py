@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'link',
     'markdownx',
     'rangefilter',
+    'graphene_django',
 ]
 
 MIDDLEWARE = [
@@ -134,3 +135,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media').replace('\\', '/')
 STATIC_DIR = os.path.join(BASE_DIR, 'static').replace('\\', '/')
 STATICFILES_DIRS = (MEDIA_ROOT, STATIC_DIR)
+
+GRAPHENE = {
+    'SCHEMA': 'crm.schema.schema' # Where your Graphene schema lives
+}

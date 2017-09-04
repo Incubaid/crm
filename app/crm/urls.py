@@ -16,13 +16,14 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from graphene_django.views import GraphQLView
 import crm.settings
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^markdownx/', include('markdownx.urls')),
-    url('', include('contact.urls')),
-    url('', include('company.urls')),
+    url(r'^graph', GraphQLView.as_view(graphiql=True)),
+
     # url('^contact/', include('contact.urls'))
 ]
 

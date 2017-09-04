@@ -70,3 +70,61 @@ open http://127.0.0.1/admin in your browser
     python manage.py dumpdata sprint.sprint --format json --indent 4 > sprint/fixtures/sprint.json
     ```
 
+## Graphql Support
+- Open ```http://127.0.0/graph```
+- Insert query
+    ```json
+    {
+      contact{
+        firstName
+        emails {
+          id
+        },
+        deals {
+          closedDate
+        },
+        comments{
+          content
+        }
+
+      }
+    }
+    ```
+    - Result should look like
+    ```json
+
+    {
+      "data": {
+        "contact": [
+          {
+            "firstName": "Hamdy",
+            "emails": [
+              {
+                "id": "1"
+              }
+            ],
+            "deals": [
+              {
+                "closedDate": "2017-09-03"
+              }
+            ],
+            "comments": [
+              {
+                "content": "comment"
+              }
+            ]
+          },
+          {
+            "firstName": "Peter",
+            "emails": [
+              {
+                "id": "2"
+              }
+            ],
+            "deals": [],
+            "comments": []
+          }
+        ]
+      }
+    }
+    ```
