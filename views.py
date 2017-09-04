@@ -92,7 +92,10 @@ class ContactModelView(EnhancedModelView):
     column_searchable_list = ('firstname', 'lastname',)
     column_list = ('firstname', 'lastname', 'emails',
                    'telephones', 'description')
-    inline_models = [TelephoneModel, EmailModel, TaskModel]
+    inline_models = [
+        (TelephoneModel, {'form_columns': ['id', 'number']}), (EmailModel, {
+            'form_columns': ['id', 'email']}),
+        (TaskModel, {'form_columns': ['id', 'title', 'description', 'content', 'type', 'priority', 'eta']})]
 
 
 class CompanyModelView(EnhancedModelView):
@@ -105,7 +108,13 @@ class CompanyModelView(EnhancedModelView):
     column_searchable_list = ('name', 'description',)
     column_list = ('name', 'description', 'emails', 'telephones')
 
-    inline_models = [TelephoneModel, EmailModel, MessageModel, TaskModel]
+    inline_models = [
+        (TelephoneModel, {'form_columns': ['id', 'number']}), (EmailModel, {
+            'form_columns': ['id', 'email']}),
+        (TaskModel, {'form_columns': [
+         'id', 'title', 'description', 'content', 'type', 'priority', 'eta']}),
+        (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']})
+    ]
 
 
 class OrganizationModelView(EnhancedModelView):
@@ -117,7 +126,13 @@ class OrganizationModelView(EnhancedModelView):
                        'promoter', 'gaurdian', 'owner', 'tasks', 'messages')
     column_list = ('name', 'emails', 'description', 'owner')
     column_searchable_list = ('name', 'description',)
-    inline_models = [EmailModel, MessageModel, TaskModel]
+    inline_models = [
+        (EmailModel, {
+            'form_columns': ['id', 'email']}),
+        (TaskModel, {'form_columns': [
+         'id', 'title', 'description', 'content', 'type', 'priority', 'eta']}),
+        (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']})
+    ]
 
 
 class DealModelView(EnhancedModelView):
@@ -132,7 +147,11 @@ class DealModelView(EnhancedModelView):
     column_searchable_list = (
         'name', 'amount', 'currency', 'deal_type', 'deal_state')
 
-    inline_models = [MessageModel, TaskModel]
+    inline_models = [
+        (TaskModel, {'form_columns': [
+         'id', 'title', 'description', 'content', 'type', 'priority', 'eta']}),
+        (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']})
+    ]
 
 
 class ProjectModelView(EnhancedModelView):
@@ -147,7 +166,11 @@ class ProjectModelView(EnhancedModelView):
     column_list = ('name', 'description', 'start_date', 'deadline', )
     column_searchable_list = ('name', 'description', 'start_date', 'deadline')
 
-    inline_models = [MessageModel, TaskModel]
+    inline_models = [
+        (TaskModel, {'form_columns': [
+         'id', 'title', 'description', 'content', 'type', 'priority', 'eta']}),
+        (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']})
+    ]
 
 
 class SprintModelView(EnhancedModelView):
@@ -159,7 +182,11 @@ class SprintModelView(EnhancedModelView):
     column_list = ('name', 'description', 'start_date', 'deadline')
     column_searchable_list = ('name', 'description', 'start_date', 'deadline')
 
-    inline_models = [MessageModel, TaskModel]
+    inline_models = [
+        (TaskModel, {'form_columns': [
+         'id', 'title', 'description', 'content', 'type', 'priority', 'eta']}),
+        (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']})
+    ]
 
 
 class CommentModelView(EnhancedModelView):
