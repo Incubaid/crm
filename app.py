@@ -25,6 +25,7 @@ development = True
 DBPATHDEV = os.path.join(os.getcwd(), "db", "development.db")
 DBPATHPROD = os.path.join(os.getcwd(), "db", "production.db")
 FIXTURES = os.getenv("BOOTSTRAPWITHFIXTURES", False)
+RESETDB = os.getenv("RESETDB", False)
 DBPATH = DBPATHDEV
 
 if development is False:
@@ -47,11 +48,11 @@ migrate = Migrate(app, db)
 
 
 if __name__ == "__main__":
-    try:
-        os.remove(DBPATH)
-    except:
-        pass
-
+    if RESETDB:
+        try:
+            os.remove(DBPATH)
+        except:
+            pass
     try:
         db.create_all(app=app)
         db.session.commit()
