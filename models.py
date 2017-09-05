@@ -406,9 +406,9 @@ class Task(db.Model, AdminLinksMixin):
     priority = db.Column(db.Enum(TaskPriority), default=TaskPriority.MINOR)
 
     # time_done means time be spent on that task in hours
-    deadline = db.Column(db.TIMESTAMP, default=date.utcnow, nullable=False) 
-    eta = db.Column(db.TIMESTAMP, default=date.utcnow, nullable=False) 
-    time_estimate = db.Column(db.Integer, default=0) #in hours again
+    deadline = db.Column(db.TIMESTAMP, default=datetime.utcnow, nullable=False)
+    eta = db.Column(db.TIMESTAMP, default=datetime.utcnow, nullable=False)
+    time_estimate = db.Column(db.Integer, default=0)  # in hours again
     time_done = db.Column(db.Integer, default=0)
 
     # relations
@@ -422,12 +422,12 @@ class Task(db.Model, AdminLinksMixin):
     comments = db.relationship("Comment", backref="task")
     messages = db.relationship("Message", backref="task")
     links = db.relationship("Link", backref="task")
-    
+
     # timestamps
     created_at = db.Column(
         db.TIMESTAMP, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.utcnow,
-                           onupdate=datetime.utcnow, nullable=False)    
+                           onupdate=datetime.utcnow, nullable=False)
 
     def __str__(self):
         return self.title
