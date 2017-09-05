@@ -1,0 +1,37 @@
+{% macro render_inline_fields(field, template, render, check=None) %}
+<div class="inline-field" id="{{ field.id }}">
+    {# existing inline form fields #}
+    <div class="inline-field-list">
+        <table>
+        {%set firstitem = field[0] %}
+        {% for subfield in firstitem %}
+            {% if subfield.short_name != "id" %}
+                <th>{{subfield.label.text}}</th>
+            {% endif %}
+        {% endfor %}
+        {% for subfield in field %}
+        <tr id="{{ subfield.id }}" class="inline-field well well-sm">
+            {{ render(subfield) }}
+        </tr>
+        {% endfor %}
+    </table>
+    </div>
+
+    {# template for new inline form fields #}
+    <div class="inline-field-template hide">
+        {% filter forceescape %}
+        <div class="inline-field well well-sm">
+            <legend>
+                <!-- <small>{{ _gettext('New') }} {{ field.label.text }}</small> -->
+                <div class="pull-right">
+                    <a href="javascript:void(0)" class="inline-remove-field"><span class="fa fa-times glyphicon glyphicon-remove"></span></a>
+                </div>
+            </legend>
+            <div class='clearfix'></div>
+            {{ render(template) }}
+        </div>
+        {% endfilter %}
+    </div>
+    <a id="{{ field.id }}-button" href="javascript:void(0)" class="btn btn-default" onclick="faForm.addInlineField(this, '{{ field.id }}');">{{ _gettext('Add') }} {{ field.label.text }}</a>
+</div>
+{% endmacro %}
