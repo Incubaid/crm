@@ -11,6 +11,7 @@
                 <th>{{subfield.label.text}}</th>
             {% endif %}
         {% endfor %}
+                <th>Actions</th>
                 </tr>
             </thead>
         <tbody>
@@ -18,8 +19,18 @@
         <tr>
         <div id="{{ subfield.id }}" class="inline-field">
             {{ render(subfield) }}
+
         </div>
+        <td>
+            {% if subfield.get_pk and subfield.get_pk() %}
+            <input type="checkbox" name="del-{{ subfield.id }}" id="del-{{ subfield.id }}" />
+            <label for="del-{{ subfield.id }}" style="display: inline">{{ _gettext('Delete?') }}</label>
+            {% else %}
+            <a href="javascript:void(0)" class="inline-remove-field"><i class="fa fa-times glyphicon glyphicon-remove"></i></a>
+            {% endif %}
+        </td>
         </tr>
+
         {% endfor %}
     </tbody>
     </table>
