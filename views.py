@@ -4,10 +4,11 @@ from sqlalchemy.orm.collections import InstrumentedList
 from flask_admin.model import typefmt
 from jinja2 import Markup
 from datetime import datetime
-from models import Telephone as TelephoneModel, Email as EmailModel, Contact as ContactModel, Company as CompanyModel, Organization as OrganizationModel, Deal as DealModel, Deal as DealModel, Link as LinkModel, Project as ProjectModel, Sprint as SprintModel, Task as TaskModel, Comment as CommentModel, Message as MessageModel
+from models import TaskAssignment as TaskAssignmentModel, Telephone as TelephoneModel, Email as EmailModel, Contact as ContactModel, Company as CompanyModel, Organization as OrganizationModel, Deal as DealModel, Deal as DealModel, Link as LinkModel, Project as ProjectModel, Sprint as SprintModel, Task as TaskModel, Comment as CommentModel, Message as MessageModel
 
 
 def format_instrumented_list(view, context, model, name):
+
     value = getattr(model, name)
     out = ""
     if isinstance(value, InstrumentedList):
@@ -272,3 +273,20 @@ class MessageModelView(EnhancedModelView):
                    'company', 'contact', 'deal', 'organizaton', 'task', 'project', 'sprint')
     column_searchable_list = ('title', 'content', 'channel')
     column_sortable_list = ('title',)
+
+
+class TaskAssignmentModelView(EnhancedModelView):
+    column_details_list = ('contact', 'task', 'tasktracking')
+    column_list = ('percent_completed', 'contact',
+                   'task',)
+    # column_list = ('title', 'content', 'channel', 'time_tosend', 'time_sent',
+    #                'company', 'contact', 'deal', 'organizaton', 'task', 'project', 'sprint')
+    # column_searchable_list = ('title', 'content', 'channel')
+    # column_sortable_list = ('title',)
+
+
+class TaskTrackingModelView(EnhancedModelView):
+    column_list = column_details_list = ('remarks',
+                                         'time_done',)
+
+    # inline_models = [TaskAssignmentModel]

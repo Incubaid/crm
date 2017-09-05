@@ -121,7 +121,7 @@ def do_fixtures():
         return com
 
     def newtask():
-        t = Task(title=fake.sentence(5), content=fake.paragraph(),
+        t = Task(title=fake.sentence(5) + "task", content=fake.paragraph(),
                  remarks=fake.paragraph())
         t.comments = [newcomment() for i in range(10)]
         db.session.add(t)

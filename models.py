@@ -78,7 +78,7 @@ class Contact(db.Model, AdminLinksMixin):
     # tasks = db.relationship("Task", backref="assignee")
     messages = db.relationship("Message", backref="contact")
     links = db.relationship("Link", backref="contact")
-
+    assignments = db.relationship("TaskAssignment", backref="contact")
     owner_id = db.Column(db.String(4), db.ForeignKey("contacts.contact_id"))
     owner = db.relationship('Contact', primaryjoin=(
         'Contact.owner_id==Contact.id'), backref='ownedusers', remote_side=id, uselist=False)
@@ -411,21 +411,24 @@ class TaskAssignment(db.Model):
     # relations
     contact_id = db.Column(db.String, db.ForeignKey("contacts.contact_id"))
     task_id = db.Column(db.String, db.ForeignKey("tasks.task_id"))
+    tasktracking_id = db.Column(
+        db.String, db.ForeignKey("tasktrackings.tasktracking_id"))
+    time_todo = db.Column(db.Integer, default=0)
 
     @property
     def percent_completed(self):
-        pass
-        # done = 0.0
-        # for stat in self.stats.all():
-        #     done += stat.time_done
-        # if not done:
-        #     return done
-        # if not self.time_todo:
-        #     return 100
-        # return (done / self.time_todo) * 100
+        done = 0.0
+        for stat in self.tasks:
+            done += stat.time_done
+        if not done:
+            return done
+        if not self.time_todo:
+            return 100
+        return (done / self.time_todo) * 100
 
     def __str__(self):
-        return '%s (%s)' % (self.task.title, self.contact.name)
+
+        return '%s (%s)' % (self.task.title, self.contact.firstname + self.contact.lastname)
 
 
 class Task(db.Model, AdminLinksMixin):
@@ -459,6 +462,7 @@ class Task(db.Model, AdminLinksMixin):
     links = db.relationship("Link", backref="task")
     contacts = db.relationship("Contact", secondary="contacts_tasks",
                                backref=db.backref("tasks"))
+    assignments = db.relationship("TaskAssignment", backref="task")
 
     # timestamps
     created_at = db.Column(
@@ -505,45 +509,20 @@ class Message(db.Model, AdminLinksMixin):
         return self.title
 
 
-# class TaskTracking(models.Model):
-#     uid = models.CharField(
-#         max_length=4,
-#         unique=True,
-#         db_index=True,
-#         primary_key=True,
-#     )
+class TaskTracking(db.Model):
+    __tablename__ = "tasktrackings"
+    id = db.Column('tasktracking_id', db.String(
+        4), default=generate_id, primary_key=True)
 
-#     assignment = models.ForeignKey(
-#         TaskAssignment,
-#         verbose_name='assignment',
-#         related_name='stats',
-#         on_delete=models.CASCADE
-#     )
+    assignment = db.relationship("TaskAssignment",
+                                 backref=db.backref("tasktracking"), uselist=False)
+    remarks = db.Column(db.Text())  # should be markdown.
+    time_done = db.Column(db.Integer, default=0)
 
-#     remark = MarkdownxField(
-#         max_length=10000,
-#         blank=True,
-#     )
+    def __str__(self):
+        return "<TaskTracker %s>" % (self.id)
 
-#     time_done = models.FloatField(
-#         default=0,
-#         validators=[MinValueValidator(0)]
-#     )
-
-#     epoch = models.IntegerField(
-#         blank=True,
-#         validators=[validate_epoch]
-#     )
-
-#     def save(self, *args, **kwargs):
-#         if not self.epoch:
-#             self.epoch = int(time.time())
-
-#         if not self.pk:
-#             self.uid = generate_uid(self.__class__)
-#             super(TaskTracking, self).save(*args, **kwargs)
-#         else:
-#             TaskTracking.objects.filter(pk=self.pk).update(**model_to_dict(self))
-
-#     def __str__(self):
-#         return self.assignment.header
+    # epoch = models.IntegerField(
+    #     blank=True,
+    #     validators=[validate_epoch]
+    # )
