@@ -125,14 +125,14 @@ class CompanyModelView(EnhancedModelView):
 
 class OrganizationModelView(EnhancedModelView):
     form_rules = column_filters = column_details_list = ('name', 'description', 'emails',
-                                                         'promoter', 'gaurdian', 'owner',
+                                                         'promoter', 'guardian', 'owner',
                                                          'sprints', 'tasks', 'users', 'messages', 'comments',
                                                          'links',)
     form_rules = ('name', 'description', 'emails',
-                  'promoter', 'gaurdian', 'owner',)
+                  'promoter', 'guardian', 'owner',)
 
     form_edit_rules = ('name', 'description', 'emails',
-                       'promoter', 'gaurdian', 'owner', 'tasks', 'messages')
+                       'promoter', 'guardian', 'owner', 'tasks', 'messages')
     column_list = ('name', 'emails', 'description', 'owner')
     column_searchable_list = ('name', 'description',)
     column_sortable_list = ('name',)
@@ -175,14 +175,14 @@ class DealModelView(EnhancedModelView):
 
 class ProjectModelView(EnhancedModelView):
     column_filters = column_details_list = ('name', 'description', 'start_date', 'deadline',
-                                            'promoter', 'sprint', 'tasks', 'gaurdian',
+                                            'promoter', 'sprint', 'tasks', 'guardian',
                                             'users', 'comments', 'messages', 'links',)
     form_rules = ('name', 'description', 'start_date', 'deadline',
-                  'promoter', 'sprint', 'tasks', 'gaurdian',)
+                  'promoter', 'sprint', 'tasks', 'guardian',)
 
     edit_form_rules = ('name', 'description',
                        'start_date', 'deadline',
-                       'promoter', 'gaurdian',
+                       'promoter', 'guardian',
                        'users', 'tasks', 'messages')
 
     column_list = ('name', 'description', 'start_date', 'deadline', )
@@ -198,14 +198,14 @@ class ProjectModelView(EnhancedModelView):
 
 class SprintModelView(EnhancedModelView):
     column_filters = column_details_list = ('name', 'description', 'start_date', 'deadline',
-                                            'promoter', 'gaurdian', 'parent', 'users',
+                                            'promoter', 'guardian', 'parent', 'users',
                                             'comments', 'links', 'messages', )
     form_rules = ('name', 'description', 'start_date', 'deadline',
-                  'promoter', 'gaurdian', 'parent',
+                  'promoter', 'guardian', 'parent',
                   )
 
     form_edit_rules = ('name', 'description', 'start_date', 'deadline',
-                       'promoter', 'gaurdian', 'parent', 'users', 'tasks', 'messages')
+                       'promoter', 'guardian', 'parent', 'users', 'tasks', 'messages')
     column_list = ('name', 'description', 'start_date', 'deadline')
     column_searchable_list = ('name', 'description', 'start_date', 'deadline')
     column_sortable_list = ('name', 'start_date', 'deadline')

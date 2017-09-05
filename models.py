@@ -160,8 +160,8 @@ class Organization(db.Model, AdminLinksMixin):
     sprints = db.relationship("Sprint", backref="organization")
     promoter = db.relationship(
         "Contact", backref="promotedorganizations", uselist=False)
-    gaurdian = db.relationship(
-        "Contact", backref="gaurdianedorganizations", uselist=False)
+    guardian = db.relationship(
+        "Contact", backref="guardianedorganizations", uselist=False)
     parent_id = db.Column(db.String(4), db.ForeignKey(
         "organizations.organization_id"))
     owner = db.relationship('Organization', primaryjoin=(
@@ -259,8 +259,8 @@ class Project(db.Model, AdminLinksMixin):
     contact_id = db.Column(db.String(4), db.ForeignKey("contacts.contact_id"))
     promoter = db.relationship(
         "Contact", backref="promotedprojects", uselist=False)
-    gaurdian = db.relationship(
-        "Contact", backref="gaurdiansprojects", uselist=False)
+    guardian = db.relationship(
+        "Contact", backref="guardiansprojects", uselist=False)
 
     # parent organization
     parent_id = db.Column(db.String(4), db.ForeignKey(
@@ -316,8 +316,8 @@ class Sprint(db.Model, AdminLinksMixin):
     contact_id = db.Column(db.String(4), db.ForeignKey("contacts.contact_id"))
     promoter = db.relationship(
         "Contact", backref="promotedsprints", uselist=False)
-    gaurdian = db.relationship(
-        "Contact", backref="gaurdiansprints", uselist=False)
+    guardian = db.relationship(
+        "Contact", backref="guardiansprints", uselist=False)
 
     # parent organization
     parent = db.relationship(
