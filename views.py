@@ -100,7 +100,7 @@ class ContactModelView(EnhancedModelView):
     inline_models = [
         (TelephoneModel, {'form_columns': ['id', 'number']}), (EmailModel, {
             'form_columns': ['id', 'email']}),
-        (TaskModel, {'form_columns': ['id', 'title', 'description', 'content', 'type', 'priority', 'eta']})]
+        (TaskModel, {'form_columns': ['id', 'title', 'type', 'priority', 'eta']})]
 
 
 class CompanyModelView(EnhancedModelView):
@@ -118,8 +118,8 @@ class CompanyModelView(EnhancedModelView):
         (TelephoneModel, {'form_columns': ['id', 'number']}), (EmailModel, {
             'form_columns': ['id', 'email']}),
         (TaskModel, {'form_columns': [
-         'id', 'title', 'description', 'content', 'type', 'priority', 'eta']}),
-        (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']})
+         'id', 'title', 'type', 'priority', 'eta']}),
+        (MessageModel, {'form_columns': ['id', 'title', 'channel']})
     ]
 
 
@@ -141,7 +141,7 @@ class OrganizationModelView(EnhancedModelView):
         (EmailModel, {
             'form_columns': ['id', 'email']}),
         (TaskModel, {'form_columns': [
-         'id', 'title', 'description', 'content', 'type', 'priority', 'eta']}),
+         'id', 'title', 'type', 'priority', 'eta']}),
         (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']})
     ]
 
@@ -168,7 +168,7 @@ class DealModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-         'id', 'title', 'description', 'content', 'type', 'priority', 'eta']}),
+         'id', 'title', 'type', 'priority', 'eta']}),
         (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']})
     ]
 
@@ -191,7 +191,7 @@ class ProjectModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-         'id', 'title', 'description', 'content', 'type', 'priority', 'eta']}),
+         'id', 'title', 'type', 'priority', 'eta']}),
         (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']})
     ]
 
@@ -212,7 +212,7 @@ class SprintModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-         'id', 'title', 'description', 'content', 'type', 'priority', 'eta']}),
+         'id', 'title', 'type', 'priority', 'eta']}),
         (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']})
     ]
 
@@ -233,8 +233,8 @@ class CommentModelView(EnhancedModelView):
 class LinkModelView(EnhancedModelView):
     column_filters = column_details_list = ('url', 'contact', 'organization', 'task', 'project',
                                             'deal', 'sprint', 'labels', 'comments')
-    form_rules = column_filters = column_details_list = ('url', 'contact', 'organization', 'task', 'project',
-                                                         'deal', 'sprint', 'labels',)
+    form_rules = ('url', 'contact', 'organization', 'task', 'project',
+                  'deal', 'sprint', 'labels',)
     form_edit_rules = ('url', 'labels')
     column_list = ('url', 'labels')
     column_searchable_list = ('url', 'labels')

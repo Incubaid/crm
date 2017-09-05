@@ -2,13 +2,18 @@
 <div class="inline-field" id="{{ field.id }}">
     {# existing inline form fields #}
     <div class="inline-field-list">
-        <table>
+        <table class="table .table-bordered">
+            <thead>
+                <tr>
         {%set firstitem = field[0] %}
         {% for subfield in firstitem %}
             {% if subfield.short_name != "id" %}
                 <th>{{subfield.label.text}}</th>
             {% endif %}
         {% endfor %}
+                </tr>
+            </thead>
+        <tbody>
         {% for subfield in field %}
         <tr>
         <div id="{{ subfield.id }}" class="inline-field">
@@ -16,6 +21,7 @@
         </div>
         </tr>
         {% endfor %}
+    </tbody>
     </table>
     </div>
 
