@@ -20,7 +20,8 @@ class AdminLinksMixin:
 
         return AdminLinksMixin.ADMIN_VIEW_LINK.format(modelname=modelname, modelid=self.id)
 
-generate_id = lambda: str(uuid4())[:4]
+
+def generate_id(): return str(uuid4())[:4]
 
 
 class Telephone(db.Model, AdminLinksMixin):
@@ -403,7 +404,7 @@ class TaskPriority(Enum):
     MINOR, NORMAL, URGENT, CRITICAL = range(4)
 
 
-class TaskAssignment(db.Model):
+class TaskAssignment(db.Model, AdminLinksMixin):
     __tablename__ = 'contacts_tasks'
     id = db.Column('taskassignment_id', db.Integer,
                    primary_key=True)
@@ -509,7 +510,7 @@ class Message(db.Model, AdminLinksMixin):
         return self.title
 
 
-class TaskTracking(db.Model):
+class TaskTracking(db.Model, AdminLinksMixin):
     __tablename__ = "tasktrackings"
     id = db.Column('tasktracking_id', db.String(
         4), default=generate_id, primary_key=True)
