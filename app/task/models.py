@@ -46,7 +46,9 @@ class TaskAssignment(models.Model):
             done += stat.time_done
         if not done:
             return done
-        return done / self.time_todo
+        if not self.time_todo:
+            return 100
+        return (done / self.time_todo) * 100
 
     time_todo = models.FloatField(
         default=0,
