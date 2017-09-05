@@ -75,7 +75,7 @@ class Contact(db.Model, AdminLinksMixin):
 
     deals = db.relationship("Deal", backref="contact")
     comments = db.relationship("Comment", backref="contact")
-    tasks = db.relationship("Task", backref="assignee")
+    # tasks = db.relationship("Task", backref="assignee")
     messages = db.relationship("Message", backref="contact")
     links = db.relationship("Link", backref="contact")
 
@@ -254,7 +254,7 @@ class Project(db.Model, AdminLinksMixin):
 
     messages = db.relationship("Message", backref="project")
     users = db.relationship("Contact", secondary="contacts_projects",
-                            backref=db.backref("projects"), lazy="dynamic")
+                            backref=db.backref("projects"))
 
     contact_id = db.Column(db.String(4), db.ForeignKey("contacts.contact_id"))
     promoter = db.relationship(
@@ -304,7 +304,7 @@ class Sprint(db.Model, AdminLinksMixin):
 
     # relations
     users = db.relationship("Contact", secondary="contacts_sprints",
-                            backref=db.backref("sprints"), lazy="dynamic")
+                            backref=db.backref("sprints"))
     project_id = db.Column(db.String(4), db.ForeignKey("projects.project_id"))
     organization_id = db.Column(
         db.String(4), db.ForeignKey("organizations.organization_id"))
@@ -403,6 +403,31 @@ class TaskPriority(Enum):
     MINOR, NORMAL, URGENT, CRITICAL = range(4)
 
 
+class TaskAssignment(db.Model):
+    __tablename__ = 'contacts_tasks'
+    id = db.Column('taskassignment_id', db.Integer,
+                   primary_key=True)
+
+    # relations
+    contact_id = db.Column(db.String, db.ForeignKey("contacts.contact_id"))
+    task_id = db.Column(db.String, db.ForeignKey("tasks.task_id"))
+
+    @property
+    def percent_completed(self):
+        pass
+        # done = 0.0
+        # for stat in self.stats.all():
+        #     done += stat.time_done
+        # if not done:
+        #     return done
+        # if not self.time_todo:
+        #     return 100
+        # return (done / self.time_todo) * 100
+
+    def __str__(self):
+        return '%s (%s)' % (self.task.title, self.contact.name)
+
+
 class Task(db.Model, AdminLinksMixin):
     __tablename__ = "tasks"
     id = db.Column('task_id', db.Integer,
@@ -432,6 +457,8 @@ class Task(db.Model, AdminLinksMixin):
     comments = db.relationship("Comment", backref="task")
     messages = db.relationship("Message", backref="task")
     links = db.relationship("Link", backref="task")
+    contacts = db.relationship("Contact", secondary="contacts_tasks",
+                               backref=db.backref("tasks"))
 
     # timestamps
     created_at = db.Column(
@@ -441,9 +468,6 @@ class Task(db.Model, AdminLinksMixin):
 
     def __str__(self):
         return self.title
-
-    def percent_completed(self):
-        return "0%"
 
 
 class MessageChannel(Enum):
@@ -479,3 +503,47 @@ class Message(db.Model, AdminLinksMixin):
 
     def __str__(self):
         return self.title
+
+
+# class TaskTracking(models.Model):
+#     uid = models.CharField(
+#         max_length=4,
+#         unique=True,
+#         db_index=True,
+#         primary_key=True,
+#     )
+
+#     assignment = models.ForeignKey(
+#         TaskAssignment,
+#         verbose_name='assignment',
+#         related_name='stats',
+#         on_delete=models.CASCADE
+#     )
+
+#     remark = MarkdownxField(
+#         max_length=10000,
+#         blank=True,
+#     )
+
+#     time_done = models.FloatField(
+#         default=0,
+#         validators=[MinValueValidator(0)]
+#     )
+
+#     epoch = models.IntegerField(
+#         blank=True,
+#         validators=[validate_epoch]
+#     )
+
+#     def save(self, *args, **kwargs):
+#         if not self.epoch:
+#             self.epoch = int(time.time())
+
+#         if not self.pk:
+#             self.uid = generate_uid(self.__class__)
+#             super(TaskTracking, self).save(*args, **kwargs)
+#         else:
+#             TaskTracking.objects.filter(pk=self.pk).update(**model_to_dict(self))
+
+#     def __str__(self):
+#         return self.assignment.header

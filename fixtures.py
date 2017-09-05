@@ -80,7 +80,7 @@ def do_fixtures():
         proj.tasks = [newtask() for i in range(5)]
         proj.messages = [newmsg() for i in range(5)]
         proj.links = [newlink() for i in range(3)]
-
+        proj.users = [newuser(), newuser()]
         db.session.add(proj)
         return proj
 

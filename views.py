@@ -242,21 +242,21 @@ class LinkModelView(EnhancedModelView):
 
 
 class TaskModelView(EnhancedModelView):
-    column_filters = column_details_list = ('title', 'description', 'content',
+    column_filters = column_details_list = ('title', 'description', 'content', 'contacts',
                                             'type', 'priority', 'eta', 'time_done',
-                                            'assignee', 'company', 'organization', 'project', 'sprint', 'deal',
+                                            'company', 'organization', 'project', 'sprint', 'deal',
                                             'comments', 'messages', 'remarks')
 
     form_rules = ('title', 'description', 'content',
                   'type', 'priority', 'eta', 'time_done',
-                  'assignee', 'company', 'organization', 'project', 'sprint', 'deal',
+                  'contacts', 'company', 'organization', 'project', 'sprint', 'deal',
                   'remarks')
 
     form_edit_rules = ('title', 'description', 'content',
                        'type', 'priority', 'eta', 'time_done',
-                       'assignee', 'company', 'organization', 'project', 'sprint', 'deal',
+                       'contacts', 'company', 'organization', 'project', 'sprint', 'deal',
                        'remarks')
-    column_list = ('title', 'description', 'assignee', 'eta', 'priority', 'time_done',
+    column_list = ('title', 'description', 'contacts', 'eta', 'priority', 'time_done',
                    'organization', 'company', 'project', 'sprint', 'deal')
     column_searchable_list = ('title', 'description',
                               'content', 'type', 'priority', 'eta')
