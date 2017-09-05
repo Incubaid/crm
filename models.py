@@ -434,8 +434,8 @@ class TaskAssignment(db.Model, AdminLinksMixin):
 
 class Task(db.Model, AdminLinksMixin):
     __tablename__ = "tasks"
-    id = db.Column('task_id', db.Integer,
-                   primary_key=True)
+    id = db.Column('task_id', db.String(
+        4), default=generate_id, primary_key=True, unique=True)
     uid = db.Column(db.String(4))
     title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text())  # should be markdown.
