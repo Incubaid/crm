@@ -3,10 +3,13 @@
 
 {# ---------------------- Forms -------------------------- #}
 {% macro render_tabular_field(form, field, kwargs={}, caller=None) %}
+    
+
     <td>
     {% set direct_error = h.is_field_error(field.errors) %}
     <div class="form-group{{ ' has-error' if direct_error else '' }}">
-    <label for="{{ field.id }}" class="col-md-2 control-label">{{ field.label.text }}
+
+    <label for="{{ field.id }}" class="col-md-2 control-label hide" name=>{{ field.label.text }}
         {% if h.is_required_form_field(field) %}
             <strong style="color: red">&#42;</strong>
         {%- else -%}

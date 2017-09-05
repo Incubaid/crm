@@ -10,8 +10,10 @@
             {% endif %}
         {% endfor %}
         {% for subfield in field %}
-        <tr id="{{ subfield.id }}" class="inline-field well well-sm">
+        <tr>
+        <div id="{{ subfield.id }}" class="inline-field">
             {{ render(subfield) }}
+        </div>
         </tr>
         {% endfor %}
     </table>
@@ -20,7 +22,7 @@
     {# template for new inline form fields #}
     <div class="inline-field-template hide">
         {% filter forceescape %}
-        <div class="inline-field well well-sm">
+        <div class="inline-field well well-sm newitem">
             <legend>
                 <!-- <small>{{ _gettext('New') }} {{ field.label.text }}</small> -->
                 <div class="pull-right">
@@ -32,6 +34,7 @@
         </div>
         {% endfilter %}
     </div>
-    <a id="{{ field.id }}-button" href="javascript:void(0)" class="btn btn-default" onclick="faForm.addInlineField(this, '{{ field.id }}');">{{ _gettext('Add') }} {{ field.label.text }}</a>
+    <!-- newitem class is important to find labels  FIXME please -->
+    <a id="{{ field.id }}-button" href="javascript:void(0)" class="btn btn-default" onclick="faForm.addInlineField(this, '{{ field.id }}'); $('.newitem').find('label').removeClass('hide');">{{ _gettext('Add') }} {{ field.label.text }}</a>
 </div>
 {% endmacro %}
