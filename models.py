@@ -10,6 +10,9 @@ class AdminLinksMixin:
     ADMIN_EDIT_LINK = "/{modelname}/edit/?id={modelid}&url=/{modelname}/"
     ADMIN_VIEW_LINK = "/{modelname}/details/?id={modelid}&url=/{modelname}/"
 
+    ADMIN_EDIT_LINK_MODAL = "/{modelname}/edit/?id={modelid}&modal=True"
+    ADMIN_VIEW_LINK_MODAL = "/{modelname}/details/?id={modelid}&modal=True"
+
     def admin_edit_link(self):
         modelname = self.__class__.__name__.lower()
         # if modelname in "Telephone"
@@ -19,6 +22,16 @@ class AdminLinksMixin:
         modelname = self.__class__.__name__.lower()
 
         return AdminLinksMixin.ADMIN_VIEW_LINK.format(modelname=modelname, modelid=self.id)
+
+    def admin_edit_link_modal(self):
+        modelname = self.__class__.__name__.lower()
+        # if modelname in "Telephone"
+        return AdminLinksMixin.ADMIN_EDIT_LINK_MODAL.format(modelname=modelname, modelid=self.id)
+
+    def admin_view_link_modal(self):
+        modelname = self.__class__.__name__.lower()
+
+        return AdminLinksMixin.ADMIN_VIEW_LINK_MODAL.format(modelname=modelname, modelid=self.id)
 
 
 def generate_id(): return str(uuid4())[:4]

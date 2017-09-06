@@ -1,3 +1,10 @@
+
+{% import 'admin/lib.html' as lib with context %}
+{% import 'admin/static.html' as admin_static with context%}
+{% import 'admin/model/layout.html' as model_layout with context %}
+{% import 'admin/actions.html' as actionlib with context %}
+{% import 'admin/model/row_actions.html' as row_actions with context %}
+<script src="/static/admin/vendor/jquery.min.js?v=2.1.4" type="text/javascript"></script>
 {% macro render_inline_fields(field, template, render, check=None) %}
 <div class="inline-field" id="{{ field.id }}">
     {# existing inline form fields #}
@@ -22,12 +29,16 @@
 
         </div>
         <td>
+            <span>
+
+            <a href="{{subfield.form._obj.admin_edit_link()}}">Edit</a>
             {% if subfield.get_pk and subfield.get_pk() %}
             <input type="checkbox" name="del-{{ subfield.id }}" id="del-{{ subfield.id }}" />
             <label for="del-{{ subfield.id }}" style="display: inline">{{ _gettext('Delete?') }}</label>
-            {% else %}
+
             <a href="javascript:void(0)" class="inline-remove-field"><i class="fa fa-times glyphicon glyphicon-remove"></i></a>
             {% endif %}
+            <span>
         </td>
         </tr>
 
