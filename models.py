@@ -27,9 +27,11 @@ class UIDMixin:
 class AdminLinksMixin:
     ADMIN_EDIT_LINK = "/{modelname}/edit/?id={modelid}&url=/{modelname}/"
     ADMIN_VIEW_LINK = "/{modelname}/details/?id={modelid}&url=/{modelname}/"
+    ADMIN_CREATE_LINK = "/{modelname}/new/?id={modelid}&url=/{modelname}/"
 
     ADMIN_EDIT_LINK_MODAL = "/{modelname}/edit/?id={modelid}&modal=True"
     ADMIN_VIEW_LINK_MODAL = "/{modelname}/details/?id={modelid}&modal=True"
+    ADMIN_CREATE_LINK_MODAL = "/{modelname}/new/"
 
     def admin_edit_link(self):
         modelname = self.__class__.__name__.lower()
@@ -41,16 +43,23 @@ class AdminLinksMixin:
 
         return AdminLinksMixin.ADMIN_VIEW_LINK.format(modelname=modelname, modelid=self.id)
 
+    def admin_create_link(self):
+        modelname = self.__class__.__name__.lower()
+
+        return AdminLinksMixin.ADMIN_CREATE_LINK.format(modelname=modelname, modelid=self.id)
+
     def admin_edit_link_modal(self):
         modelname = self.__class__.__name__.lower()
-        # if modelname in "Telephone"
         return AdminLinksMixin.ADMIN_EDIT_LINK_MODAL.format(modelname=modelname, modelid=self.id)
 
     def admin_view_link_modal(self):
         modelname = self.__class__.__name__.lower()
-
         return AdminLinksMixin.ADMIN_VIEW_LINK_MODAL.format(modelname=modelname, modelid=self.id)
 
+    def admin_create_link_modal(self):
+        modelname = self.__class__.__name__.lower()
+
+        return AdminLinksMixin.ADMIN_CREATE_LINK_MODAL.format(modelname=modelname, modelid=self.id)
 
 class Telephone(db.Model, AdminLinksMixin):
     __tablename__ = "telephones"

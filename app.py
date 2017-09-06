@@ -10,6 +10,7 @@ from schema import schema
 from models import Telephone, Email, Contact, Company, Organization, Deal, Link, Project, Sprint, Task, Comment, Message, TaskAssignment, TaskTracking
 from views import *
 from fixtures import do_fixtures
+from flask_admin.helpers import get_url
 
 dbmodels = [Company, Contact, Organization, Deal,
             Project, Sprint, Task, TaskAssignment, TaskTracking]
@@ -40,7 +41,7 @@ config = {
 }
 
 app = Flask(__name__)
-app.jinja_env.globals.update(getattr=getattr, hasattr=hasattr, type=type)
+app.jinja_env.globals.update(getattr=getattr, hasattr=hasattr, type=type, get_url=get_url)
 app.secret_key = "dmdmkey"
 app.config = {**app.config, **config}
 db.app = app

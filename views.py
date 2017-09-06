@@ -104,7 +104,7 @@ class ContactModelView(EnhancedModelView):
     inline_models = [
         (TelephoneModel, {'form_columns': ['id', 'number']}), (EmailModel, {
             'form_columns': ['id', 'email']}),
-        (TaskModel, {'form_columns': ['id', 'title', 'type', 'priority', 'eta']})]
+        (TaskModel, {'form_columns': ['id', 'title', 'description', 'type', 'priority', 'eta']})]
 
 
 class CompanyModelView(EnhancedModelView):
@@ -122,7 +122,7 @@ class CompanyModelView(EnhancedModelView):
         (TelephoneModel, {'form_columns': ['id', 'number']}), (EmailModel, {
             'form_columns': ['id', 'email']}),
         (TaskModel, {'form_columns': [
-         'id', 'title', 'type', 'priority', 'eta']}),
+         'id', 'title', 'description', 'type', 'priority', 'eta']}),
         (MessageModel, {'form_columns': ['id', 'title', 'channel']})
     ]
 
@@ -195,7 +195,7 @@ class ProjectModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-         'id', 'title', 'type', 'priority', 'eta']}),
+         'id', 'title', 'description', 'type', 'priority', 'eta']}),
         (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']})
     ]
 

@@ -1,4 +1,6 @@
 
+
+
 {% import 'admin/lib.html' as lib with context %}
 {% import 'admin/static.html' as admin_static with context%}
 {% import 'admin/model/layout.html' as model_layout with context %}
@@ -6,7 +8,20 @@
 {% import 'admin/model/row_actions.html' as row_actions with context %}
 <script src="/static/admin/vendor/jquery.min.js?v=2.1.4" type="text/javascript"></script>
 {% macro render_inline_fields(field, template, render, check=None) %}
-<div class="inline-field" id="{{ field.id }}">
+<div>
+<div class="modal fade" id="fa_modal_window_{{field.id}}" tabindex="-1" role="dialog" aria-labelledby="fa_modal_label">
+<div class="modal-dialog" role="document">
+  
+  <div class="modal-content">
+  </div>
+</div>
+</div>
+
+    {{ lib.add_modal_button(url=get_url(field[0].form._obj.__class__.__name__.lower()+'.create_view', url=return_url, modal=True), modal_window_id="fa_modal_window_"+field.id, title=_gettext('Create New Record'), content=_gettext('New [all fields]')) }}
+</div>
+<button type="button" class="btn btn-info" data-toggle="collapse" data-target="#{{field.id}}">Show {{field.label.text}}</button>    
+
+<div class="inline-field collapse" id="{{ field.id }}">
     {# existing inline form fields #}
     <div class="inline-field-list">
         <table class="table .table-bordered">
