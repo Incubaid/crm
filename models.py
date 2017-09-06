@@ -1,9 +1,27 @@
+from enum import Enum
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
-from enum import Enum
-from uuid import uuid4
+from sqlalchemy.event import listen
+from util import newuid
+
 db = SQLAlchemy()  # init later in app.py
 db.session.autocommit = True
+
+def generate_id(mapper, connect, target):
+    target.generate_id()
+
+
+class UIDMixin:
+    def generate_id(self):
+        if not self.id:
+            uid = newuid()
+
+            while True:
+                currentobjs = self.query.filter_by(id=uid)
+                if currentobjs.count() == 0:
+                    self.id = uid
+                    return 
+                uid = newiid() 
 
 
 class AdminLinksMixin:
@@ -34,9 +52,6 @@ class AdminLinksMixin:
         return AdminLinksMixin.ADMIN_VIEW_LINK_MODAL.format(modelname=modelname, modelid=self.id)
 
 
-def generate_id(): return str(uuid4())[:4]
-
-
 class Telephone(db.Model, AdminLinksMixin):
     __tablename__ = "telephones"
     id = db.Column('telephone_id', db.Integer,
@@ -63,10 +78,10 @@ class Email(db.Model, AdminLinksMixin):
         return self.email
 
 
-class Contact(db.Model, AdminLinksMixin):
+class Contact(db.Model, AdminLinksMixin, UIDMixin):
     __tablename__ = "contacts"
     id = db.Column('contact_id', db.String(
-        4), default=generate_id, primary_key=True)
+        4), primary_key=True)
     # uid = db.Column(db.String(4))
     firstname = db.Column(db.String(15), nullable=False)
     lastname = db.Column(db.String(15))
@@ -106,10 +121,10 @@ class Contact(db.Model, AdminLinksMixin):
         return "{} {}".format(self.firstname, self.lastname)
 
 
-class Company(db.Model, AdminLinksMixin):
+class Company(db.Model, AdminLinksMixin, UIDMixin):
     __tablename__ = "companies"
     id = db.Column('company_id', db.String(
-        4), default=generate_id, primary_key=True)
+        4), primary_key=True)
     # uid = db.Column(db.String(4))
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text())  # should be markdown.
@@ -141,17 +156,17 @@ class Company(db.Model, AdminLinksMixin):
 #  manytomany through table.
 class ContactsOrganizations(db.Model, AdminLinksMixin):
     __tablename__ = 'contacts_organizations'
-    id = db.Column(db.String(4), default=generate_id, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     contact_id = db.Column(db.String(4), db.ForeignKey(
         'contacts.contact_id'))  # , ondelete='CASCADE'))
     organization_id = db.Column(db.String(4), db.ForeignKey(
         'organizations.organization_id'))  # , ondelete='CASCADE'))
 
 
-class Organization(db.Model, AdminLinksMixin):
+class Organization(db.Model, AdminLinksMixin, UIDMixin):
     __tablename__ = "organizations"
     id = db.Column('organization_id', db.String(
-        4), default=generate_id, primary_key=True)
+        4), primary_key=True)
     # uid = db.Column(db.String(4))
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text())  # should be markdown.
@@ -197,10 +212,10 @@ class DealCurrency(Enum):
     USD, EUR, AED, GBP = range(4)
 
 
-class Deal(db.Model, AdminLinksMixin):
+class Deal(db.Model, AdminLinksMixin, UIDMixin):
     __tablename__ = "deals"
     id = db.Column('deal_id', db.String(
-        4), default=generate_id, primary_key=True)
+        4), primary_key=True)
     # uid = db.Column(db.String(4))
     name = db.Column(db.String(255), nullable=False)
     remarks = db.Column(db.Text())  # should be markdown.
@@ -236,17 +251,17 @@ class Deal(db.Model, AdminLinksMixin):
 #  manytomany through table.
 class ContactsProjects(db.Model):
     __tablename__ = 'contacts_projects'
-    id = db.Column(db.String(4), default=generate_id, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     contact_id = db.Column(db.String(4), db.ForeignKey(
         'contacts.contact_id'))  # , ondelete='CASCADE'))
     project_id = db.Column(db.String(4), db.ForeignKey(
         'projects.project_id'))  # , ondelete='CASCADE'))
 
 
-class Project(db.Model, AdminLinksMixin):
+class Project(db.Model, AdminLinksMixin, UIDMixin):
     __tablename__ = "projects"
     id = db.Column('project_id', db.String(
-        4), default=generate_id, primary_key=True)
+        4), primary_key=True)
     # uid = db.Column(db.String(4))
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text())  # should be markdown.
@@ -302,10 +317,10 @@ class ContactsSprints(db.Model):
         return self.name
 
 
-class Sprint(db.Model, AdminLinksMixin):
+class Sprint(db.Model, AdminLinksMixin, UIDMixin):
     __tablename__ = "sprints"
     id = db.Column('sprint_id', db.String(
-        4), default=generate_id, primary_key=True)
+        4), primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text())  # should be markdown.
     start_date = db.Column(db.TIMESTAMP)
@@ -385,7 +400,6 @@ class Link(db.Model, AdminLinksMixin):
     __tablename__ = "links"
     id = db.Column('link_id', db.Integer,
                    primary_key=True)
-    # uid = db.Column(db.String(4), default=generate_id, primary_key=True)
     url = db.Column(db.String(255), nullable=False)
     labels = db.Column(db.Text())  # should be markdown.
 
@@ -426,7 +440,7 @@ class TaskAssignment(db.Model, AdminLinksMixin):
     contact_id = db.Column(db.String, db.ForeignKey("contacts.contact_id"))
     task_id = db.Column(db.String, db.ForeignKey("tasks.task_id"))
     tasktracking_id = db.Column(
-        db.String, db.ForeignKey("tasktrackings.tasktracking_id"))
+        db.Integer, db.ForeignKey("tasktrackings.tasktracking_id"))
     time_todo = db.Column(db.Integer, default=0)
 
     @property
@@ -445,10 +459,10 @@ class TaskAssignment(db.Model, AdminLinksMixin):
         return '%s (%s)' % (self.task.title, self.contact.firstname + self.contact.lastname)
 
 
-class Task(db.Model, AdminLinksMixin):
+class Task(db.Model, AdminLinksMixin, UIDMixin):
     __tablename__ = "tasks"
     id = db.Column('task_id', db.String(
-        4), default=generate_id, primary_key=True, unique=True)
+        4), primary_key=True, unique=True)
     uid = db.Column(db.String(4))
     title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text())  # should be markdown.
@@ -525,8 +539,7 @@ class Message(db.Model, AdminLinksMixin):
 
 class TaskTracking(db.Model, AdminLinksMixin):
     __tablename__ = "tasktrackings"
-    id = db.Column('tasktracking_id', db.String(
-        4), default=generate_id, primary_key=True)
+    id = db.Column('tasktracking_id', db.Integer, primary_key=True)
 
     assignment = db.relationship("TaskAssignment",
                                  backref=db.backref("tasktracking"), uselist=False)
@@ -536,7 +549,7 @@ class TaskTracking(db.Model, AdminLinksMixin):
     def __str__(self):
         return "<TaskTracker %s>" % (self.id)
 
-    # epoch = models.IntegerField(
-    #     blank=True,
-    #     validators=[validate_epoch]
-    # )
+
+
+for m in [Contact, Company, Organization, Deal, Project, Sprint, Task]:
+    listen(m, 'before_insert', generate_id)
