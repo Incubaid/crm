@@ -18,7 +18,7 @@
                 <th>{{subfield.label.text}}</th>
             {% endif %}
         {% endfor %}
-                <th>Actions</th>
+                <th><!--used for actions--></th>
                 </tr>
             </thead>
         <tbody>
@@ -31,13 +31,14 @@
         <td>
             <span>
 
-            <a href="{{subfield.form._obj.admin_edit_link()}}">Edit</a>
             {% if subfield.get_pk and subfield.get_pk() %}
             <input type="checkbox" name="del-{{ subfield.id }}" id="del-{{ subfield.id }}" />
             <label for="del-{{ subfield.id }}" style="display: inline">{{ _gettext('Delete?') }}</label>
-
+            {% else %}
             <a href="javascript:void(0)" class="inline-remove-field"><i class="fa fa-times glyphicon glyphicon-remove"></i></a>
             {% endif %}
+            <a href="{{subfield.form._obj.admin_edit_link()}}">Edit</a>
+
             <span>
         </td>
         </tr>
