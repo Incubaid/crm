@@ -35,8 +35,8 @@ if development is False:
 
 config = {
     "SQLALCHEMY_DATABASE_URI": "sqlite:///{}".format(DBPATH),
-    "SQLALCHEMY_ECHO": True,
-    "SQLALCHEMY_RECORD_QUERIES": True,
+    # "SQLALCHEMY_ECHO": True,
+    # "SQLALCHEMY_RECORD_QUERIES": True,
 }
 
 app = Flask(__name__)

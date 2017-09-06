@@ -62,6 +62,9 @@ formatters = {**formatters, **
 class EnhancedModelView(ModelView):
     can_view_details = True
     column_formatters = formatters
+    create_modal = True
+    edit_modal = True
+
     form_widget_args = {
         'created_at': {
             'readonly': True,
