@@ -23,7 +23,7 @@ class UIDMixin:
                 if currentobjs.count() == 0:
                     self.id = uid
                     return
-                uid = newiid()
+                uid = newid()
 
 
 class AdminLinksMixin:
