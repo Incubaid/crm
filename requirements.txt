@@ -1,0 +1,10 @@
+Flask_GraphQL==1.4.1
+Flask_Admin==1.5.0
+graphene==1.4.1
+Jinja2==2.9.6
+SQLAlchemy==1.1.13
+Faker==0.7.18
+Flask==0.12
+graphene_sqlalchemy==1.1.1
+Flask_Migrate==2.1.0
+Flask_SQLAlchemy==2.2

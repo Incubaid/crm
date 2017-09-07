@@ -1,0 +1,12 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+
+<h2>Quick links</h2>
+
+<ul>
+    {% for item in ["telephone", "email", "contact", "company", "organization", "project", "sprint", "deal", "task", "message", "comment","link"]  %}
+        <li><a href="/{{item}}/new/?url=/{{item}}">Create new {{item}}</a></li>
+    {% endfor %}
+</ul>
+{% endblock %}
