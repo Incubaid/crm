@@ -36,8 +36,8 @@ if development is False:
 
 config = {
     "SQLALCHEMY_DATABASE_URI": "sqlite:///{}".format(DBPATH),
-    # "SQLALCHEMY_ECHO": True,
-    # "SQLALCHEMY_RECORD_QUERIES": True,
+    "SQLALCHEMY_ECHO": True,
+    "SQLALCHEMY_RECORD_QUERIES": True,
 }
 
 app = Flask(__name__)
@@ -58,12 +58,12 @@ if __name__ == "__main__":
             pass
     try:
         db.create_all(app=app)
-        db.session.commit()
     except Exception as e:  # db already exists
         raise
     try:
         if FIXTURES:
             do_fixtures()
+            db.session.commit()
     except Exception as e:
         raise
     app.add_url_rule(

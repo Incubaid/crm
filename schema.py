@@ -1,13 +1,12 @@
 import graphene
 from graphene import relay
-from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType
+from graphene_sqlalchemy import SQLAlchemyObjectType
 
 from models import Telephone as TelephoneModel, Email as EmailModel,\
-                   Contact as ContactModel, Company as CompanyModel, Organization as OrganizationModel,\
-                   Deal as DealModel, Project as ProjectModel, Sprint as SprintModel,\
-                   Task as TaskModel, TaskAssignment as TaskAssignmentModel, TaskTracking as TaskTrackingModel,\
-                   Link as LinkModel, Comment as CommentModel, Message as MessageModel
-
+    Contact as ContactModel, Company as CompanyModel, Organization as OrganizationModel,\
+    Deal as DealModel, Project as ProjectModel, Sprint as SprintModel,\
+    Task as TaskModel, TaskAssignment as TaskAssignmentModel, TaskTracking as TaskTrackingModel,\
+    Link as LinkModel, Comment as CommentModel, Message as MessageModel
 
 
 class Telephone(SQLAlchemyObjectType):
@@ -20,6 +19,7 @@ class Email(SQLAlchemyObjectType):
 
     class Meta:
         model = EmailModel
+
 
 class Contact(SQLAlchemyObjectType):
 
@@ -50,15 +50,19 @@ class Task(SQLAlchemyObjectType):
     class Meta:
         model = TaskModel
 
+
 class TaskAssignment(SQLAlchemyObjectType):
 
     class Meta:
         model = TaskAssignmentModel
 
+
 class TaskTracking(SQLAlchemyObjectType):
 
     class Meta:
         model = TaskTrackingModel
+
+
 class Project(SQLAlchemyObjectType):
 
     class Meta:
@@ -71,11 +75,11 @@ class Sprint(SQLAlchemyObjectType):
         model = SprintModel
 
 
-
 class Link(SQLAlchemyObjectType):
 
     class Meta:
         model = LinkModel
+
 
 class Comment(SQLAlchemyObjectType):
 
@@ -159,7 +163,6 @@ class Query(graphene.ObjectType):
     def resolve_links(self, args, context, info):
         query = Link.get_query(context)  # SQLAlchemy query
         return query.all()
-
 
 
 schema = graphene.Schema(query=Query, types=[
