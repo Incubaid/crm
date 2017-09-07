@@ -92,7 +92,7 @@ class EmailModelView(EnhancedModelView):
 class ContactModelView(EnhancedModelView):
     form_rules = column_filters = column_details_list = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'message_channels',
                                                          'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
-    form_edit_rules = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'tasks',
+    form_edit_rules = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'tasks', 'deals',
                        'message_channels', 'owner', 'ownerbackup')
 
     column_searchable_list = ('firstname', 'lastname',)
@@ -102,9 +102,11 @@ class ContactModelView(EnhancedModelView):
     column_sortable_list = ('firstname', 'lastname')
 
     inline_models = [
-        (TelephoneModel, {'form_columns': ['id', 'number']}), (EmailModel, {
-            'form_columns': ['id', 'email']}),
-        (TaskModel, {'form_columns': ['id', 'title', 'description', 'type', 'priority', 'eta']})]
+        (TelephoneModel, {'form_columns': ['id', 'number']}),
+        (EmailModel, {'form_columns': ['id', 'email']}),
+        (TaskModel, {'form_columns': [
+         'id', 'title', 'description', 'type', 'priority', 'eta']}),
+        (DealModel, {'form_columns': ['id', 'name', 'amount', 'currency', 'remarks', ]})]
 
 
 class CompanyModelView(EnhancedModelView):
@@ -256,15 +258,19 @@ class TaskModelView(EnhancedModelView):
                   'contacts', 'company', 'organization', 'project', 'sprint', 'deal',
                   'remarks')
 
-    form_edit_rules = ('title', 'description', 'content',
-                       'type', 'priority', 'eta', 'time_done',
-                       'contacts', 'company', 'organization', 'project', 'sprint', 'deal',
-                       'remarks')
+    form_edit_rules = ('title', 'description', 'content', 'remarks',
+                       'type', 'priority', 'eta', 'time_done', 'comments',
+                       'contacts', 'company', 'organization', 'project', 'sprint', 'deal',)
     column_list = ('title', 'description', 'contacts', 'eta', 'priority', 'time_done',
                    'organization', 'company', 'project', 'sprint', 'deal')
     column_searchable_list = ('title', 'description',
                               'content', 'type', 'priority', 'eta')
     column_sortable_list = ('eta', 'priority')
+
+    inline_models = [
+        (CommentModel, {'form_columns': [
+         'id', 'name', 'content', 'remarks']}),
+    ]
 
 
 class MessageModelView(EnhancedModelView):

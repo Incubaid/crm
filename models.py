@@ -7,11 +7,13 @@ from util import newuid
 db = SQLAlchemy()  # init later in app.py
 db.session.autocommit = True
 
+
 def generate_id(mapper, connect, target):
     target.generate_id()
 
 
 class UIDMixin:
+
     def generate_id(self):
         if not self.id:
             uid = newuid()
@@ -20,8 +22,8 @@ class UIDMixin:
                 currentobjs = self.query.filter_by(id=uid)
                 if currentobjs.count() == 0:
                     self.id = uid
-                    return 
-                uid = newiid() 
+                    return
+                uid = newiid()
 
 
 class AdminLinksMixin:
@@ -31,7 +33,7 @@ class AdminLinksMixin:
 
     ADMIN_EDIT_LINK_MODAL = "/{modelname}/edit/?id={modelid}&modal=True"
     ADMIN_VIEW_LINK_MODAL = "/{modelname}/details/?id={modelid}&modal=True"
-    ADMIN_CREATE_LINK_MODAL = "/{modelname}/new/"
+    ADMIN_CREATE_LINK_MODAL = "/{modelname}/new/?url=/{modelname}"
 
     def admin_edit_link(self):
         modelname = self.__class__.__name__.lower()
@@ -60,6 +62,7 @@ class AdminLinksMixin:
         modelname = self.__class__.__name__.lower()
 
         return AdminLinksMixin.ADMIN_CREATE_LINK_MODAL.format(modelname=modelname, modelid=self.id)
+
 
 class Telephone(db.Model, AdminLinksMixin):
     __tablename__ = "telephones"
@@ -225,7 +228,6 @@ class Deal(db.Model, AdminLinksMixin, UIDMixin):
     __tablename__ = "deals"
     id = db.Column('deal_id', db.String(
         4), primary_key=True)
-    # uid = db.Column(db.String(4))
     name = db.Column(db.String(255), nullable=False)
     remarks = db.Column(db.Text())  # should be markdown.
     amount = db.Column(db.Integer)  # default to int.
@@ -557,7 +559,6 @@ class TaskTracking(db.Model, AdminLinksMixin):
 
     def __str__(self):
         return "<TaskTracker %s>" % (self.id)
-
 
 
 for m in [Contact, Company, Organization, Deal, Project, Sprint, Task]:
