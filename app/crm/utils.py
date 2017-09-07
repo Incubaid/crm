@@ -22,7 +22,7 @@ def generate_uid(model):
 
 def model_to_dict(model):
     d = {}
-    for k, v in model.__dict__.iteritems():
+    for k, v in model.__dict__.items():
         if k.startswith('_'):
             continue
         d[k] = v

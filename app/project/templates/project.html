@@ -2,7 +2,25 @@
 {% load i18n admin_urls static admin_modify %}
 {% load markdown_filters %}
 {% block extrahead %}{{ block.super }}
-<script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+
+<link rel="stylesheet" type="text/css" href="/static/admin/css/base.css">
+<link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css">
+
+
+<script type="text/javascript" src="/admin/jsi18n/"></script>
+<script type="text/javascript" src="/static/admin/js/core.js"></script>
+<script type="text/javascript" src="/static/admin/js/vendor/jquery/jquery.js"></script>
+<script type="text/javascript" src="/static/admin/js/jquery.init.js"></script>
+<script type="text/javascript" src="/static/admin/js/admin/RelatedObjectLookups.js"></script>
+<script type="text/javascript" src="/static/admin/js/actions.js"></script>
+<script type="text/javascript" src="/static/admin/js/urlify.js"></script>
+<script type="text/javascript" src="/static/admin/js/prepopulate.js"></script>
+<script type="text/javascript" src="/static/admin/js/vendor/xregexp/xregexp.js"></script>
+<script type="text/javascript" src="/static/markdownx/js/markdownx.js"></script>
+<script type="text/javascript" src="/static/admin/js/inlines.js"></script>
+
+<meta name="robots" content="NONE,NOARCHIVE">
+
 {{ media }}
 {% endblock %}
 
@@ -159,7 +177,10 @@
 </fieldset>
 
      <fieldset class="module aligned ">
-        <h2> Project Tasks </h2>
+         <div>
+              <a class="related-widget-wrapper-link add-related" id="add_id_task" href="/admin/task/task/add/?_to_field=uid&amp;project={{project.uid}}&amp;_popup=1" title="Add another task"><img src="/static/admin/img/icon-addlink.svg" alt="Add"></a> <h2> Project Tasks<br/> </h2>
+
+         </div>
 
          {% include 'tasks_table.html' with tasks=project.tasks.all exclude='project, deal, organization' %}
 

@@ -128,6 +128,32 @@
 
         </div>
 
+                    <div class="form-row row1">
+                <div>
+                <label> Users: </label>
+                     <table>
+     <thead>
+         <tr>
+              <th class="original">Name</th>
+         </tr>
+     </thead>
+                         <tbody>
+
+                            {% for user in company.users.all %}
+                            <tr>
+                                <td class="form-row row1">
+                                    <a href="{{contact_root_path}}/{{user.uid}}/review">{{user.name}}</a>
+                                    <a class="related-widget-wrapper-link change-related" title="Edit contact" href="{{contact_root_path}}/{{user.uid}}"><img src="/static/admin/img/icon-changelink.svg" alt="Edit contac"></a>
+
+                                </td>
+                                {% endfor %}
+                            </tr>
+                        </tbody>
+                     </table>
+                </div>
+        </div>
+
+
 </fieldset>
     <fieldset class="module aligned">
    <h2>Company phones</h2>

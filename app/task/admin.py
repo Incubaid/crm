@@ -9,7 +9,7 @@ from django.utils.safestring import mark_safe
 
 # Register your models here.
 from task.models import Task, TaskAssignment, TaskTracking
-
+from comment.models import Comment
 
 class TaskAssignmentInline(admin.TabularInline):
     model = TaskAssignment
@@ -19,15 +19,23 @@ class TaskTrackingInline(admin.TabularInline):
     model = TaskTracking
     exclude = ('uid',)
 
+class TaskCommentInline(admin.TabularInline):
+    readonly_fields = ('uid',)
+    model = Comment
+    extra = 1
+
 class TaskAdmin(admin.ModelAdmin):
     readonly_fields = ('uid',)
     inlines = (
         TaskAssignmentInline,
+        TaskCommentInline
     )
     list_display = ('view', 'created_at', 'modified_at')
     list_filter = (
         ('created_at', DateRangeFilter),
         ('modified_at', DateRangeFilter),
+        ('project__deadline', DateRangeFilter),
+
     )
 
     search_fields = [
@@ -40,7 +48,9 @@ class TaskAdmin(admin.ModelAdmin):
         'organization__name',
         'sprint__name',
         'owner__first_name',
-        'owner__last_name'
+        'owner__last_name',
+        'assignments__contact__first_name',
+        'assignments__contact__last_name'
     ]
 
     def view(self, obj):

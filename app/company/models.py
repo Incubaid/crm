@@ -59,6 +59,11 @@ class Company(models.Model):
         auto_now=True
     )
 
+    users = models.ManyToManyField(
+        Contact,
+        related_name='companies'
+    )
+
     owner = models.ForeignKey(
         Contact,
         verbose_name='owner',

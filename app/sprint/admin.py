@@ -20,6 +20,7 @@ class SprintAdmin(admin.ModelAdmin):
         ('deadline', DateRangeFilter),
         ('created_at', DateRangeFilter),
         ('modified_at', DateRangeFilter),
+        ('project__deadline', DateRangeFilter),
     )
     search_fields = [
         'name',

@@ -38,7 +38,7 @@
          </thead>
      <tbody>
      {% for task in tasks reversed %}
-     <tr class="form-row row1 has_original dynamic-phone_numbers">
+     <tr id="id_task" class="form-row row1 has_original dynamic-phone_numbers">
          <td class="form-row row1">
             <div class="related-widget-wrapper">
                     <a href="{{task_root_path}}/{{task.uid}}/review">{{task.uid}}</a>
