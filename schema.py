@@ -124,7 +124,7 @@ class Query(graphene.ObjectType):
         query = Company.get_query(context)  # SQLAlchemy query
         return query.all()
 
-    def reslove_organizations(self, args, context, info):
+    def resolve_organizations(self, args, context, info):
         query = Organization.get_query(context)  # SQLAlchemy query
         return query.all()
 
@@ -132,11 +132,11 @@ class Query(graphene.ObjectType):
         query = Deal.get_query(context)  # SQLAlchemy query
         return query.all()
 
-    def reslove_projects(self, args, context, info):
+    def resolve_projects(self, args, context, info):
         query = Project.get_query(context)  # SQLAlchemy query
         return query.all()
 
-    def reslove_sprints(self, args, context, info):
+    def resolve_sprints(self, args, context, info):
         query = Sprint.get_query(context)  # SQLAlchemy query
         return query.all()
 
