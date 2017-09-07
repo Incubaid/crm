@@ -1,5 +1,7 @@
-import string, random
+import string
+import random
+
 
 def newuid():
-    uid = ''.join(random.sample(string.ascii_letters+string.digits, 4))
+    uid = ''.join(random.sample(string.ascii_lowercase + string.digits, 4))
     return uid
