@@ -41,7 +41,8 @@ config = {
 }
 
 app = Flask(__name__)
-app.jinja_env.globals.update(getattr=getattr, hasattr=hasattr, type=type, get_url=get_url)
+app.jinja_env.globals.update(
+    getattr=getattr, hasattr=hasattr, type=type, len=len, get_url=get_url)
 app.secret_key = "dmdmkey"
 app.config = {**app.config, **config}
 db.app = app
