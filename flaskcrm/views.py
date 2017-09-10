@@ -113,7 +113,7 @@ class CompanyModelView(EnhancedModelView):
     form_rules = column_filters = column_details_list = ('name', 'description', 'emails', 'telephones',
                                                          'deals', 'messages', 'tasks', 'comments', 'owner', 'ownerbackup')
 
-    form_edit_rules = ('name', 'description', 'emails', 'telephones', 'messages', 'tasks',
+    form_edit_rules = ('name', 'description', 'emails', 'telephones', 'messages', 'tasks', 'deals',
                        'owner', 'ownerbackup')
 
     column_searchable_list = ('name', 'description',)
@@ -125,8 +125,8 @@ class CompanyModelView(EnhancedModelView):
             'form_columns': ['id', 'email']}),
         (TaskModel, {'form_columns': [
          'id', 'title', 'description', 'type', 'priority', 'eta']}),
-        (MessageModel, {'form_columns': ['id', 'title', 'channel']})
-    ]
+        (MessageModel, {'form_columns': ['id', 'title', 'channel']}),
+        (DealModel, {'form_columns': ['id', 'name', 'amount', 'currency', 'remarks', ]})]
 
 
 class OrganizationModelView(EnhancedModelView):
