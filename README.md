@@ -1,15 +1,32 @@
 # incubaidCRM
 
 ## Installation
-- clone `https://github.com/Incubaid/crm` 
-- checkout to `flaskproject` branch.
+- clone `https://github.com/Incubaid/crm`
+- change directory to flaskcrm 
 - `pip install -r requirements.txt`
 
-## Start Application
-- If you want to bootstrap it with some test fixtures 
-    `bash runappwithfixtures.sh` which is equivalent to `BOOTSTRAPWITHFIXTURES=TRUE python3 app.py`
-- Set `RESETDB=1` remove existing db.
-- If you have database already just execute `python3 app.py`
+## CRM Manager
+
+### Create database
+```
+python3 manage.py createdb
+```
+
+### Start application 
+```
+python3 manage.py startapp
+```
+
+### Reset database
+```
+python3 manage.py resetdb
+```
+
+### Load database with test fixtures
+```
+python3 manage.py populate_test_fixtures
+```
+
 
 ## Admin Panel
 After starting the application you can access the admin panel from http://localhost:5000
