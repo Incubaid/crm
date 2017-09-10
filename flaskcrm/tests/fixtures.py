@@ -5,7 +5,7 @@ from faker import Faker
 fake = Faker()
 
 
-def do_fixtures():
+def generate_fixtures():
     global db
 
     def newemail():
@@ -142,3 +142,11 @@ def do_fixtures():
         sprint = newsprint()
 
     db.session.commit()
+
+
+def import_fixtures():
+    pass
+
+
+def export_fixtures():
+    pass
