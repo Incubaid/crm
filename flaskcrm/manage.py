@@ -23,11 +23,6 @@ app.config.from_pyfile("settings.py")
 app.secret_key = app.config['SECRET_KEY']
 
 
-# ensure database directory
-if not os.path.exists(app.config['DBDIR']):
-    os.mkdir(app.config['DBDIR'])
-
-
 app.jinja_env.globals.update(
     getattr=getattr, hasattr=hasattr, type=type, len=len, get_url=get_url)
 
@@ -56,25 +51,41 @@ def main():
 
 
 @manager.command
+def dropdb():
+    """Drop database and tables."""
+    try:
+        os.remove(app.config['DBPATH'])
+    except:
+        raise
+
+
+@manager.command
 def resetdb():
     """Remove database and create it again."""
-    if app.config['RESETDB']:
-        try:
-            os.remove(app.config['DBPATH'])
-        except:
-            pass
-        try:
-            db.create_all(app=app)
-        except Exception as e:  # db already exists
-            raise
+    try:
+        os.remove(app.config['DBPATH'])
+    except:
+        raise
+    db.create_all(app=app)
 
     print("DB Resetted")
 
 
 @manager.command
+def createdb():
+    """Create database and tables."""
+    # ensure database directory
+    if not os.path.exists(app.config['DBDIR']):
+        os.mkdir(app.config['DBDIR'])
+
+    db.create_all(app=app)
+    print("DB created.")
+
+
+@manager.command
 def populate_test_fixtures():
     """Populate database with test fixtures."""
-    from .tests.fixtures import generate_fixtures
+    from tests.fixtures import generate_fixtures
     generate_fixtures()
 
 
@@ -83,5 +94,5 @@ def startapp():
     """Starts the Flask-CRM."""
     main()
 
-
-manager.run()
+if __name__ == "__main__":
+    manager.run()
