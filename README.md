@@ -1,22 +1,23 @@
 # incubaidCRM
 
 ## Installation
-- clone `https://github.com/Incubaid/crm` 
+- clone `https://github.com/Incubaid/crm`
+- change directory to flaskcrm 
 - `pip install -r requirements.txt`
 
 ## CRM Manager
 
-### Creating database
+### Create database
 ```
 python3 manage.py createdb
 ```
 
-### Starting application 
+### Start application 
 ```
 python3 manage.py startapp
 ```
 
-### Resetting database
+### Reset database
 ```
 python3 manage.py resetdb
 ```
