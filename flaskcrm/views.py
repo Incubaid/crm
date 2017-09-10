@@ -106,7 +106,7 @@ class ContactModelView(EnhancedModelView):
         (EmailModel, {'form_columns': ['id', 'email']}),
         (TaskModel, {'form_columns': [
          'id', 'title', 'description', 'type', 'priority', 'eta']}),
-        (DealModel, {'form_columns': ['id', 'name', 'amount', 'currency', 'remarks', ]})]
+        (DealModel, {'form_columns': ['id', 'name', 'amount', 'currency', 'deal_type', 'remarks']})]
 
 
 class CompanyModelView(EnhancedModelView):
@@ -126,7 +126,7 @@ class CompanyModelView(EnhancedModelView):
         (TaskModel, {'form_columns': [
          'id', 'title', 'description', 'type', 'priority', 'eta']}),
         (MessageModel, {'form_columns': ['id', 'title', 'channel']}),
-        (DealModel, {'form_columns': ['id', 'name', 'amount', 'currency', 'remarks', ]})]
+        (DealModel, {'form_columns': ['id', 'name', 'amount', 'currency', 'deal_type', 'remarks', ]})]
 
 
 class OrganizationModelView(EnhancedModelView):
