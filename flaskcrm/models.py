@@ -22,6 +22,7 @@ class UIDMixin:
                 currentobjs = self.query.filter_by(id=uid)
                 if currentobjs.count() == 0:
                     self.id = uid
+                    self.uid = uid
                     return
                 uid = newid()
 
@@ -63,7 +64,9 @@ class AdminLinksMixin:
 
         return AdminLinksMixin.ADMIN_CREATE_LINK_MODAL.format(modelname=modelname, modelid=self.id)
 
-
+    @property
+    def uid(self):
+        return self.id
 class Telephone(db.Model, AdminLinksMixin):
     __tablename__ = "telephones"
     id = db.Column('telephone_id', db.Integer,
@@ -94,7 +97,7 @@ class Contact(db.Model, AdminLinksMixin, UIDMixin):
     __tablename__ = "contacts"
     id = db.Column('contact_id', db.String(
         4), primary_key=True)
-    # uid = db.Column(db.String(4))
+    uid = db.Column(db.String(4))
     firstname = db.Column(db.String(15), nullable=False)
     lastname = db.Column(db.String(15))
     description = db.Column(db.Text())  # should be markdown.
@@ -138,7 +141,7 @@ class Company(db.Model, AdminLinksMixin, UIDMixin):
     __tablename__ = "companies"
     id = db.Column('company_id', db.String(
         4), primary_key=True)
-    # uid = db.Column(db.String(4))
+    uid = db.Column(db.String(4))
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text())  # should be markdown.
     isuser = db.Column(db.Boolean, default=False)
@@ -180,7 +183,7 @@ class Organization(db.Model, AdminLinksMixin, UIDMixin):
     __tablename__ = "organizations"
     id = db.Column('organization_id', db.String(
         4), primary_key=True)
-    # uid = db.Column(db.String(4))
+    uid = db.Column(db.String(4))
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text())  # should be markdown.
     # timestamps
@@ -229,6 +232,7 @@ class Deal(db.Model, AdminLinksMixin, UIDMixin):
     __tablename__ = "deals"
     id = db.Column('deal_id', db.String(
         4), primary_key=True)
+    uid = db.Column(db.String(4))
     name = db.Column(db.String(255), nullable=False)
     remarks = db.Column(db.Text())  # should be markdown.
     amount = db.Column(db.Integer)  # default to int.
@@ -274,7 +278,7 @@ class Project(db.Model, AdminLinksMixin, UIDMixin):
     __tablename__ = "projects"
     id = db.Column('project_id', db.String(
         4), primary_key=True)
-    # uid = db.Column(db.String(4))
+    uid = db.Column(db.String(4))
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text())  # should be markdown.
 
@@ -333,6 +337,7 @@ class Sprint(db.Model, AdminLinksMixin, UIDMixin):
     __tablename__ = "sprints"
     id = db.Column('sprint_id', db.String(
         4), primary_key=True)
+    uid = db.Column(db.String(4))
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text())  # should be markdown.
     start_date = db.Column(db.TIMESTAMP)
