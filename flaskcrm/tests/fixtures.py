@@ -39,6 +39,25 @@ def generate_fixtures():
         db.session.add(u)
         return u
 
+    def newthreefoldemployee():
+        phonenumber = fake.phone_number()
+        firstname = fake.first_name()
+        lastname = fake.last_name()
+        phoneobj = Telephone(number=phonenumber)
+        email = newemail()
+        u = Contact(firstname=firstname, lastname=lastname)
+        u.telephones = [phoneobj]
+        u.emails = [email]
+        u.isthreefoldemployee = True
+        db.session.add(phoneobj)
+
+        u.comments = [newcomment() for i in range(2)]
+        u.tasks = [newtask() for i in range(2)]
+        u.messages = [newmsg() for i in range(2)]
+        u.links = [newlink() for i in range(3)]
+        db.session.add(u)
+        return u
+
     def newcompany():
         companyname = fake.company()
         companyemail = newemail()
@@ -134,7 +153,7 @@ def generate_fixtures():
 
     for i in range(5):
         u = newuser()
-
+        tu = newthreefoldemployee()
         com = newcompany()
         proj = newproj()
         org = neworg()
