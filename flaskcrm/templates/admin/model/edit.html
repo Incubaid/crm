@@ -30,7 +30,16 @@
   {% endblock %}
 
   {% block edit_form %}
-
+    {% if 'filtered_objects' in g._admin_view._template_args %}
+      <div class="container" id="filtered_objects_section">
+       <ul class="list-inline"><li class="list-inline-item"><span>Referenced objects:</span></li> 
+      {% for viewname, vals in g._admin_view._template_args['filtered_objects'].items() %}
+        {% set tofilterview, filtername = vals %}
+        <li class="list-inline-item"><a href="/{{tofilterview.model.__name__.lower()}}/?{{tofilterview.get_filter_arg_helper(filtername, 'contains')}}={{form._obj.id}}"> {{tofilterview.model.__name__.lower()}} </a></li>
+      {% endfor %}
+       </ul>
+      </div>
+    {% endif %}
     {{ lib.render_form(form, return_url, extra(), form_opts) }}
   {% endblock %}
 {% endblock %}

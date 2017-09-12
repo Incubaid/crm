@@ -5,8 +5,6 @@ from flask_admin.model import typefmt
 from jinja2 import Markup
 from datetime import datetime
 from models import db, TaskAssignment as TaskAssignmentModel, Telephone as TelephoneModel, Email as EmailModel, Contact as ContactModel, Company as CompanyModel, Organization as OrganizationModel, Deal as DealModel, Deal as DealModel, Link as LinkModel, Project as ProjectModel, Sprint as SprintModel, Task as TaskModel, Comment as CommentModel, Message as MessageModel
-from flask_admin import form
-from flask_admin.contrib.sqla.filters import FilterLike
 from flask_admin.base import expose
 
 
@@ -76,10 +74,9 @@ class EnhancedModelView(ModelView):
             'readonly': True,
         },
     }
-    
     def get_filter_arg_helper(self, filter_name, filter_op='equals'):
         filters = self._filter_groups[filter_name].filters
-        position = self._filter_groups.keys().index(filter_name)
+        position = list(self._filter_groups.keys()).index(filter_name)
 
         for f in filters:
             if f['operation'] == filter_op:
@@ -136,10 +133,15 @@ class ContactModelView(EnhancedModelView):
 
     @expose('/edit/', methods=('GET', 'POST'))
     def edit_view(self):
-        self._template_args['tasksview'] = TaskModelView(TaskModel, db.session)
-        self._template_args['messagesview'] = MessageModelView(MessageModel, db.session)
+        filtered_objects = {}
 
+        filtered_objects['tasksview'] = [
+            TaskModelView(TaskModel, db.session), 'Contacts / Uid']
+        filtered_objects['messagesview'] = [MessageModelView(
+            MessageModel, db.session), 'Contacts / Uid']
+        self._template_args['filtered_objects'] = filtered_objects
         return super().edit_view()
+
 
 class CompanyModelView(EnhancedModelView):
     form_rules = column_filters = column_details_list = ('name', 'description', 'emails', 'telephones',
@@ -159,6 +161,17 @@ class CompanyModelView(EnhancedModelView):
          'id', 'title', 'description', 'type', 'priority', 'eta']}),
         (MessageModel, {'form_columns': ['id', 'title', 'channel']}),
         (DealModel, {'form_columns': ['id', 'name', 'amount', 'currency', 'deal_type', 'remarks', ]})]
+
+    @expose('/edit/', methods=('GET', 'POST'))
+    def edit_view(self):
+        filtered_objects = {}
+
+        filtered_objects['tasksview'] = [
+            TaskModelView(TaskModel, db.session), 'Companies / Uid']
+        filtered_objects['messagesview'] = [MessageModelView(
+            MessageModel, db.session), 'Companies / Uid']
+        self._template_args['filtered_objects'] = filtered_objects
+        return super().edit_view()
 
 
 class OrganizationModelView(EnhancedModelView):
@@ -182,6 +195,17 @@ class OrganizationModelView(EnhancedModelView):
          'id', 'title', 'type', 'priority', 'eta']}),
         (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']})
     ]
+
+    @expose('/edit/', methods=('GET', 'POST'))
+    def edit_view(self):
+        filtered_objects = {}
+
+        filtered_objects['tasksview'] = [
+            TaskModelView(TaskModel, db.session), 'Organizations / Uid']
+        filtered_objects['messagesview'] = [MessageModelView(
+            MessageModel, db.session), 'Organizations / Uid']
+        self._template_args['filtered_objects'] = filtered_objects
+        return super().edit_view()
 
 
 class DealModelView(EnhancedModelView):
@@ -235,6 +259,17 @@ class ProjectModelView(EnhancedModelView):
         (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']})
     ]
 
+    @expose('/edit/', methods=('GET', 'POST'))
+    def edit_view(self):
+        filtered_objects = {}
+
+        filtered_objects['tasksview'] = [
+            TaskModelView(TaskModel, db.session), 'Projects / Uid']
+        filtered_objects['messagesview'] = [MessageModelView(
+            MessageModel, db.session), 'Projects / Uid']
+        self._template_args['filtered_objects'] = filtered_objects
+        return super().edit_view()
+
 
 class SprintModelView(EnhancedModelView):
     column_filters = column_details_list = ('id', 'name', 'description', 'start_date', 'deadline',
@@ -256,6 +291,17 @@ class SprintModelView(EnhancedModelView):
          'id', 'title', 'type', 'priority', 'eta']}),
         (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']})
     ]
+
+    @expose('/edit/', methods=('GET', 'POST'))
+    def edit_view(self):
+        filtered_objects = {}
+
+        filtered_objects['tasksview'] = [
+            TaskModelView(TaskModel, db.session), 'Sprints / Uid']
+        filtered_objects['messagesview'] = [MessageModelView(
+            MessageModel, db.session), 'Sprints / Uid']
+        self._template_args['filtered_objects'] = filtered_objects
+        return super().edit_view()
 
 
 class CommentModelView(EnhancedModelView):

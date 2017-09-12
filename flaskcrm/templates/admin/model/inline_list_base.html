@@ -21,6 +21,7 @@
 <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#{{field.id}}">Show {{field.label.text}}</button>    
 {% if len(field) > 0 %}
 {{ lib.add_modal_button(url=get_url(field[0].form._obj.__class__.__name__.lower()+'.create_view', url=return_url, modal=True), modal_window_id="fa_modal_window_"+field.id, title=_gettext('Create New Record'), content=_gettext('New [all fields]')) }}
+
 {% endif %}
 
 <div class="inline-field collapse" id="{{ field.id }}">

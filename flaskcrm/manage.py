@@ -94,5 +94,6 @@ def startapp():
     """Starts the Flask-CRM."""
     main()
 
+
 if __name__ == "__main__":
     manager.run()

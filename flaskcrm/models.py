@@ -29,6 +29,7 @@ class UIDMixin:
 
 class AdminLinksMixin:
     ADMIN_EDIT_LINK = "/{modelname}/edit/?id={modelid}&url=/{modelname}/"
+    ADMIN_LIST_LINK = "/{modelname}/"
     ADMIN_VIEW_LINK = "/{modelname}/details/?id={modelid}&url=/{modelname}/"
     ADMIN_CREATE_LINK = "/{modelname}/new/?id={modelid}&url=/{modelname}/"
 
@@ -36,9 +37,12 @@ class AdminLinksMixin:
     ADMIN_VIEW_LINK_MODAL = "/{modelname}/details/?id={modelid}&modal=True"
     ADMIN_CREATE_LINK_MODAL = "/{modelname}/new/?url=/{modelname}"
 
+    def admin_list_link(self):
+        modelname = self.__class__.__name__.lower()
+        return AdminLinksMixin.ADMIN_LIST_LINK.format(modelname=modelname)
+
     def admin_edit_link(self):
         modelname = self.__class__.__name__.lower()
-        # if modelname in "Telephone"
         return AdminLinksMixin.ADMIN_EDIT_LINK.format(modelname=modelname, modelid=self.id)
 
     def admin_view_link(self):
@@ -67,11 +71,13 @@ class AdminLinksMixin:
     @property
     def uid(self):
         return self.id
+
+
 class Telephone(db.Model, AdminLinksMixin):
     __tablename__ = "telephones"
     id = db.Column('telephone_id', db.Integer,
                    primary_key=True)
-    number = db.Column(db.String(20), nullable=False)  # how long is phoneumber
+    number = db.Column(db.String(20), nullable=False)
     contact_id = db.Column(db.Integer, db.ForeignKey("contacts.contact_id"))
     company_id = db.Column(db.Integer, db.ForeignKey("companies.company_id"))
 
@@ -83,7 +89,7 @@ class Email(db.Model, AdminLinksMixin):
     __tablename__ = "emails"
     id = db.Column('email_id', db.Integer,
                    primary_key=True)
-    email = db.Column(db.String(255), nullable=False)  # how long is phoneumber
+    email = db.Column(db.String(255), nullable=False)
     contact_id = db.Column(db.String(4), db.ForeignKey("contacts.contact_id"))
     company_id = db.Column(db.String(4), db.ForeignKey("companies.company_id"))
     organization_id = db.Column(
