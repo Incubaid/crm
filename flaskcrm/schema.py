@@ -109,59 +109,59 @@ class Query(graphene.ObjectType):
     messages = graphene.List(Message)
 
     def resolve_telephones(self, args, context, info):
-        query = Telephone.get_query(context)  # SQLAlchemy query
+        query = Telephone.get_query(context)
         return query.all()
 
     def resolve_emails(self, args, context, info):
-        query = Email.get_query(context)  # SQLAlchemy query
+        query = Email.get_query(context)
         return query.all()
 
     def resolve_contacts(self, args, context, info):
-        query = Contact.get_query(context)  # SQLAlchemy query
+        query = Contact.get_query(context)
         return query.all()
 
     def resolve_companies(self, args, context, info):
-        query = Company.get_query(context)  # SQLAlchemy query
+        query = Company.get_query(context)
         return query.all()
 
     def resolve_organizations(self, args, context, info):
-        query = Organization.get_query(context)  # SQLAlchemy query
+        query = Organization.get_query(context)
         return query.all()
 
     def resolve_deals(self, args, context, info):
-        query = Deal.get_query(context)  # SQLAlchemy query
+        query = Deal.get_query(context)
         return query.all()
 
     def resolve_projects(self, args, context, info):
-        query = Project.get_query(context)  # SQLAlchemy query
+        query = Project.get_query(context)
         return query.all()
 
     def resolve_sprints(self, args, context, info):
-        query = Sprint.get_query(context)  # SQLAlchemy query
+        query = Sprint.get_query(context)
         return query.all()
 
     def resolve_tasks(self, args, context, info):
-        query = Task.get_query(context)  # SQLAlchemy query
+        query = Task.get_query(context)
         return query.all()
 
     def resolve_taskassignments(self, args, context, info):
-        query = TaskAssignment.get_query(context)  # SQLAlchemy query
+        query = TaskAssignment.get_query(context)
         return query.all()
 
     def resolve_tasktrackings(self, args, context, info):
-        query = TaskTracking.get_query(context)  # SQLAlchemy query
+        query = TaskTracking.get_query(context)
         return query.all()
 
     def resolve_comments(self, args, context, info):
-        query = Comment.get_query(context)  # SQLAlchemy query
+        query = Comment.get_query(context)
         return query.all()
 
     def resolve_messages(self, args, context, info):
-        query = Message.get_query(context)  # SQLAlchemy query
+        query = Message.get_query(context)
         return query.all()
 
     def resolve_links(self, args, context, info):
-        query = Link.get_query(context)  # SQLAlchemy query
+        query = Link.get_query(context)
         return query.all()
 
 
