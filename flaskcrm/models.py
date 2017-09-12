@@ -227,7 +227,7 @@ class DealState(Enum):
 
 
 class DealType(Enum):
-    HOSTER, ITO, PTO, PREPTO = range(4)
+    HOSTER, ITO, PTO, AMBASSADOR = range(4)
 
 
 class DealCurrency(Enum):
