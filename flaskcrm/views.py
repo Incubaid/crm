@@ -5,6 +5,7 @@ from flask_admin.model import typefmt
 from jinja2 import Markup
 from datetime import datetime
 from models import TaskAssignment as TaskAssignmentModel, Telephone as TelephoneModel, Email as EmailModel, Contact as ContactModel, Company as CompanyModel, Organization as OrganizationModel, Deal as DealModel, Deal as DealModel, Link as LinkModel, Project as ProjectModel, Sprint as SprintModel, Task as TaskModel, Comment as CommentModel, Message as MessageModel
+from flask_admin import form
 
 
 def format_instrumented_list(view, context, model, name):
@@ -75,6 +76,11 @@ class EnhancedModelView(ModelView):
     }
 
 
+def possible_owners():
+    return ContactModel.query.filter(
+        ContactModel.isthreefoldemployee == True).all()
+
+
 class TelephoneModelView(EnhancedModelView):
     column_filters = column_list = column_details_list = (
         'number', 'contact', 'company')
@@ -91,9 +97,9 @@ class EmailModelView(EnhancedModelView):
 
 class ContactModelView(EnhancedModelView):
     form_rules = column_filters = column_details_list = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'message_channels',
-                                                         'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
+                                                         'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'isthreefoldemployee', 'links', 'owner', 'ownerbackup')
     form_edit_rules = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'tasks', 'deals',
-                       'message_channels', 'owner', 'ownerbackup')
+                       'message_channels', 'isthreefoldemployee', 'owner', 'ownerbackup')
 
     column_searchable_list = ('firstname', 'lastname',)
     column_list = ('firstname', 'lastname', 'emails',
@@ -107,6 +113,12 @@ class ContactModelView(EnhancedModelView):
         (TaskModel, {'form_columns': [
          'id', 'title', 'description', 'type', 'priority', 'eta']}),
         (DealModel, {'form_columns': ['id', 'name', 'amount', 'currency', 'deal_type', 'remarks']})]
+
+    form_args = {
+        'isthreefoldemployee': {'label': 'ThreeFold Employee'},
+        'owner': {'query_factory': possible_owners},
+        'ownerbackup': {'query_factory': possible_owners, 'label': 'Backup Owner'},
+    }
 
 
 class CompanyModelView(EnhancedModelView):

@@ -99,6 +99,7 @@ class Contact(db.Model, AdminLinksMixin, UIDMixin):
     lastname = db.Column(db.String(15))
     description = db.Column(db.Text())  # should be markdown.
     message_channels = db.Column(db.String(10), default="E1,S2:T1")
+    isthreefoldemployee = db.Column(db.Boolean, default=False)
 
     # timestamps
     created_at = db.Column(
