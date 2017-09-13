@@ -31,6 +31,7 @@
   {% endblock %}
 
   {% block details_table %}
+
     <table class="table table-hover table-bordered searchable">
 
     {% for c, name in details_columns %}
@@ -50,6 +51,20 @@
       </tr>
       {% endif %}
     {% endfor %}
+    {% if 'filtered_objects' in g._admin_view._template_args %}
+
+    <tr>
+      <td><b>Referenced objects</b></td>
+      <td>
+        <ul class="list-inline"><li class="list-inline-item"></li> 
+        {% for viewname, vals in g._admin_view._template_args['filtered_objects'].items() %}
+          {% set tofilterview, filtername = vals %}
+          <li class="list-inline-item"><a href="/{{tofilterview.model.__name__.lower()}}/?{{tofilterview.get_filter_arg_helper(filtername, 'contains')}}={{model.id}}"> {{tofilterview.model.__name__.lower()}} </a></li>
+        {% endfor %}
+        </ul>
+      </td>
+    </tr>
+  {% endif %}
     </table>
   {% endblock %}
 {% endblock %}
