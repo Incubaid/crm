@@ -84,7 +84,7 @@ class EnhancedModelView(ModelView):
 
 def possible_owners():
     return ContactModel.query.filter(
-        ContactModel.isthreefoldemployee == True).all()
+        ContactModel.isemployee == True).all()
 
 
 class TelephoneModelView(EnhancedModelView):
@@ -106,9 +106,9 @@ class EmailModelView(EnhancedModelView):
 
 class ContactModelView(EnhancedModelView):
     form_rules = column_details_list = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'message_channels',
-                                                         'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'isthreefoldemployee', 'links', 'owner', 'ownerbackup')
+                                                         'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'isemployee', 'links', 'owner', 'ownerbackup')
     form_edit_rules = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'tasks', 'deals',
-                       'message_channels', 'isthreefoldemployee', 'owner', 'ownerbackup')
+                       'message_channels', 'isemployee', 'owner', 'ownerbackup')
 
     column_filters = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'message_channels',
                       'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
@@ -126,7 +126,7 @@ class ContactModelView(EnhancedModelView):
         (DealModel, {'form_columns': ['id', 'name', 'amount', 'currency', 'deal_type', 'remarks']})]
 
     form_args = {
-        'isthreefoldemployee': {'label': 'ThreeFold Employee'},
+        'isemployee': {'label': 'Employee?'},
         'owner': {'query_factory': possible_owners},
         'ownerbackup': {'query_factory': possible_owners, 'label': 'Backup Owner'},
     }

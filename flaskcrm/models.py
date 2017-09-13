@@ -108,15 +108,13 @@ class Contact(db.Model, AdminLinksMixin, UIDMixin):
     lastname = db.Column(db.String(15))
     description = db.Column(db.Text())  # should be markdown.
     message_channels = db.Column(db.String(10), default="E1,S2:T1")
-    isthreefoldemployee = db.Column(db.Boolean, default=False)
+    isemployee = db.Column(db.Boolean, default=False)
 
     # timestamps
     created_at = db.Column(
         db.TIMESTAMP, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.utcnow,
                            onupdate=datetime.utcnow, nullable=False)
-    isuser = db.Column(db.Boolean, default=False)
-
     # relations
     telephones = db.relationship("Telephone", backref="contact")
     emails = db.relationship("Email", backref="contact")
