@@ -32,7 +32,7 @@ db.init_app(app)
 migrate = Migrate(app, db)
 
 
-def main():
+def main(host, port):
     app.add_url_rule(
         '/graphql', view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True))
     admin = Admin(app, name="CRM", template_mode="bootstrap3", url="/")
@@ -47,7 +47,7 @@ def main():
         viewcls = getattr(sys.modules[__name__], viewname)
         admin.add_view(viewcls(m, db.session, category="Extra"))
     debug = not app.config['PRODUCTION']
-    app.run(debug=debug)
+    app.run(debug=debug, host=host, port=port)
 
 
 @manager.command
@@ -89,10 +89,11 @@ def populate_test_fixtures():
     generate_fixtures()
 
 
-@manager.command
-def startapp():
+@manager.option("-h", "--host", help="host", default="0.0.0.0")
+@manager.option("-p", "--port", help="port", default=5000)
+def startapp(host, port=5000):
     """Starts the Flask-CRM."""
-    main()
+    main(host, int(port))
 
 
 if __name__ == "__main__":

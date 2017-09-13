@@ -3,7 +3,7 @@
 ## Installation
 - clone `https://github.com/Incubaid/crm`
 - change directory to flaskcrm 
-- `pip install -r requirements.txt`
+- `pip3 install -r requirements.txt`
 
 ## CRM Manager
 
@@ -15,6 +15,10 @@ python3 manage.py createdb
 ### Start application 
 ```
 python3 manage.py startapp
+```
+To change the host/port application running on you can use
+```
+python3 manage.py startapp --host 0.0.0.0 --port 18000
 ```
 
 ### Reset database
