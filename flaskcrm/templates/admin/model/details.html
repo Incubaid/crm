@@ -39,8 +39,15 @@
       {% if attr or (hasattr(attr, 'length') and attr|length > 0) %}
        <tr>
         <td>
+          {% set potentialviewname = (name+"view").lower()%}
+          {% if potentialviewname in g._admin_view._template_args['filtered_objects'] %}
+          {% set tofilterview, filtername = g._admin_view._template_args['filtered_objects'][potentialviewname]%}
+          <a href="/{{tofilterview.model.__name__.lower()}}/?{{tofilterview.get_filter_arg_helper(filtername, 'contains')}}={{model.id}}"> {{name}} </a>
+          {% else %}
           <b>{{ name }}</b>
+          {% endif %}
         </td>
+
         <td>
         {% if hasattr(attr, "admin_view_link") %}
              <a href="{{ getattr(model, c).admin_view_link() }}">{{get_value(model, c)}}</a>
@@ -53,17 +60,6 @@
     {% endfor %}
     {% if 'filtered_objects' in g._admin_view._template_args %}
 
-    <tr>
-      <td><b>Referenced objects</b></td>
-      <td>
-        <ul class="list-inline"><li class="list-inline-item"></li> 
-        {% for viewname, vals in g._admin_view._template_args['filtered_objects'].items() %}
-          {% set tofilterview, filtername = vals %}
-          <li class="list-inline-item"><a href="/{{tofilterview.model.__name__.lower()}}/?{{tofilterview.get_filter_arg_helper(filtername, 'contains')}}={{model.id}}"> {{tofilterview.model.__name__.lower()}} </a></li>
-        {% endfor %}
-        </ul>
-      </td>
-    </tr>
   {% endif %}
     </table>
   {% endblock %}
