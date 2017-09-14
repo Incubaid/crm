@@ -66,6 +66,8 @@ class EnhancedModelView(ModelView):
     create_modal = True
     edit_modal = True
 
+    mainfilter = ""
+
     form_widget_args = {
         'created_at': {
             'readonly': True,
@@ -74,6 +76,7 @@ class EnhancedModelView(ModelView):
             'readonly': True,
         },
     }
+
     def get_filter_arg_helper(self, filter_name, filter_op='equals'):
         filters = self._filter_groups[filter_name].filters
         position = list(self._filter_groups.keys()).index(filter_name)
@@ -81,6 +84,7 @@ class EnhancedModelView(ModelView):
         for f in filters:
             if f['operation'] == filter_op:
                 return 'flt%d_%d' % (position, f['index'])
+
 
 def possible_owners():
     return ContactModel.query.filter(
@@ -104,9 +108,63 @@ class EmailModelView(EnhancedModelView):
     column_sortable_list = ('email', )
 
 
-class ContactModelView(EnhancedModelView):
+class FilterableMixin:
+    @expose('/edit/', methods=('GET', 'POST'))
+    def edit_view(self):
+        if self.mainfilter:
+            filtered_objects = {}
+            filtered_objects['emailsview'] = [
+                EmailModelView(EmailModel, db.session), self.mainfilter]
+            filtered_objects['telephonesview'] = [
+                TelephoneModelView(TelephoneModel, db.session), self.mainfilter]
+            filtered_objects['tasksview'] = [
+                TaskModelView(TaskModel, db.session), self.mainfilter]
+            filtered_objects['messagesview'] = [MessageModelView(
+                MessageModel, db.session), self.mainfilter]
+            filtered_objects['projectsview'] = [ProjectModelView(
+                ProjectModel, db.session), self.mainfilter]
+            filtered_objects['sprintsview'] = [SprintModelView(
+                SprintModel, db.session), self.mainfilter]
+            filtered_objects['dealsview'] = [DealModelView(
+                DealModel, db.session), self.mainfilter]
+            filtered_objects['commentsview'] = [CommentModelView(
+                CommentModel, db.session), self.mainfilter]
+            filtered_objects['linksview'] = [LinkModelView(
+                LinkModel, db.session), self.mainfilter]
+
+            self._template_args['filtered_objects'] = filtered_objects
+        return super().edit_view()
+
+    @expose('/details/', methods=('GET',))
+    def details_view(self):
+        if self.mainfilter:
+            filtered_objects = {}
+            filtered_objects['emailsview'] = [
+                EmailModelView(EmailModel, db.session), self.mainfilter]
+            filtered_objects['telephonesview'] = [
+                TelephoneModelView(TelephoneModel, db.session), self.mainfilter]
+            filtered_objects['tasksview'] = [
+                TaskModelView(TaskModel, db.session), self.mainfilter]
+            filtered_objects['messagesview'] = [MessageModelView(
+                MessageModel, db.session), self.mainfilter]
+            filtered_objects['projectsview'] = [ProjectModelView(
+                ProjectModel, db.session), self.mainfilter]
+            filtered_objects['sprintsview'] = [SprintModelView(
+                SprintModel, db.session), self.mainfilter]
+            filtered_objects['dealsview'] = [DealModelView(
+                DealModel, db.session), self.mainfilter]
+            filtered_objects['commentsview'] = [CommentModelView(
+                CommentModel, db.session), self.mainfilter]
+            filtered_objects['linksview'] = [LinkModelView(
+                LinkModel, db.session), self.mainfilter]
+
+            self._template_args['filtered_objects'] = filtered_objects
+        return super().details_view()
+
+
+class ContactModelView(FilterableMixin, EnhancedModelView):
     form_rules = column_details_list = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'message_channels',
-                                                         'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'isemployee', 'links', 'owner', 'ownerbackup')
+                                        'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'isemployee', 'links', 'owner', 'ownerbackup')
     form_edit_rules = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'tasks', 'deals',
                        'message_channels', 'isemployee', 'owner', 'ownerbackup')
 
@@ -131,30 +189,10 @@ class ContactModelView(EnhancedModelView):
         'ownerbackup': {'query_factory': possible_owners, 'label': 'Backup Owner'},
     }
 
-    @expose('/edit/', methods=('GET', 'POST'))
-    def edit_view(self):
-        filtered_objects = {}
-
-        filtered_objects['tasksview'] = [
-            TaskModelView(TaskModel, db.session), 'Contacts / Uid']
-        filtered_objects['messagesview'] = [MessageModelView(
-            MessageModel, db.session), 'Contacts / Uid']
-        self._template_args['filtered_objects'] = filtered_objects
-        return super().edit_view()
-
-    @expose('/details/', methods=('GET',))
-    def details_view(self):
-        filtered_objects = {}
-
-        filtered_objects['tasksview'] = [
-            TaskModelView(TaskModel, db.session), 'Contacts / Uid']
-        filtered_objects['messagesview'] = [MessageModelView(
-            MessageModel, db.session), 'Contacts / Uid']
-        self._template_args['filtered_objects'] = filtered_objects
-        return super().details_view()
+    mainfilter = "Contacts / Uid"
 
 
-class CompanyModelView(EnhancedModelView):
+class CompanyModelView(FilterableMixin, EnhancedModelView):
     form_rules = column_filters = column_details_list = ('name', 'description', 'emails', 'telephones',
                                                          'deals', 'messages', 'tasks', 'comments', 'owner', 'ownerbackup')
 
@@ -173,30 +211,10 @@ class CompanyModelView(EnhancedModelView):
         (MessageModel, {'form_columns': ['id', 'title', 'channel']}),
         (DealModel, {'form_columns': ['id', 'name', 'amount', 'currency', 'deal_type', 'remarks', ]})]
 
-    @expose('/edit/', methods=('GET', 'POST'))
-    def edit_view(self):
-        filtered_objects = {}
-
-        filtered_objects['tasksview'] = [
-            TaskModelView(TaskModel, db.session), 'Companies / Uid']
-        filtered_objects['messagesview'] = [MessageModelView(
-            MessageModel, db.session), 'Companies / Uid']
-        self._template_args['filtered_objects'] = filtered_objects
-        return super().edit_view()
-
-    @expose('/details/', methods=('GET',))
-    def details_view(self):
-        filtered_objects = {}
-
-        filtered_objects['tasksview'] = [
-            TaskModelView(TaskModel, db.session), 'Companies / Uid']
-        filtered_objects['messagesview'] = [MessageModelView(
-            MessageModel, db.session), 'Companies / Uid']
-        self._template_args['filtered_objects'] = filtered_objects
-        return super().details_view()
+    mainfilter = "Companies / Uid"
 
 
-class OrganizationModelView(EnhancedModelView):
+class OrganizationModelView(FilterableMixin, EnhancedModelView):
     form_rules = column_filters = column_details_list = ('name', 'description', 'emails',
                                                          'promoter', 'guardian', 'owner',
                                                          'sprints', 'tasks', 'users', 'messages', 'comments',
@@ -217,28 +235,7 @@ class OrganizationModelView(EnhancedModelView):
          'id', 'title', 'type', 'priority', ]}),
         (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']})
     ]
-
-    @expose('/edit/', methods=('GET', 'POST'))
-    def edit_view(self):
-        filtered_objects = {}
-
-        filtered_objects['tasksview'] = [
-            TaskModelView(TaskModel, db.session), 'Organizations / Uid']
-        filtered_objects['messagesview'] = [MessageModelView(
-            MessageModel, db.session), 'Organizations / Uid']
-        self._template_args['filtered_objects'] = filtered_objects
-        return super().edit_view()
-
-    @expose('/details/', methods=('GET',))
-    def details_view(self):
-        filtered_objects = {}
-
-        filtered_objects['tasksview'] = [
-            TaskModelView(TaskModel, db.session), 'Organizations / Uid']
-        filtered_objects['messagesview'] = [MessageModelView(
-            MessageModel, db.session), 'Organizations / Uid']
-        self._template_args['filtered_objects'] = filtered_objects
-        return super().details_view()
+    mainfilter = "Organizations / Uid"
 
 
 class DealModelView(EnhancedModelView):
@@ -264,12 +261,12 @@ class DealModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-         'id', 'title', 'type', 'priority',]}),
+         'id', 'title', 'type', 'priority', ]}),
         (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']})
     ]
 
 
-class ProjectModelView(EnhancedModelView):
+class ProjectModelView(FilterableMixin, EnhancedModelView):
     column_filters = column_details_list = ('name', 'description', 'start_date', 'deadline',
                                             'promoter', 'sprint', 'tasks', 'guardian',
                                             'users', 'comments', 'messages', 'links',)
@@ -288,32 +285,11 @@ class ProjectModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-         'id', 'title', 'description', 'type', 'priority',]}),
+         'id', 'title', 'description', 'type', 'priority', ]}),
         (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']})
     ]
 
-    @expose('/edit/', methods=('GET', 'POST'))
-    def edit_view(self):
-        filtered_objects = {}
-
-        filtered_objects['tasksview'] = [
-            TaskModelView(TaskModel, db.session), 'Projects / Uid']
-        filtered_objects['messagesview'] = [MessageModelView(
-            MessageModel, db.session), 'Projects / Uid']
-        self._template_args['filtered_objects'] = filtered_objects
-        return super().edit_view()
-
-
-    @expose('/details/', methods=('GET',))
-    def details_view(self):
-        filtered_objects = {}
-
-        filtered_objects['tasksview'] = [
-            TaskModelView(TaskModel, db.session), 'Projects / Uid']
-        filtered_objects['messagesview'] = [MessageModelView(
-            MessageModel, db.session), 'Projects / Uid']
-        self._template_args['filtered_objects'] = filtered_objects
-        return super().details_view()
+    mainfilter = "Projects / Uid"
 
 
 class SprintModelView(EnhancedModelView):
@@ -333,31 +309,12 @@ class SprintModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-         'id', 'title', 'type', 'priority',]}),
+         'id', 'title', 'type', 'priority', ]}),
         (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']})
     ]
 
-    @expose('/edit/', methods=('GET', 'POST'))
-    def edit_view(self):
-        filtered_objects = {}
+    mainfilter = "Sprints / Uid"
 
-        filtered_objects['tasksview'] = [
-            TaskModelView(TaskModel, db.session), 'Sprints / Uid']
-        filtered_objects['messagesview'] = [MessageModelView(
-            MessageModel, db.session), 'Sprints / Uid']
-        self._template_args['filtered_objects'] = filtered_objects
-        return super().edit_view()
-
-    @expose('/details/', methods=('GET',))
-    def details_view(self):
-        filtered_objects = {}
-
-        filtered_objects['tasksview'] = [
-            TaskModelView(TaskModel, db.session), 'Sprints / Uid']
-        filtered_objects['messagesview'] = [MessageModelView(
-            MessageModel, db.session), 'Sprints / Uid']
-        self._template_args['filtered_objects'] = filtered_objects
-        return super().details_view()
 
 class CommentModelView(EnhancedModelView):
     column_filters = column_details_list = ('id', 'name', 'content',
@@ -412,6 +369,7 @@ class TaskModelView(EnhancedModelView):
          'id', 'name', 'content', 'remarks']}),
     ]
 
+
 class MessageModelView(EnhancedModelView):
     form_rules = column_filters = column_details_list = ('id', 'title', 'content', 'channel', 'time_tosend', 'time_sent',
                                                          'company', 'contact', 'organization', 'project', 'sprint', 'deal', 'task')
@@ -427,8 +385,8 @@ class TaskAssignmentModelView(EnhancedModelView):
     column_details_list = ('contact', 'task', 'tasktracking')
     column_list = ('percent_completed', 'contact',
                    'task',)
+
+
 class TaskTrackingModelView(EnhancedModelView):
     column_list = column_details_list = ('remarks',
                                          'time_done',)
-
-    # inline_models = [TaskAssignmentModel]
