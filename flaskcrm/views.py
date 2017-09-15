@@ -64,8 +64,17 @@ def format_description(view, context, model, name):
         return markdown(value)
     return value
 
-formatters = dict(list(zip(["telephones", "emails", "users", "contacts", "organizations", "projects",  "deals", "sprints",
-                            "links", "tasks", "messages"], cycle([format_instrumented_list]))), comments=format_comments, url=format_url, description=format_description)
+def format_emails(view, context, model, name):
+    value = getattr(model, name)
+    out = "<ul>" 
+    for x in value:
+        out += '<li><a href="mailto:{email}">{email}</a></li>'.format(email=x)
+    out += "</ul>"
+    return Markup(out)
+
+
+formatters = dict(list(zip(["telephones", "users", "contacts", "organizations", "projects",  "deals", "sprints",
+                            "links", "tasks", "messages"], cycle([format_instrumented_list]))), comments=format_comments, url=format_url, emails=format_emails, description=format_description)
 
 formatters = {**formatters, **
               dict(list(zip(["created_at", "updated_at", "closed_at", "start_date", "deadline", "eta"], cycle([format_datetime]))))}
