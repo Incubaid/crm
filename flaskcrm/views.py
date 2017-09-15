@@ -45,8 +45,8 @@ def format_comments(view, context, model, name):
         out = "<ul>"
         for x in value:
             if hasattr(x, "admin_view_link"):
-                out += "<li>{commenttitle} {commentcontent}<a href='{commentadminlink}'> Read more...</a></li>".format(
-                    commentadminlink=getattr(x, "admin_view_link")(), commenttitle=x.name, commentcontent=x.content)
+                out += "<li>{commentcontent}<a href='{commentadminlink}'> Read more...</a></li>".format(
+                    commentadminlink=getattr(x, "admin_view_link")(), commentcontent=x.content)
             else:
                 out += str(x)
         out += "</ul>"
@@ -313,16 +313,16 @@ class SprintModelView(EnhancedModelView):
 
 
 class CommentModelView(EnhancedModelView):
-    column_filters = column_details_list = ('id', 'name', 'content',
+    column_filters = column_details_list = ('id', 'content',
                                             'company', 'contact', 'organization', 'project', 'sprint', 'task',
-                                            'link', 'deal', 'sprint', 'remarks')
-    form_rules = ('name', 'content',
+                                            'link', 'deal', 'sprint')
+    form_rules = ( 'content',
                   'company', 'contact', 'organization', 'project', 'sprint', 'task',
-                  'link', 'deal', 'sprint', 'remarks')
-    form_edit_rules = ('name', 'content')
-    column_list = ('id', 'name', 'content')
-    column_searchable_list = ('id', 'name', 'content')
-    column_sortable_list = ('name',)
+                  'link', 'deal', 'sprint')
+    form_edit_rules = ( 'content')
+    column_list = ('id', 'content')
+    column_searchable_list = ('id', 'content')
+    column_sortable_list = ('content',)
 
 
 class LinkModelView(EnhancedModelView):
@@ -352,13 +352,12 @@ class TaskModelView(EnhancedModelView):
                   'remarks')
 
     form_edit_rules = ('title', 'description', 'content', 'remarks',
-                       'type', 'priority', 'eta', 'time_done', 'comments',
-                       'contacts', 'company', 'organization', 'project', 'sprint', 'deal',)
-    column_list = ('id', 'title', 'description', 'contacts', 'eta', 'priority', 'time_done',
+                       'type', 'priority', 'time_done', 'comments')
+    column_list = ('id', 'title', 'type','priority', 'time_done',
                    'organization', 'company', 'project', 'sprint', 'deal')
     column_searchable_list = ('id', 'title', 'description',
-                              'content', 'type', 'priority', 'eta')
-    column_sortable_list = ('eta', 'priority')
+                              'content', 'type', 'priority')
+    column_sortable_list = ( ['priority'])
 
     inline_models = [
         (CommentModel, {'form_columns': [

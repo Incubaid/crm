@@ -393,8 +393,6 @@ class Sprint(db.Model, AdminLinksMixin, UIDMixin):
 class Comment(db.Model, AdminLinksMixin):
     __tablename__ = "comments"
     id = db.Column('comment_id', db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
-    remarks = db.Column(db.Text())  # should be markdown.
     content = db.Column(db.Text())  # should be markdown.
 
     # timestamps
