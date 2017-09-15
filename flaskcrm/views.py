@@ -362,7 +362,7 @@ class TaskModelView(EnhancedModelView):
 
 
 class MessageModelView(EnhancedModelView):
-    form_rules = column_filters = ('id', 'title', 'content', 'channel', 'time_tosend', 'time_sent',
+    form_rules = column_filters = ('title', 'content', 'channel', 'time_tosend', 'time_sent',
                                    'company', 'contact', 'organization', 'project', 'sprint', 'deal', 'task')
     column_details_list = ('id', 'title', 'content', 'company',
                            'contact', 'organization', 'project', 'sprint', 'deal', 'task')
