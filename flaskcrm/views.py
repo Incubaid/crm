@@ -85,30 +85,6 @@ class EnhancedModelView(ModelView):
             if f['operation'] == filter_op:
                 return 'flt%d_%d' % (position, f['index'])
 
-
-def possible_owners():
-    return ContactModel.query.filter(
-        ContactModel.isemployee == True).all()
-
-
-class TelephoneModelView(EnhancedModelView):
-    column_list = column_details_list = (
-        'number', 'contact', 'company',)
-
-    column_filters = (
-        'number', 'contact', 'company',)
-    column_searchable_list = ('number',)
-    column_sortable_list = ('number',)
-
-
-class EmailModelView(EnhancedModelView):
-    form_rules = column_filters = column_list = column_details_list = (
-        'email', 'contact', 'company', 'organization')
-    column_searchable_list = ('email',)
-    column_sortable_list = ('email', )
-
-
-class FilterableMixin:
     @expose('/edit/', methods=('GET', 'POST'))
     def edit_view(self):
         if self.mainfilter:
@@ -162,7 +138,29 @@ class FilterableMixin:
         return super().details_view()
 
 
-class ContactModelView(FilterableMixin, EnhancedModelView):
+def possible_owners():
+    return ContactModel.query.filter(
+        ContactModel.isemployee == True).all()
+
+
+class TelephoneModelView(EnhancedModelView):
+    column_list = column_details_list = (
+        'number', 'contact', 'company',)
+
+    column_filters = (
+        'number', 'contact', 'company',)
+    column_searchable_list = ('number',)
+    column_sortable_list = ('number',)
+
+
+class EmailModelView(EnhancedModelView):
+    form_rules = column_filters = column_list = column_details_list = (
+        'email', 'contact', 'company', 'organization')
+    column_searchable_list = ('email',)
+    column_sortable_list = ('email', )
+
+
+class ContactModelView(EnhancedModelView):
     form_rules = column_details_list = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'message_channels',
                                         'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'isemployee', 'links', 'owner', 'ownerbackup')
     form_edit_rules = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'tasks', 'deals','comments',
@@ -193,7 +191,7 @@ class ContactModelView(FilterableMixin, EnhancedModelView):
     mainfilter = "Contacts / Uid"
 
 
-class CompanyModelView(FilterableMixin, EnhancedModelView):
+class CompanyModelView(EnhancedModelView):
     form_rules = column_filters = column_details_list = ('name', 'description', 'emails', 'telephones',
                                                          'deals', 'messages', 'tasks', 'comments', 'owner', 'ownerbackup')
 
@@ -216,14 +214,18 @@ class CompanyModelView(FilterableMixin, EnhancedModelView):
     mainfilter = "Companies / Uid"
 
 
-class OrganizationModelView(FilterableMixin, EnhancedModelView):
+class OrganizationModelView(EnhancedModelView):
     form_rules = column_filters = column_details_list = ('name', 'description', 'emails', 'owner',
-                                                          'tasks', 'users', 'comments',
+                                                         'tasks', 'users', 'comments',
                                                          'links',)
     form_rules = ('name', 'description', 'emails', 'owner',)
 
     form_edit_rules = ('name', 'description', 'emails',
+<<<<<<< HEAD
                         'owner', 'tasks','comments')
+=======
+                       'owner', 'tasks')
+>>>>>>> 266ef5e80e9e2145197067df18728463f4208888
     column_list = ('id', 'name', 'emails', 'description', 'owner')
     column_searchable_list = ('id', 'name', 'description',)
     column_sortable_list = ('name',)
@@ -266,7 +268,7 @@ class DealModelView(EnhancedModelView):
     ]
 
 
-class ProjectModelView(FilterableMixin, EnhancedModelView):
+class ProjectModelView(EnhancedModelView):
     column_filters = column_details_list = ('name', 'description', 'start_date', 'deadline',
                                             'promoter', 'sprint', 'tasks', 'guardian')
     form_rules = ('name', 'description', 'start_date', 'deadline',
