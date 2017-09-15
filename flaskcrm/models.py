@@ -28,13 +28,14 @@ class UIDMixin:
 
 
 class AdminLinksMixin:
-    ADMIN_EDIT_LINK = "/{modelname}/edit/?id={modelid}&url=/{modelname}/"
+    ADMIN_EDIT_LINK = "/{modelname}/edit/?id={modelid}"
+    #&url=/{modelname}/"
     ADMIN_LIST_LINK = "/{modelname}/"
-    ADMIN_VIEW_LINK = "/{modelname}/details/?id={modelid}&url=/{modelname}/"
-    ADMIN_CREATE_LINK = "/{modelname}/new/?id={modelid}&url=/{modelname}/"
+    ADMIN_VIEW_LINK = "/{modelname}/details/?id={modelid}"#&url=/{modelname}/"
+    ADMIN_CREATE_LINK = "/{modelname}/new/?id={modelid}"#&url=/{modelname}/"
 
-    ADMIN_EDIT_LINK_MODAL = "/{modelname}/edit/?id={modelid}&modal=True"
-    ADMIN_VIEW_LINK_MODAL = "/{modelname}/details/?id={modelid}&modal=True"
+    ADMIN_EDIT_LINK_MODAL = "/{modelname}/edit/?id={modelid}"#&modal=True"
+    ADMIN_VIEW_LINK_MODAL = "/{modelname}/details/?id={modelid}"#&modal=True"
     ADMIN_CREATE_LINK_MODAL = "/{modelname}/new/?url=/{modelname}"
 
     def admin_list_link(self):

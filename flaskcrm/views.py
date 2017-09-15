@@ -180,8 +180,8 @@ class ContactModelView(FilterableMixin, EnhancedModelView):
         (TelephoneModel, {'form_columns': ['id', 'number']}),
         (EmailModel, {'form_columns': ['id', 'email']}),
         (TaskModel, {'form_columns': [
-         'id', 'title', 'description', 'type', 'priority', 'eta']}),
-        (DealModel, {'form_columns': ['id', 'name', 'amount', 'currency', 'deal_type', 'remarks']})]
+         'id', 'title', 'description', 'type', 'priority']}),
+        (DealModel, {'form_columns': ['id', 'name', 'amount', 'currency', 'deal_type']})]
 
     form_args = {
         'isemployee': {'label': 'Employee?'},
@@ -240,9 +240,7 @@ class OrganizationModelView(FilterableMixin, EnhancedModelView):
 
 class DealModelView(EnhancedModelView):
     column_filters = column_details_list = ('id', 'name',  'amount', 'currency', 'deal_type', 'deal_state',
-                                            'contact', 'company', 'owner', 'ownerbackup',
-                                            'tasks', 'remarks', 'messages', 'comments',
-                                            'links', )
+                                            'contact', 'company' )
 
     form_rules = ('name',  'amount', 'currency', 'deal_type', 'deal_state',
                   'contact', 'company', 'owner', 'ownerbackup',
@@ -251,8 +249,7 @@ class DealModelView(EnhancedModelView):
     form_edit_rules = ('name',  'amount', 'currency', 'deal_type', 'deal_state',
                        'contact', 'company', 'owner', 'ownerbackup', 'tasks', 'messages')
 
-    columns_list = ('id', 'name', 'amount', 'currency',
-                    'deal_type', 'deal_state')
+    column_list = ('id', 'name', 'amount', 'currency','deal_type', 'deal_state')
     column_searchable_list = (
         'id', 'name', 'amount', 'currency', 'deal_type', 'deal_state')
 
@@ -262,14 +259,13 @@ class DealModelView(EnhancedModelView):
     inline_models = [
         (TaskModel, {'form_columns': [
          'id', 'title', 'type', 'priority', ]}),
-        (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']})
+        (MessageModel, {'form_columns': ['id', 'title', 'content']})
     ]
 
 
 class ProjectModelView(FilterableMixin, EnhancedModelView):
     column_filters = column_details_list = ('name', 'description', 'start_date', 'deadline',
-                                            'promoter', 'sprint', 'tasks', 'guardian',
-                                            'users', 'comments', 'messages', 'links',)
+                                            'promoter', 'sprint', 'tasks', 'guardian')
     form_rules = ('name', 'description', 'start_date', 'deadline',
                   'promoter', 'sprint', 'tasks', 'guardian',)
 
@@ -367,17 +363,19 @@ class TaskModelView(EnhancedModelView):
     inline_models = [
         (CommentModel, {'form_columns': [
          'id', 'name', 'content', 'remarks']}),
-    ]
+    ]   
 
 
 class MessageModelView(EnhancedModelView):
-    form_rules = column_filters = column_details_list = ('id', 'title', 'content', 'channel', 'time_tosend', 'time_sent',
+    form_rules = column_filters  = ('id', 'title', 'content', 'channel', 'time_tosend', 'time_sent',
                                                          'company', 'contact', 'organization', 'project', 'sprint', 'deal', 'task')
+    column_details_list = ('id', 'title', 'content','company', 'contact', 'organization', 'project', 'sprint', 'deal', 'task')
+
     form_edit_rules = ('title', 'content', 'channel',
                        'time_tosend', 'time_sent',)
-    column_list = ('title', 'content', 'channel', 'time_tosend', 'time_sent',
+    column_list = ('title', 'content',
                    'company', 'contact', 'deal', 'organizaton', 'task', 'project', 'sprint')
-    column_searchable_list = ('title', 'content', 'channel')
+    column_searchable_list = ('title', 'content')
     column_sortable_list = ('title',)
 
 
