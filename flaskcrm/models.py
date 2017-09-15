@@ -486,8 +486,6 @@ class Task(db.Model, AdminLinksMixin, UIDMixin):
     uid = db.Column(db.String(4))
     title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text())  # should be markdown.
-    remarks = db.Column(db.Text())  # should be markdown.
-    content = db.Column(db.Text())  # should be markdown.
     type = db.Column(db.Enum(TaskType), default=TaskType.FEATURE)
     priority = db.Column(db.Enum(TaskPriority), default=TaskPriority.MINOR)
 

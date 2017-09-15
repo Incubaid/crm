@@ -134,15 +134,13 @@ def generate_fixtures():
         return deal
 
     def newcomment():
-        com = Comment(name=fake.sentence(4),
-                      content=fake.paragraph())
+        com = Comment(content=fake.paragraph())
         db.session.add(com)
         return com
 
     def newtask():
-        t = Task(title=fake.sentence(5) + "task", content=fake.paragraph(),
-                 remarks=fake.paragraph())
-        t.comments = [newcomment() for i in range(10)]
+        t = Task(title=fake.sentence(5) + "task", description=fake.paragraph())
+        t.comments = [newcomment() for i in range(5)]
         db.session.add(t)
         return t
 
