@@ -216,7 +216,7 @@ class CompanyModelView(FilterableMixin, EnhancedModelView):
 
 class OrganizationModelView(FilterableMixin, EnhancedModelView):
     form_rules = column_filters = column_details_list = ('name', 'description', 'emails', 'owner',
-                                                         'sprints', 'tasks', 'users', 'comments',
+                                                          'tasks', 'users', 'comments',
                                                          'links',)
     form_rules = ('name', 'description', 'emails', 'owner',)
 
