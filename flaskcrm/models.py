@@ -453,8 +453,17 @@ class TaskPriority(Enum):
     MINOR, NORMAL, URGENT, CRITICAL = range(4)
 
 
-class TaskAssignment(db.Model, AdminLinksMixin):
+class ContactsTasks(db.Model, AdminLinksMixin):
     __tablename__ = 'contacts_tasks'
+    id = db.Column('taskassignment_id', db.Integer,
+                   primary_key=True)
+
+    # relations
+    contact_id = db.Column(db.String, db.ForeignKey("contacts.contact_id"))
+    task_id = db.Column(db.String, db.ForeignKey("tasks.task_id"))
+
+class TaskAssignment(db.Model, AdminLinksMixin):
+    __tablename__ = 'taskassignments'
     id = db.Column('taskassignment_id', db.Integer,
                    primary_key=True)
 
@@ -479,7 +488,6 @@ class TaskAssignment(db.Model, AdminLinksMixin):
     def __str__(self):
 
         return '%s (%s)' % (self.task.title, self.contact.firstname + self.contact.lastname)
-
 
 class Task(db.Model, AdminLinksMixin, UIDMixin):
     __tablename__ = "tasks"
