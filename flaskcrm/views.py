@@ -240,7 +240,7 @@ class OrganizationModelView(FilterableMixin, EnhancedModelView):
 
 class DealModelView(EnhancedModelView):
     column_filters = column_details_list = ('id', 'name',  'amount', 'currency', 'deal_type', 'deal_state',
-                                            'contact', 'company' )
+                                            'contact', 'company')
 
     form_rules = ('name',  'amount', 'currency', 'deal_type', 'deal_state',
                   'contact', 'company', 'owner', 'ownerbackup',
@@ -249,7 +249,8 @@ class DealModelView(EnhancedModelView):
     form_edit_rules = ('name',  'amount', 'currency', 'deal_type', 'deal_state',
                        'contact', 'company', 'owner', 'ownerbackup', 'tasks', 'messages')
 
-    column_list = ('id', 'name', 'amount', 'currency','deal_type', 'deal_state')
+    column_list = ('id', 'name', 'amount', 'currency',
+                   'deal_type', 'deal_state')
     column_searchable_list = (
         'id', 'name', 'amount', 'currency', 'deal_type', 'deal_state')
 
@@ -316,10 +317,10 @@ class CommentModelView(EnhancedModelView):
     column_filters = column_details_list = ('id', 'content',
                                             'company', 'contact', 'organization', 'project', 'sprint', 'task',
                                             'link', 'deal', 'sprint')
-    form_rules = ( 'content',
+    form_rules = ('content',
                   'company', 'contact', 'organization', 'project', 'sprint', 'task',
                   'link', 'deal', 'sprint')
-    form_edit_rules = ( 'content')
+    form_edit_rules = ('content')
     column_list = ('id', 'content')
     column_searchable_list = ('id', 'content')
     column_sortable_list = ('content',)
@@ -342,32 +343,33 @@ class TaskModelView(EnhancedModelView):
                            'company', 'organization', 'project', 'sprint', 'deal',
                            'comments', 'messages')
 
-    column_filters = ('id', 'title', 'description', 'content', 'contacts',
+    column_filters = ('id', 'title', 'description', 'contacts',
                       'type', 'priority', 'eta', 'time_done',
                       'company', 'organization', 'project', 'sprint', 'deal',
                       'comments', 'messages')
-    form_rules = ('title', 'description', 'content',
+    form_rules = ('title', 'description',
                   'type', 'priority', 'eta', 'time_done',
                   'contacts', 'company', 'organization', 'project', 'sprint', 'deal')
 
     form_edit_rules = ('title', 'description',
                        'type', 'priority', 'time_done', 'comments')
-    column_list = ('id', 'title', 'type','priority', 'time_done',
+    column_list = ('id', 'title', 'type', 'priority', 'time_done',
                    'organization', 'company', 'project', 'sprint', 'deal')
     column_searchable_list = ('id', 'title', 'description',
-                              'content', 'type', 'priority')
-    column_sortable_list = ( ['priority'])
+                              'type', 'priority')
+    column_sortable_list = (['priority'])
 
     inline_models = [
         (CommentModel, {'form_columns': [
-         'id', 'name', 'content', 'remarks']}),
-    ]   
+         'id', 'content', ]}),
+    ]
 
 
 class MessageModelView(EnhancedModelView):
-    form_rules = column_filters  = ('id', 'title', 'content', 'channel', 'time_tosend', 'time_sent',
-                                                         'company', 'contact', 'organization', 'project', 'sprint', 'deal', 'task')
-    column_details_list = ('id', 'title', 'content','company', 'contact', 'organization', 'project', 'sprint', 'deal', 'task')
+    form_rules = column_filters = ('id', 'title', 'content', 'channel', 'time_tosend', 'time_sent',
+                                   'company', 'contact', 'organization', 'project', 'sprint', 'deal', 'task')
+    column_details_list = ('id', 'title', 'content', 'company',
+                           'contact', 'organization', 'project', 'sprint', 'deal', 'task')
 
     form_edit_rules = ('title', 'content', 'channel',
                        'time_tosend', 'time_sent',)
