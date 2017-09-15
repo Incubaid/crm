@@ -1,11 +1,15 @@
 from itertools import cycle
 from flask_admin.contrib.sqla import ModelView
+import sqlalchemy
 from sqlalchemy.orm.collections import InstrumentedList
+import flask_admin
 from flask_admin.model import typefmt
+from flask_admin.base import expose
+from flask_admin.form.fields import Select2Field
+from flask_admin.model.form import converts
 from jinja2 import Markup
 from datetime import datetime
 from models import db, TaskAssignment as TaskAssignmentModel, Telephone as TelephoneModel, Email as EmailModel, Contact as ContactModel, Company as CompanyModel, Organization as OrganizationModel, Deal as DealModel, Deal as DealModel, Link as LinkModel, Project as ProjectModel, Sprint as SprintModel, Task as TaskModel, Comment as CommentModel, Message as MessageModel
-from flask_admin.base import expose
 
 
 def format_instrumented_list(view, context, model, name):
@@ -59,13 +63,48 @@ formatters = dict(list(zip(["telephones", "emails", "users", "contacts", "organi
 formatters = {**formatters, **
               dict(list(zip(["created_at", "updated_at", "closed_at", "start_date", "deadline", "eta"], cycle([format_datetime]))))}
 
+class EnumField(Select2Field):
+    def __init__(self, column, **kwargs):
+        assert isinstance(column.type, sqlalchemy.sql.sqltypes.Enum)
+
+        def coercer(value):
+            # coerce incoming value into an enum value
+            if isinstance(value, column.type.enum_class):
+                return value
+            elif isinstance(value, str):
+                return column.type.enum_class[value]
+            else:
+                assert False
+
+        super(EnumField, self).__init__(
+            choices=[(v, v) for v in column.type.enums],
+            coerce=coercer,
+            **kwargs)
+
+    def pre_validate(self, form):
+        # we need to override the default SelectField validation because it
+        # apparently tries to directly compare the field value with the choice
+        # key; it is not clear how that could ever work in cases where the
+        # values and choice keys must be different types
+
+        for (v, _) in self.choices:
+            if self.data == self.coerce(v):
+                break
+        else:
+            raise ValueError(self.gettext('Not a valid choice'))
+
+
+class CustomAdminConverter(flask_admin.contrib.sqla.form.AdminModelConverter):
+    @converts("sqlalchemy.sql.sqltypes.Enum")
+    def conv_enum(self, field_args, **extra):
+        return EnumField(column=extra["column"], **field_args)
 
 class EnhancedModelView(ModelView):
     can_view_details = True
     column_formatters = formatters
     create_modal = True
     edit_modal = True
-
+    model_form_converter = CustomAdminConverter
     mainfilter = ""
 
     form_widget_args = {
