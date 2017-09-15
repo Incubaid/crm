@@ -149,7 +149,7 @@ class Company(db.Model, AdminLinksMixin, UIDMixin):
     uid = db.Column(db.String(4))
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text())  # should be markdown.
-    isuser = db.Column(db.Boolean, default=False)
+    # isuser = db.Column(db.Boolean, default=False)
 
     # timestamps
     created_at = db.Column(
@@ -207,11 +207,11 @@ class Organization(db.Model, AdminLinksMixin, UIDMixin):
 
     links = db.relationship("Link", backref="organization")
     messages = db.relationship("Message", backref="organization")
-    sprints = db.relationship("Sprint", backref="organization")
-    promoter = db.relationship(
-        "Contact", backref="promotedorganizations", uselist=False)
-    guardian = db.relationship(
-        "Contact", backref="guardianedorganizations", uselist=False)
+    # sprints = db.relationship("Sprint", backref="organization")
+    # promoter = db.relationship(
+    #     "Contact", backref="promotedorganizations", uselist=False)
+    # guardian = db.relationship(
+    #     "Contact", backref="guardianedorganizations", uselist=False)
     parent_id = db.Column(db.String(4), db.ForeignKey(
         "organizations.organization_id"))
     owner = db.relationship('Organization', primaryjoin=(

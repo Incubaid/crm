@@ -215,15 +215,13 @@ class CompanyModelView(FilterableMixin, EnhancedModelView):
 
 
 class OrganizationModelView(FilterableMixin, EnhancedModelView):
-    form_rules = column_filters = column_details_list = ('name', 'description', 'emails',
-                                                         'promoter', 'guardian', 'owner',
-                                                         'sprints', 'tasks', 'users', 'messages', 'comments',
+    form_rules = column_filters = column_details_list = ('name', 'description', 'emails', 'owner',
+                                                         'sprints', 'tasks', 'users', 'comments',
                                                          'links',)
-    form_rules = ('name', 'description', 'emails',
-                  'promoter', 'guardian', 'owner',)
+    form_rules = ('name', 'description', 'emails', 'owner',)
 
     form_edit_rules = ('name', 'description', 'emails',
-                       'promoter', 'guardian', 'owner', 'tasks', 'messages')
+                        'owner', 'tasks')
     column_list = ('id', 'name', 'emails', 'description', 'owner')
     column_searchable_list = ('id', 'name', 'description',)
     column_sortable_list = ('name',)
