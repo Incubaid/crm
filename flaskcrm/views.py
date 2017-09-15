@@ -7,7 +7,7 @@ from flask_admin.model import typefmt
 from flask_admin.base import expose
 from flask_admin.form.fields import Select2Field
 from flask_admin.model.form import converts
-from flask.ext.misaka import markdown
+from flask_misaka import markdown
 from jinja2 import Markup
 from datetime import datetime
 from models import db, TaskAssignment as TaskAssignmentModel, Telephone as TelephoneModel, Email as EmailModel, Contact as ContactModel, Company as CompanyModel, Organization as OrganizationModel, Deal as DealModel, Deal as DealModel, Link as LinkModel, Project as ProjectModel, Sprint as SprintModel, Task as TaskModel, Comment as CommentModel, Message as MessageModel
