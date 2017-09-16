@@ -9,7 +9,7 @@ from flask_admin.form.fields import Select2Field
 from flask_admin.model.form import converts
 from jinja2 import Markup
 from datetime import datetime
-from models import db, TaskAssignment as TaskAssignmentModel, Telephone as TelephoneModel, Email as EmailModel, Contact as ContactModel, Company as CompanyModel, Organization as OrganizationModel, Deal as DealModel, Deal as DealModel, Link as LinkModel, Project as ProjectModel, Sprint as SprintModel, Task as TaskModel, Comment as CommentModel, Message as MessageModel
+from models import db, Telephone as TelephoneModel, Email as EmailModel, Contact as ContactModel, Company as CompanyModel, Organization as OrganizationModel, Deal as DealModel, Deal as DealModel, Link as LinkModel, Project as ProjectModel, Sprint as SprintModel, Task as TaskModel, Comment as CommentModel, Message as MessageModel
 
 
 def format_instrumented_list(view, context, model, name):
@@ -208,7 +208,7 @@ class ContactModelView(EnhancedModelView):
     column_filters = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'message_channels',
                       'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
     column_searchable_list = ('firstname', 'lastname',)
-    column_list = ('id', 'firstname', 'lastname', 'emails',
+    column_list = ('firstname', 'lastname', 'emails',
                    'telephones', 'description')
 
     column_sortable_list = ('firstname', 'lastname')
@@ -239,7 +239,7 @@ class CompanyModelView(EnhancedModelView):
                        'comments', 'owner', 'ownerbackup')
 
     column_searchable_list = ('id', 'name', 'description',)
-    column_list = ('id', 'name', 'description', 'emails', 'telephones')
+    column_list = ( 'name', 'description')
     column_sortable_list = ('name', )
 
     inline_models = [
@@ -264,7 +264,7 @@ class OrganizationModelView(EnhancedModelView):
     form_edit_rules = ('name', 'description', 'emails',
                        'owner', 'tasks')
 
-    column_list = ('id', 'name', 'emails', 'description', 'owner')
+    column_list = ('name', 'emails', 'description', 'owner')
     column_searchable_list = ('id', 'name', 'description',)
     column_sortable_list = ('name',)
 
@@ -290,7 +290,7 @@ class DealModelView(EnhancedModelView):
     form_edit_rules = ('name',  'amount', 'currency', 'deal_type', 'deal_state',
                        'contact', 'company', 'owner', 'ownerbackup', 'tasks', 'messages', 'comments')
 
-    column_list = ('id', 'name', 'amount', 'currency',
+    column_list = ( 'name', 'amount', 'currency',
                    'deal_type', 'deal_state')
     column_searchable_list = (
         'id', 'name', 'amount', 'currency', 'deal_type', 'deal_state')
@@ -317,7 +317,7 @@ class ProjectModelView(EnhancedModelView):
                        'promoter', 'guardian',
                        'users', 'tasks', 'messages', 'comments')
 
-    column_list = ('id', 'name', 'description', 'start_date', 'deadline', )
+    column_list = ( 'name', 'description', 'start_date', 'deadline', )
     column_searchable_list = (
         'id', 'name', 'description', 'start_date', 'deadline')
     column_sortable_list = ('name', 'start_date', 'deadline')
@@ -342,7 +342,7 @@ class SprintModelView(EnhancedModelView):
 
     form_edit_rules = ('name', 'description', 'start_date', 'deadline',
                        'promoter', 'guardian', 'parent', 'users', 'tasks', 'messages', 'comments')
-    column_list = ('id', 'name', 'description', 'start_date', 'deadline')
+    column_list = ('name', 'description', 'start_date', 'deadline')
     column_searchable_list = (
         'id', 'name', 'description', 'start_date', 'deadline')
     column_sortable_list = ('name', 'start_date', 'deadline')
@@ -398,7 +398,7 @@ class TaskModelView(EnhancedModelView):
 
     form_edit_rules = ('title', 'description',
                        'type', 'priority', 'time_done', 'comments')
-    column_list = ('id', 'title', 'type', 'priority', 'time_done',
+    column_list = ('title', 'type', 'priority',
                    'organization', 'company', 'project', 'sprint', 'deal')
     column_searchable_list = ('id', 'title', 'description',
                               'type', 'priority')

@@ -1,5 +1,5 @@
 from models import db
-from models import Telephone, Email, Contact, Company, Organization, Deal, Link, Project, Sprint, Task, Comment, Message
+from models import *
 from faker import Faker
 
 fake = Faker()
@@ -21,7 +21,7 @@ def generate_fixtures():
 
         return l
 
-    def newuser():
+    def newcontact():
         phonenumber = fake.phone_number()
         firstname = fake.first_name()
         lastname = fake.last_name()
@@ -34,6 +34,24 @@ def generate_fixtures():
 
         u.comments = [newcomment() for i in range(2)]
         u.tasks = [newtask() for i in range(2)]
+        u.messages = [newmsg() for i in range(2)]
+        u.links = [newlink() for i in range(3)]
+        db.session.add(u)
+        return u
+
+
+    def newuser():
+        phonenumber = fake.phone_number()
+        firstname = fake.first_name()
+        lastname = fake.last_name()
+        phoneobj = Telephone(number=phonenumber)
+        email = newemail()
+        u = User(firstname=firstname, lastname=lastname)
+        u.telephones = [phoneobj]
+        u.emails = [email]
+        db.session.add(phoneobj)
+
+        u.comments = [newcomment() for i in range(2)]
         u.messages = [newmsg() for i in range(2)]
         u.links = [newlink() for i in range(3)]
         db.session.add(u)

@@ -7,15 +7,13 @@ from flask_admin import Admin
 from flask_graphql import GraphQLView
 from models import db
 from schema import schema
-from models import Telephone, Email, Contact, Company, Organization, Deal, Link, Project, Sprint, Task, Comment, Message, TaskAssignment, TaskTracking
+from models import *
 from views import *
 from flask_admin.helpers import get_url
 from flask_script import Manager
 
-dbmodels = [Company, Contact, Organization, Deal,
-            Project, Sprint, Task, TaskAssignment, TaskTracking]
-extramodels = [Telephone, Email,
-               Link, Comment, Message]
+dbmodels = [Company, Contact, Organization, Deal,Project, Sprint, Task]
+extramodels = [Telephone, Email,Link, Comment, Message]
 
 app = Flask(__name__)
 manager = Manager(app)

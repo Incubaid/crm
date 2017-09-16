@@ -5,8 +5,10 @@ from graphene_sqlalchemy import SQLAlchemyObjectType
 from models import Telephone as TelephoneModel, Email as EmailModel,\
     Contact as ContactModel, Company as CompanyModel, Organization as OrganizationModel,\
     Deal as DealModel, Project as ProjectModel, Sprint as SprintModel,\
-    Task as TaskModel, TaskAssignment as TaskAssignmentModel, TaskTracking as TaskTrackingModel,\
+    Task as TaskModel, TaskTracking as TaskTrackingModel,\
     Link as LinkModel, Comment as CommentModel, Message as MessageModel
+
+    #, TaskAssignment as TaskAssignmentModel,\
 
 
 class Telephone(SQLAlchemyObjectType):
@@ -49,12 +51,6 @@ class Task(SQLAlchemyObjectType):
 
     class Meta:
         model = TaskModel
-
-
-class TaskAssignment(SQLAlchemyObjectType):
-
-    class Meta:
-        model = TaskAssignmentModel
 
 
 class TaskTracking(SQLAlchemyObjectType):
@@ -144,14 +140,6 @@ class Query(graphene.ObjectType):
         query = Task.get_query(context)
         return query.all()
 
-    def resolve_taskassignments(self, args, context, info):
-        query = TaskAssignment.get_query(context)
-        return query.all()
-
-    def resolve_tasktrackings(self, args, context, info):
-        query = TaskTracking.get_query(context)
-        return query.all()
-
     def resolve_comments(self, args, context, info):
         query = Comment.get_query(context)
         return query.all()
@@ -166,4 +154,4 @@ class Query(graphene.ObjectType):
 
 
 schema = graphene.Schema(query=Query, types=[
-                         Telephone, Email, Contact, Company, Organization, Deal, Project, Task, TaskAssignment, TaskTracking, Link, Sprint, Comment, Message])
+                         Telephone, Email, Contact, Company, Organization, Deal, Project, Task, Link, Sprint, Comment, Message])
