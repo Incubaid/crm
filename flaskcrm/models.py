@@ -114,7 +114,7 @@ class Contact(db.Model, AdminLinksMixin, Base):
     __tablename__ = "contacts"
     firstname = db.Column(db.String(15), nullable=False)
     lastname = db.Column(db.String(15))
-    description = db.Column(db.Text())  # should be markdown.
+    description = db.Column(db.Text()) 
     message_channels = db.Column(db.String(20), default="")
 
     # relations
@@ -128,9 +128,7 @@ class Contact(db.Model, AdminLinksMixin, Base):
 
     owner_id = db.Column(db.String(5), db.ForeignKey('users.id')) 
     ownerbackup_id = db.Column(db.String(5), db.ForeignKey('users.id')) 
-    
-    parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'))
-    
+    parent_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 
     def __str__(self):
@@ -140,8 +138,8 @@ class Contact(db.Model, AdminLinksMixin, Base):
 
 class CompaniesContacts(db.Model, AdminLinksMixin,Base):
     __tablename__ = 'companies_contacts'
-    company_id = db.Column(db.String(5), db.ForeignKey('companies.id'))  # , ondelete='CASCADE'))
-    contact_id = db.Column(db.String(5), db.ForeignKey('contacts.id'))  # , ondelete='CASCADE'))
+    company_id = db.Column(db.String(5), db.ForeignKey('companies.id')) 
+    contact_id = db.Column(db.String(5), db.ForeignKey('contacts.id')) 
 
 
 class Company(db.Model, AdminLinksMixin, Base):
@@ -162,7 +160,7 @@ class Company(db.Model, AdminLinksMixin, Base):
         backref=db.backref("companies"), lazy="dynamic")
 
     owner_id = db.Column(db.String(5), db.ForeignKey('users.id')) 
-    ownerbackup_id = db.Column(db.String(5), db.ForeignKey('users.id')) 
+    ownerbackup_id = db.Column(db.String(5), db.ForeignKey('users.id'))
 
     def __str__(self):
         return self.name
@@ -179,24 +177,28 @@ class User(db.Model, AdminLinksMixin, Base):
     telephones = db.relationship("Telephone", backref="user")
     emails = db.relationship("Email", backref="user")
 
-    organizations = db.relationship("UsersOrganizations", backref="users")
+    # organizations = db.relationship("UsersOrganizations", backref="users")
 
     comments = db.relationship("Comment", backref="user")
     messages = db.relationship("Message", backref="user")
     links = db.relationship("Link", backref="user")
 
-    ownsContacts = db.relationship("Contact", backref="owner",foreign_keys=[Contact.owner_id])
-    ownsAsbackupContacts = db.relationship("Contact", backref="ownerbackup",foreign_keys=[Contact.ownerbackup_id])
+    ownsContacts = db.relationship("Contact", backref="owner", primaryjoin=("User.id==Contact.owner_id"))
+    ownsAsBackupContacts = db.relationship("Contact", backref="ownerbackup", primaryjoin="User.id==Contact.ownerbackup_id")
 
-    ownsCompanies = db.relationship("Company", backref="owner",foreign_keys=[Company.owner_id])
-    ownsAsbackupCompanies= db.relationship("Company", backref="ownerbackup",foreign_keys=[Company.ownerbackup_id])
+    ownsCompanies = db.relationship("Company", backref="owner", primaryjoin=("User.id==Company.owner_id"))
+    ownsAsBackupCompanies = db.relationship("Company", backref="ownerbackup", primaryjoin="User.id==Company.ownerbackup_id")
 
-    ownsSprints = db.relationship("Sprint", backref="owner")
+    ownsOrganizations = db.relationship("Organization", backref="owner", primaryjoin=("User.id==Organization.owner_id"))
+    ownsSprints = db.relationship("Sprint", backref="owner", primaryjoin=("User.id==Sprint.owner_id"))
 
-    ownsOrganizations = db.relationship("Organization", backref="owner")
 
-    promoterProjects = db.relationship("Project", backref="promoter")
-    guardianProjects = db.relationship("Project", backref="guardian")
+    project_promoter_id = db.Column(
+        db.Integer, db.ForeignKey("projects.promoter_id"))
+    project_guardian_id = db.Column(
+        db.Integer, db.ForeignKey("projects.guardian_id"))       
+    promoterProjects = db.relationship("Project", backref="promoter", primaryjoin="User.id==Project.promoter_id")
+    guardianProjects = db.relationship("Project", backref="guardian", primaryjoin="User.id==Project.guardian_id")
 
     def __str__(self):
         return "{} {}".format(self.firstname, self.lastname)
@@ -204,13 +206,19 @@ class User(db.Model, AdminLinksMixin, Base):
 #  manytomany through table.
 class UsersOrganizations(db.Model, AdminLinksMixin,Base):
     __tablename__ = 'users_organizations'
-    user_id = db.Column(db.String(5), db.ForeignKey('users.id'))  # , ondelete='CASCADE'))
-    organization_id = db.Column(db.String(5), db.ForeignKey('organizations.id'))  # , ondelete='CASCADE'))
+    user_id = db.Column(db.String(5), db.ForeignKey('users.id'))
+    organization_id = db.Column(db.String(5), db.ForeignKey('organizations.id')) 
 
 class UsersSprints(db.Model, AdminLinksMixin,Base):
     __tablename__ = 'users_sprints'
-    user_id = db.Column(db.String(5), db.ForeignKey('users.id'))  # , ondelete='CASCADE'))
-    sprint_id = db.Column(db.String(5), db.ForeignKey('sprints.id'))  # , ondelete='CASCADE'))
+    user_id = db.Column(db.String(5), db.ForeignKey('users.id'))
+    sprint_id = db.Column(db.String(5), db.ForeignKey('sprints.id')) 
+
+class ContactsSprints(db.Model, AdminLinksMixin,Base):
+    __tablename__ = 'contacts_sprints'
+    contact_id = db.Column(db.String(5), db.ForeignKey('contacts.id'))
+    sprint_id = db.Column(db.String(5), db.ForeignKey('sprints.id')) 
+
 
 
 class Organization(db.Model, AdminLinksMixin, Base):
@@ -225,14 +233,14 @@ class Organization(db.Model, AdminLinksMixin, Base):
     comments = db.relationship("Comment", backref="organization")
     
     users = db.relationship("User", secondary="users_organizations",
-        backref=db.backref("organizationss"), lazy="dynamic")
+        backref=db.backref("organizations"), lazy="dynamic")
 
     links = db.relationship("Link", backref="organization")
     messages = db.relationship("Message", backref="organization")
 
+    owner_id = db.Column(db.String(5), db.ForeignKey('users.id')) 
     parent_id = db.Column(db.String(5), db.ForeignKey("organizations.id"))
 
-    owner_id = db.Column(db.String(5), db.ForeignKey('users.id')) 
 
     def __str__(self):
         return self.name
@@ -277,13 +285,13 @@ class Deal(db.Model, AdminLinksMixin, Base):
 #  manytomany through table.
 class UsersProjects(db.Model,AdminLinksMixin,Base):
     __tablename__ = 'users_projects'
-    user_id = db.Column(db.String(5), db.ForeignKey('users.id'))  # , ondelete='CASCADE'))
-    project_id = db.Column(db.String(5), db.ForeignKey('projects.id'))  # , ondelete='CASCADE'))
+    user_id = db.Column(db.String(5), db.ForeignKey('users.id')) 
+    project_id = db.Column(db.String(5), db.ForeignKey('projects.id'))
 
 class ContactsProjects(db.Model,AdminLinksMixin,Base):
     __tablename__ = 'contacts_projects'
-    contact_id = db.Column(db.String(5), db.ForeignKey('contacts.id'))  # , ondelete='CASCADE'))
-    project_id = db.Column(db.String(5), db.ForeignKey('projects.id'))  # , ondelete='CASCADE'))
+    contact_id = db.Column(db.String(5), db.ForeignKey('contacts.id'))
+    project_id = db.Column(db.String(5), db.ForeignKey('projects.id'))
 
 
 class Project(db.Model, AdminLinksMixin, Base):
@@ -298,18 +306,17 @@ class Project(db.Model, AdminLinksMixin, Base):
     # relations
     comments = db.relationship("Comment", backref="project")
     links = db.relationship("Link", backref="project")
-
     tasks = db.relationship("Task", backref="project")
-
     messages = db.relationship("Message", backref="project")
 
+    sprint_id = db.Column(db.String(5), db.ForeignKey('sprints.id')) 
+    sprints = db.relationship("Sprint", backref="project", primaryjoin=("Project.id==Sprint.project_id"))
     # users = db.relationship("User", secondary="users_projects",backref=db.backref("users"))
-
-    contacts = db.relationship("Contact", secondary="contacts_projects",backref=db.backref("contacts"))
+    contacts = db.relationship("Contact", secondary="contacts_projects",backref=db.backref("projects"))
 
     # #promoter/guardian
-    promoter = db.Column(db.String(5), db.ForeignKey('users.id')) 
-    guardian = db.Column(db.String(5), db.ForeignKey('users.id')) 
+    promoter_id = db.Column(db.String(5), db.ForeignKey('users.id')) 
+    guardian_id = db.Column(db.String(5), db.ForeignKey('users.id')) 
 
     def percentage_done():
         pass
@@ -327,13 +334,15 @@ class Sprint(db.Model, AdminLinksMixin, Base):
 
     # relations
     # users = db.relationship("User", secondary="users_sprints",backref=db.backref("userss"))
+    contacts = db.relationship("Contact", secondary="contacts_sprints",backref=db.backref("sprints"))
 
     tasks = db.relationship("Task", backref="sprint")
     comments = db.relationship("Comment", backref="sprint")
     links = db.relationship("Link", backref="sprint")
     messages = db.relationship("Message", backref="sprint")
 
-    owner = db.Column(db.String(5), db.ForeignKey('users.id'))
+    owner_id = db.Column(db.String(5), db.ForeignKey('users.id')) 
+    project_id = db.Column(db.String(5), db.ForeignKey('projects.id')) 
 
     
     def percentage_done():
@@ -407,7 +416,7 @@ class Task(db.Model, AdminLinksMixin, Base):
     __tablename__ = "tasks"
 
     title = db.Column(db.String(255), nullable=False)
-    description = db.Column(db.Text())  # should be markdown.
+    description = db.Column(db.Text())
     type = db.Column(db.Enum(TaskType), default=TaskType.FEATURE)
     priority = db.Column(db.Enum(TaskPriority), default=TaskPriority.MINOR)
     state = db.Column(db.Enum(TaskState), default=TaskState.NEW)
@@ -456,8 +465,8 @@ class Task(db.Model, AdminLinksMixin, Base):
 class Message(db.Model, AdminLinksMixin,Base):
     __tablename__ = "messages"
     title = db.Column(db.String(255), nullable=False)
-    content = db.Column(db.Text())  # should be markdown.
-    channel = db.Column(db.String(255))  # should be markdown.
+    content = db.Column(db.Text()) 
+    channel = db.Column(db.String(255)) 
     time_tosend = db.Column(db.TIMESTAMP)
     time_sent = db.Column(db.TIMESTAMP)
 

@@ -12,7 +12,7 @@ from views import *
 from flask_admin.helpers import get_url
 from flask_script import Manager
 
-dbmodels = [Company, Contact, Organization, Deal,Project, Sprint, Task]
+dbmodels = [User, Company, Contact, Organization, Deal,Project, Sprint, Task]
 extramodels = [Telephone, Email,Link, Comment, Message]
 
 app = Flask(__name__)
