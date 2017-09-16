@@ -13,31 +13,6 @@ db.session.autocommit = True
 def generate_id(mapper, connect, target):
     target.generate_id()
 
-class Base:
-
-    id = db.Column(db.String(5), primary_key=True)
-    
-    # timestamps
-    created_at = db.Column(
-        db.TIMESTAMP, default=datetime.utcnow, nullable=False)
-    updated_at = db.Column(db.TIMESTAMP, default=datetime.utcnow,
-                           onupdate=datetime.utcnow, nullable=False)    
-
-    def _newuid(self):
-        uid = ''.join(random.sample(string.ascii_lowercase + string.digits, 5))
-        return uid
-
-    def generate_id(self):
-        print("##GENID:%s"%self)
-        if not self.id:            
-            while True:
-                uid = self._newuid()
-                currentobjs = self.query.filter_by(id=uid)
-                if currentobjs.count() == 0:
-                    self.id = uid
-                    return
-
-
 class AdminLinksMixin:
     ADMIN_EDIT_LINK = "/{modelname}/edit/?id={modelid}"
     #&url=/{modelname}/"
@@ -87,7 +62,32 @@ class AdminLinksMixin:
         return self.id
 
 
-class Telephone(db.Model, AdminLinksMixin,Base):
+class Base(AdminLinksMixin):
+
+    id = db.Column(db.String(5), primary_key=True)
+    # timestamps
+    created_at = db.Column(
+        db.TIMESTAMP, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.TIMESTAMP, default=datetime.utcnow,
+                           onupdate=datetime.utcnow, nullable=False)    
+
+    def _newuid(self):
+        uid = ''.join(random.sample(string.ascii_lowercase + string.digits, 5))
+        return uid
+
+    def generate_id(self):
+        print("##GENID:{}".format(str(self)))
+        if not self.id:            
+            while True:
+                uid = self._newuid()
+                currentobjs = self.query.filter_by(id=uid)
+                if currentobjs.count() == 0:
+                    self.id = uid
+                    return
+
+
+
+class Telephone(db.Model, Base):
     __tablename__ = "telephones"
     number = db.Column(db.String(20), nullable=False)
     contact_id = db.Column(db.String(5), db.ForeignKey("contacts.id"))
@@ -98,7 +98,7 @@ class Telephone(db.Model, AdminLinksMixin,Base):
         return self.number
 
 
-class Email(db.Model, AdminLinksMixin,Base):
+class Email(db.Model, Base):
     __tablename__ = "emails"
     email = db.Column(db.String(150), nullable=False)
     contact_id = db.Column(db.String(5), db.ForeignKey("contacts.id"))
@@ -110,7 +110,7 @@ class Email(db.Model, AdminLinksMixin,Base):
         return self.email
 
 
-class Contact(db.Model, AdminLinksMixin, Base):
+class Contact(db.Model, Base):
     __tablename__ = "contacts"
     firstname = db.Column(db.String(15), nullable=False)
     lastname = db.Column(db.String(15))
@@ -136,13 +136,13 @@ class Contact(db.Model, AdminLinksMixin, Base):
 
 
 
-class CompaniesContacts(db.Model, AdminLinksMixin,Base):
+class CompaniesContacts(db.Model, Base):
     __tablename__ = 'companies_contacts'
     company_id = db.Column(db.String(5), db.ForeignKey('companies.id')) 
     contact_id = db.Column(db.String(5), db.ForeignKey('contacts.id')) 
 
 
-class Company(db.Model, AdminLinksMixin, Base):
+class Company(db.Model, Base):
     __tablename__ = "companies"
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text())  # should be markdown.
@@ -165,7 +165,7 @@ class Company(db.Model, AdminLinksMixin, Base):
     def __str__(self):
         return self.name
 
-class User(db.Model, AdminLinksMixin, Base):
+class User(db.Model, Base):
     __tablename__ = "users"
 
     firstname = db.Column(db.String(15), nullable=False)
@@ -204,24 +204,24 @@ class User(db.Model, AdminLinksMixin, Base):
         return "{} {}".format(self.firstname, self.lastname)
 
 #  manytomany through table.
-class UsersOrganizations(db.Model, AdminLinksMixin,Base):
+class UsersOrganizations(db.Model, Base):
     __tablename__ = 'users_organizations'
     user_id = db.Column(db.String(5), db.ForeignKey('users.id'))
     organization_id = db.Column(db.String(5), db.ForeignKey('organizations.id')) 
 
-class UsersSprints(db.Model, AdminLinksMixin,Base):
+class UsersSprints(db.Model, Base):
     __tablename__ = 'users_sprints'
     user_id = db.Column(db.String(5), db.ForeignKey('users.id'))
     sprint_id = db.Column(db.String(5), db.ForeignKey('sprints.id')) 
 
-class ContactsSprints(db.Model, AdminLinksMixin,Base):
+class ContactsSprints(db.Model, Base):
     __tablename__ = 'contacts_sprints'
     contact_id = db.Column(db.String(5), db.ForeignKey('contacts.id'))
     sprint_id = db.Column(db.String(5), db.ForeignKey('sprints.id')) 
 
 
 
-class Organization(db.Model, AdminLinksMixin, Base):
+class Organization(db.Model, Base):
     __tablename__ = "organizations"
 
     name = db.Column(db.String(255), nullable=False)
@@ -258,7 +258,7 @@ class DealCurrency(Enum):
     USD, EUR, AED, GBP = range(4)
 
 
-class Deal(db.Model, AdminLinksMixin, Base):
+class Deal(db.Model, Base):
     __tablename__ = "deals"
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text())  # should be markdown.
@@ -283,18 +283,18 @@ class Deal(db.Model, AdminLinksMixin, Base):
 
 
 #  manytomany through table.
-class UsersProjects(db.Model,AdminLinksMixin,Base):
+class UsersProjects(db.Model, Base):
     __tablename__ = 'users_projects'
     user_id = db.Column(db.String(5), db.ForeignKey('users.id')) 
     project_id = db.Column(db.String(5), db.ForeignKey('projects.id'))
 
-class ContactsProjects(db.Model,AdminLinksMixin,Base):
+class ContactsProjects(db.Model, Base):
     __tablename__ = 'contacts_projects'
     contact_id = db.Column(db.String(5), db.ForeignKey('contacts.id'))
     project_id = db.Column(db.String(5), db.ForeignKey('projects.id'))
 
 
-class Project(db.Model, AdminLinksMixin, Base):
+class Project(db.Model, Base):
     __tablename__ = "projects"
 
     name = db.Column(db.String(255), nullable=False)
@@ -325,7 +325,7 @@ class Project(db.Model, AdminLinksMixin, Base):
         return self.name
 
 
-class Sprint(db.Model, AdminLinksMixin, Base):
+class Sprint(db.Model, Base):
     __tablename__ = "sprints"
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text())  # should be markdown.
@@ -361,7 +361,7 @@ class Sprint(db.Model, AdminLinksMixin, Base):
         return self.name
 
 
-class Comment(db.Model, AdminLinksMixin,Base):
+class Comment(db.Model, Base):
     __tablename__ = "comments"
 
     content = db.Column(db.Text())  # should be markdown.
@@ -381,7 +381,7 @@ class Comment(db.Model, AdminLinksMixin,Base):
         return self.content
 
 
-class Link(db.Model, AdminLinksMixin,Base):
+class Link(db.Model, Base):
     __tablename__ = "links"
 
     url = db.Column(db.String(255), nullable=False)
@@ -412,7 +412,7 @@ class TaskPriority(Enum):
 class TaskState(Enum):
     NEW, PROGRESS, QUESTION, VERIFICATION, CLOSED = range(5)
 
-class Task(db.Model, AdminLinksMixin, Base):
+class Task(db.Model, Base):
     __tablename__ = "tasks"
 
     title = db.Column(db.String(255), nullable=False)
@@ -462,7 +462,7 @@ class Task(db.Model, AdminLinksMixin, Base):
 #     TELEGRAM, EMAIL, SMS, INTERCOM = range(4)
 
 
-class Message(db.Model, AdminLinksMixin,Base):
+class Message(db.Model, Base):
     __tablename__ = "messages"
     title = db.Column(db.String(255), nullable=False)
     content = db.Column(db.Text()) 
@@ -485,7 +485,7 @@ class Message(db.Model, AdminLinksMixin,Base):
         return self.title
 
 
-class TaskTracking(db.Model, AdminLinksMixin,Base):
+class TaskTracking(db.Model, Base):
     __tablename__ = "tasktrackings"
 
     remarks = db.Column(db.Text())  # should be markdown.
