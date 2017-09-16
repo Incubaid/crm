@@ -265,7 +265,7 @@ class CompanyModelView(EnhancedModelView):
          'id', 'title', 'description', 'type', 'priority', ]}),
         (MessageModel, {'form_columns': ['id', 'title', 'channel']}),
         (DealModel, {'form_columns': [
-         'id', 'name', 'amount', 'currency', 'deal_type', 'remarks', ]}),
+         'id', 'name', 'amount', 'currency', 'deal_type', 'description', ]}),
         (CommentModel, {'form_columns': ['id', 'content']})]
 
     mainfilter = "Companies / Uid"
