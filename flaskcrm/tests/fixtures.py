@@ -47,30 +47,12 @@ def generate_fixtures():
         phoneobj = Telephone(number=phonenumber)
         email = newemail()
         u = User(firstname=firstname, lastname=lastname)
+        u.description = fake.paragraph()
         u.telephones = [phoneobj]
         u.emails = [email]
         db.session.add(phoneobj)
 
         u.comments = [newcomment() for i in range(2)]
-        u.messages = [newmsg() for i in range(2)]
-        u.links = [newlink() for i in range(3)]
-        db.session.add(u)
-        return u
-
-    def newemployee():
-        phonenumber = fake.phone_number()
-        firstname = fake.first_name()
-        lastname = fake.last_name()
-        phoneobj = Telephone(number=phonenumber)
-        email = newemail()
-        u = Contact(firstname=firstname, lastname=lastname)
-        u.telephones = [phoneobj]
-        u.emails = [email]
-        u.isemployee = True
-        db.session.add(phoneobj)
-
-        u.comments = [newcomment() for i in range(2)]
-        u.tasks = [newtask() for i in range(2)]
         u.messages = [newmsg() for i in range(2)]
         u.links = [newlink() for i in range(3)]
         db.session.add(u)
@@ -169,12 +151,25 @@ def generate_fixtures():
 
     for i in range(5):
         u = newuser()
-        tu = newemployee()
+        db.session.commit()
+
+        tu = newcontact()
+        db.session.commit()
+
         com = newcompany()
+        db.session.commit()
+
         proj = newproj()
+        db.session.commit()
+
         org = neworg()
+        db.session.commit()
+
         deal = newdeal()
+        db.session.commit()
+
         sprint = newsprint()
+        db.session.commit()
 
     db.session.commit()
 

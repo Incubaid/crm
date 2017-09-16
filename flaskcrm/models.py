@@ -28,15 +28,14 @@ class Base:
         return uid
 
     def generate_id(self):
-        if not self.id:
-            uid = self._newuid()
+        print("##GENID:%s"%self)
+        if not self.id:            
             while True:
+                uid = self._newuid()
                 currentobjs = self.query.filter_by(id=uid)
                 if currentobjs.count() == 0:
                     self.id = uid
-                    # self.uid = uid
                     return
-                uid = self._newuid()
 
 
 class AdminLinksMixin:
@@ -252,15 +251,13 @@ class Deal(db.Model, AdminLinksMixin, Base):
 
 
 #  manytomany through table.
-class UsersProjects(db.Model):
+class UsersProjects(db.Model,Base):
     __tablename__ = 'users_projects'
-    id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(5), db.ForeignKey('users.id'))  # , ondelete='CASCADE'))
     project_id = db.Column(db.String(5), db.ForeignKey('projects.id'))  # , ondelete='CASCADE'))
 
-class ContactsProjects(db.Model):
+class ContactsProjects(db.Model,Base):
     __tablename__ = 'contacts_projects'
-    id = db.Column(db.Integer, primary_key=True)
     contact_id = db.Column(db.String(5), db.ForeignKey('contacts.id'))  # , ondelete='CASCADE'))
     project_id = db.Column(db.String(5), db.ForeignKey('projects.id'))  # , ondelete='CASCADE'))
 
@@ -282,7 +279,7 @@ class Project(db.Model, AdminLinksMixin, Base):
 
     messages = db.relationship("Message", backref="project")
 
-    users = db.relationship("User", secondary="users_projects",backref=db.backref("users"))
+    # users = db.relationship("User", secondary="users_projects",backref=db.backref("users"))
 
     contacts = db.relationship("Contact", secondary="contacts_projects",backref=db.backref("contacts"))
 
@@ -305,8 +302,7 @@ class Sprint(db.Model, AdminLinksMixin, Base):
     deadline = db.Column(db.TIMESTAMP)
 
     # relations
-    users = db.relationship("User", secondary="users_sprints",
-                            backref=db.backref("userss"))
+    # users = db.relationship("User", secondary="users_sprints",backref=db.backref("userss"))
 
     tasks = db.relationship("Task", backref="sprint")
     comments = db.relationship("Comment", backref="sprint")
@@ -330,9 +326,9 @@ class Sprint(db.Model, AdminLinksMixin, Base):
         return self.name
 
 
-class Comment(db.Model, AdminLinksMixin):
+class Comment(db.Model, AdminLinksMixin,Base):
     __tablename__ = "comments"
-    id = db.Column('comment_id', db.Integer, primary_key=True)
+
     content = db.Column(db.Text())  # should be markdown.
 
     # relations
@@ -347,7 +343,7 @@ class Comment(db.Model, AdminLinksMixin):
     link_id = db.Column(db.Integer, db.ForeignKey("links.id"))
 
     def __str__(self):
-        return self.name
+        return self.content
 
 
 class Link(db.Model, AdminLinksMixin,Base):
@@ -388,7 +384,7 @@ class Task(db.Model, AdminLinksMixin, Base):
     description = db.Column(db.Text())  # should be markdown.
     type = db.Column(db.Enum(TaskType), default=TaskType.FEATURE)
     priority = db.Column(db.Enum(TaskPriority), default=TaskPriority.MINOR)
-    task_state = db.Column(db.Enum(DealState), default=TaskState.NEW)
+    state = db.Column(db.Enum(TaskState), default=TaskState.NEW)
     
     assignment_id = db.Column(db.String, db.ForeignKey("users.id"))
 
@@ -426,8 +422,9 @@ class Task(db.Model, AdminLinksMixin, Base):
         return self.title
 
 
-class MessageChannel(Enum):
-    TELEGRAM, EMAIL, SMS, INTERCOM = range(4)
+
+# class MessageChannel(Enum):
+#     TELEGRAM, EMAIL, SMS, INTERCOM = range(4)
 
 
 class Message(db.Model, AdminLinksMixin,Base):
@@ -463,5 +460,7 @@ class TaskTracking(db.Model, AdminLinksMixin,Base):
         return "<TaskTracker %s>" % (self.id)
 
 
-for m in [Contact, Company, Organization, Deal, Project, Sprint, Task,User]:
+for m in [Telephone,Email,Contact, User, Company,CompaniesContacts,UsersOrganizations, Comment, Link, \
+         UsersSprints,Organization, Deal,UsersProjects, ContactsProjects, Project, Sprint, Task, User, \
+         Message, TaskTracking]:
     listen(m, 'before_insert', generate_id)
