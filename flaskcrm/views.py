@@ -7,6 +7,7 @@ from flask_admin.model import typefmt
 from flask_admin.base import expose
 from flask_admin.form.fields import Select2Field
 from flask_admin.model.form import converts
+from flask_misaka import markdown
 from jinja2 import Markup
 from datetime import datetime
 from models import db, Telephone as TelephoneModel, Email as EmailModel, Contact as ContactModel, Company as CompanyModel, Organization as OrganizationModel, Deal as DealModel, Deal as DealModel, Link as LinkModel, Project as ProjectModel, Sprint as SprintModel, Task as TaskModel, Comment as CommentModel, Message as MessageModel
@@ -57,8 +58,23 @@ def format_comments(view, context, model, name):
     return Markup(out)
 
 
-formatters = dict(list(zip(["telephones", "emails", "users", "contacts", "organizations", "projects",  "deals", "sprints",
-                            "links", "tasks", "messages"], cycle([format_instrumented_list]))), comments=format_comments, url=format_url)
+def format_description(view, context, model, name):
+    value = getattr(model, name)
+    if value:
+        return markdown(value)
+    return value
+
+def format_emails(view, context, model, name):
+    value = getattr(model, name)
+    out = "<ul>" 
+    for x in value:
+        out += '<li><a href="mailto:{email}">{email}</a></li>'.format(email=x)
+    out += "</ul>"
+    return Markup(out)
+
+
+formatters = dict(list(zip(["telephones", "users", "contacts", "organizations", "projects",  "deals", "sprints",
+                            "links", "tasks", "messages"], cycle([format_instrumented_list]))), comments=format_comments, url=format_url, emails=format_emails, description=format_description)
 
 formatters = {**formatters, **
               dict(list(zip(["created_at", "updated_at", "closed_at", "start_date", "deadline", "eta"], cycle([format_datetime]))))}
