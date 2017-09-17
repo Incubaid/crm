@@ -25,6 +25,7 @@ in your `EXTRA_CONFIG` file you set a connection string
 BACKEND="postgres"
 SQLALCHEMY_DATABASE_URI="postgresql://user:password@host:port/mydatabase"
 ```
+and make sure to `pip install psycopg2`
 ### Create database
 ```
 python3 manage.py createdb
