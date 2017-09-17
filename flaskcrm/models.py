@@ -117,7 +117,7 @@ class Email(db.Model, Base):
     email = db.Column(db.String(150), nullable=False)
     contact_id = db.Column(db.String(5), db.ForeignKey("contacts.id"))
     company_id = db.Column(db.String(5), db.ForeignKey("companies.id"))
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    user_id = db.Column(db.String(5), db.ForeignKey("users.id"))
     organization_id = db.Column(db.String(5), db.ForeignKey("organizations.id"))
 
     def __str__(self):
@@ -142,7 +142,7 @@ class Contact(db.Model, Base):
 
     owner_id = db.Column(db.String(5), db.ForeignKey('users.id')) 
     ownerbackup_id = db.Column(db.String(5), db.ForeignKey('users.id')) 
-    parent_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    parent_id = db.Column(db.String(5), db.ForeignKey('users.id'))
 
 
     def __str__(self):
@@ -208,9 +208,9 @@ class User(db.Model, Base):
 
 
     project_promoter_id = db.Column(
-        db.Integer, db.ForeignKey("projects.promoter_id"))
+        db.String(5), db.ForeignKey("projects.promoter_id"))
     project_guardian_id = db.Column(
-        db.Integer, db.ForeignKey("projects.guardian_id"))       
+        db.String(5), db.ForeignKey("projects.guardian_id"))       
     promoterProjects = db.relationship("Project", backref="promoter", primaryjoin="User.id==Project.promoter_id")
     guardianProjects = db.relationship("Project", backref="guardian", primaryjoin="User.id==Project.guardian_id")
 
@@ -382,14 +382,14 @@ class Comment(db.Model, Base):
 
     # relations
     company_id = db.Column(db.String(5), db.ForeignKey("companies.id"))
-    contact_id = db.Column(db.Integer, db.ForeignKey("contacts.id"))
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-    deal_id = db.Column(db.Integer, db.ForeignKey("deals.id"))
-    task_id = db.Column(db.Integer, db.ForeignKey("tasks.id"))
-    organization_id = db.Column(db.Integer, db.ForeignKey("organizations.id"))
-    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"))
-    sprint_id = db.Column(db.Integer, db.ForeignKey("sprints.id"))
-    link_id = db.Column(db.Integer, db.ForeignKey("links.id"))
+    contact_id = db.Column(db.String(5), db.ForeignKey("contacts.id"))
+    user_id = db.Column(db.String(5), db.ForeignKey("users.id"))
+    deal_id = db.Column(db.String(5), db.ForeignKey("deals.id"))
+    task_id = db.Column(db.String(5), db.ForeignKey("tasks.id"))
+    organization_id = db.Column(db.String(5), db.ForeignKey("organizations.id"))
+    project_id = db.Column(db.String(5), db.ForeignKey("projects.id"))
+    sprint_id = db.Column(db.String(5), db.ForeignKey("sprints.id"))
+    link_id = db.Column(db.String(5), db.ForeignKey("links.id"))
 
     def __str__(self):
         return self.content
