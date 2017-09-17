@@ -422,7 +422,7 @@ class LinkModelView(EnhancedModelView):
 
 class TaskModelView(EnhancedModelView):
     column_details_list = ('id', 'title', 'description', 'contact',
-                           'type', 'priority', 'eta', 'time_done',
+                           'type', 'priority', 'eta', 'state', 'time_done',
                            'company', 'organization', 'project', 'sprint', 'deal',
                            'comments', 'messages')
 
@@ -434,7 +434,7 @@ class TaskModelView(EnhancedModelView):
                   'type', 'priority', 'eta', 'time_done',
                   'contact', 'company', 'organization', 'project', 'sprint', 'deal')
 
-    form_edit_rules = ('title', 'description',
+    form_edit_rules = ('title', 'description', 'contact', 'state',
                        'type', 'priority', 'time_done', 'comments')
     column_list = ('title', 'type', 'priority',
                    'organization', 'company', 'project', 'sprint', 'deal')
@@ -446,6 +446,11 @@ class TaskModelView(EnhancedModelView):
         (CommentModel, {'form_columns': [
          'id', 'content', ]}),
     ]
+    form_args = {
+        'contact': {
+            'label': 'Assignee',
+        }
+    }
 
 
 class MessageModelView(EnhancedModelView):
