@@ -13,6 +13,26 @@
 python3 manage.py createdb
 ```
 
+
+### Load database with test fixtures
+```
+python3 manage.py populate_test_fixtures
+```
+
+
+### Dump data into JSON
+- Data directory is configurable and can be changed under ```settings.DATA_DIR```
+
+```
+python3 manage.py dumpdata
+```
+
+### Load data from JSON
+```
+python3 manage.py loaddata
+```
+
+
 ### Start application 
 ```
 python3 manage.py startapp
@@ -25,11 +45,6 @@ python3 manage.py startapp --host 0.0.0.0 --port 18000
 ### Reset database
 ```
 python3 manage.py resetdb
-```
-
-### Load database with test fixtures
-```
-python3 manage.py populate_test_fixtures
 ```
 
 

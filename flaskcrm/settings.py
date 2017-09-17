@@ -17,3 +17,5 @@ SQLALCHEMY_ECHO = True
 SQLALCHEMY_RECORD_QUERIES = True
 
 SECRET_KEY = "dmdmkey"
+
+DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data'))

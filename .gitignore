@@ -104,3 +104,6 @@ db/
 
 #pycharm
 .idea
+
+# data dir
+data

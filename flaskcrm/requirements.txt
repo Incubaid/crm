@@ -10,3 +10,4 @@ Flask_Admin==1.5.0
 Faker==0.7.18
 Flask_SQLAlchemy==2.2
 Flask-Misaka==0.4.1
+ujson==1.35

@@ -1,5 +1,5 @@
 from enum import Enum
-from datetime import datetime
+from datetime import datetime, date
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.event import listen
 import string
@@ -85,6 +85,16 @@ class Base(AdminLinksMixin):
                     self.id = uid
                     return
 
+    def as_dict(self):
+
+        d = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        d['datetime_fields'] = []
+        # ujson only serialize datetimes into epoch
+        for k, v in d.items():
+            if isinstance(v, datetime) or isinstance(v, date):
+                d[k] = v.strftime("%Y-%m-%d %H:%M:%S")
+                d['datetime_fields'].append(k)
+        return d
 
 
 class Telephone(db.Model, Base):

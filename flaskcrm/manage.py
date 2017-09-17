@@ -1,6 +1,9 @@
 
 import sys
 import os
+import ujson as json
+from datetime import datetime
+
 from flask import Flask
 from flask_migrate import Migrate
 from flask_admin import Admin
@@ -11,9 +14,11 @@ from models import *
 from views import *
 from flask_admin.helpers import get_url
 from flask_script import Manager
+import settings
 
 dbmodels = [User, Company, Contact, Organization, Deal,Project, Sprint, Task]
 extramodels = [Telephone, Email,Link, Comment, Message]
+
 
 app = Flask(__name__)
 manager = Manager(app)
@@ -92,6 +97,54 @@ def populate_test_fixtures():
 def startapp(host, port=5000):
     """Starts the Flask-CRM."""
     main(host, int(port))
+
+
+@manager.command
+def dumpdata():
+    """Create database and tables."""
+    # ensure database directory
+    data_dir = settings.DATA_DIR
+    if not os.path.exists(data_dir):
+        os.mkdir(data_dir)
+
+    for model in dbmodels:
+        model_dir = os.path.abspath(os.path.join(data_dir, model.__name__))
+        if not os.path.exists(model_dir):
+            os.mkdir(model_dir)
+
+        for obj in model.query.all():
+
+            record_path = os.path.abspath(os.path.join(model_dir, '%s_%s.json' % (obj.id, str(obj))))
+            data = obj.as_dict()
+            with open(record_path, 'w') as f:
+                json.dump(data, f, indent=4)
+
+@manager.command
+def loaddata():
+    """Create database and tables."""
+    # ensure database directory
+
+    resetdb()
+    data_dir = settings.DATA_DIR
+    if not os.path.exists(data_dir):
+        os.mkdir(data_dir)
+
+    for model in dbmodels:
+        model_dir = os.path.abspath(os.path.join(data_dir, model.__name__))
+        for root, dirs, files in os.walk(model_dir):
+            for file in files:
+                file_path = os.path.abspath(os.path.join(root, file))
+                with open(file_path, 'r') as f:
+                    data = json.load(f)
+                    for field in data['datetime_fields']:
+                        data[field] = datetime.strptime(data[field], "%Y-%m-%d %H:%M:%S")
+                    for field, value in data.items():
+                        if isinstance(value, dict):
+                            data[field] = value['name']
+                    data.pop('datetime_fields')
+                    db.session.add(model(**data))
+            db.session.commit()
+
 
 
 if __name__ == "__main__":
