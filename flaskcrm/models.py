@@ -85,7 +85,10 @@ class Base(AdminLinksMixin):
                     self.id = uid
                     return
 
-
+    @property
+    def short_description(self):
+        if hasattr(self, "description"):
+            return "\n".join(self.description.splitlines()[:3])
 
 class Telephone(db.Model, Base):
     __tablename__ = "telephones"
