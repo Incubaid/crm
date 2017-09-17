@@ -229,13 +229,14 @@ class UserModelView(EnhancedModelView):
 
     column_filters = ('firstname', 'lastname')
     form_edit_rules = ('firstname', 'lastname', 'description',
-                       'emails', 'telephones', 'message_channels')
+                       'emails', 'telephones', 'message_channels', 'messages')
     column_sortable_list = ('firstname', 'lastname')
     column_searchable_list = ('firstname', 'lastname')
 
     inline_models = [
         (TelephoneModel, {'form_columns': ['id', 'number']}),
         (EmailModel, {'form_columns': ['id', 'email']}),
+        (MessageModel, {'form_columns': ['id', 'title', 'channel']}),
         (CommentModel, {'form_columns': ['id', 'content']})]
     mainfilter = "Users / Id"
 
@@ -243,7 +244,7 @@ class UserModelView(EnhancedModelView):
 class ContactModelView(EnhancedModelView):
     form_rules = column_details_list = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'message_channels',
                                         'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
-    form_edit_rules = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'tasks', 'deals', 'comments',
+    form_edit_rules = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'tasks', 'deals', 'messages', 'comments',
                        'message_channels', 'owner', 'ownerbackup')
 
     column_filters = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'message_channels',
@@ -259,6 +260,7 @@ class ContactModelView(EnhancedModelView):
         (EmailModel, {'form_columns': ['id', 'email']}),
         (TaskModel, {'form_columns': [
          'id', 'title', 'description', 'type', 'priority']}),
+        (MessageModel, {'form_columns': ['id', 'title', 'channel']}),
         (DealModel, {'form_columns': [
          'id', 'name', 'amount', 'currency', 'deal_type']}),
         (CommentModel, {'form_columns': ['id', 'content']})]
