@@ -23,6 +23,9 @@ extramodels = [Telephone, Email,Link, Comment, Message]
 app = Flask(__name__)
 manager = Manager(app)
 app.config.from_pyfile("settings.py")
+if os.getenv("EXTRA_CONFIG", False):
+    app.config.from_envvar("EXTRA_CONFIG")
+    print(app.config)
 app.secret_key = app.config['SECRET_KEY']
 
 
