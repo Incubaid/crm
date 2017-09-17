@@ -34,6 +34,22 @@ def format_datetime(view, context, model, name):
         return value.strftime("%Y-%m-%d")
 
 
+def format_messages(view, context, model, name):
+    value = getattr(model, name)
+    out = ""
+
+    if isinstance(value, InstrumentedList):
+        out = "<ul>"
+        for x in value:
+            if hasattr(x, "admin_view_link"):
+                out += "<li>({authorname}/{messagetitle}/{createdate}) wrote: <br/>{messagecontent}<a href='{messageadminlink}'> Read more...</a></li>".format(
+                    authorname=str(x.author), messagetitle=x.title, createdate=str(x.created_at_short), messageadminlink=getattr(x, "admin_view_link")(), messagecontent=x.content)
+            else:
+                out += str(x)
+        out += "</ul>"
+    return Markup(out)
+
+
 def format_comments(view, context, model, name):
     value = getattr(model, name)
     out = ""
@@ -48,6 +64,8 @@ def format_comments(view, context, model, name):
                 out += str(x)
         out += "</ul>"
     return Markup(out)
+
+
 
 
 def format_description(view, context, model, name):
@@ -67,7 +85,7 @@ def format_emails(view, context, model, name):
 
 
 column_formatters = dict(list(zip(["telephones", "users", "contacts", "organizations", "projects",  "deals", "sprints",
-                            "links", "tasks", "messages"], cycle([format_instrumented_list]))), comments=format_comments, url=format_url, emails=format_emails, description=format_description)
+                            "links", "tasks", "messages"], cycle([format_instrumented_list]))), messages=format_messages, comments=format_comments, url=format_url, emails=format_emails, description=format_description)
 
 column_formatters = {**column_formatters, **
               dict(list(zip(["created_at", "updated_at", "closed_at", "start_date", "deadline", "eta"], cycle([format_datetime]))))}
