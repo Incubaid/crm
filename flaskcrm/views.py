@@ -7,6 +7,9 @@ from flask_admin.base import expose
 from models import db, Telephone as TelephoneModel, Email as EmailModel, User as UserModel, Contact as ContactModel, Company as CompanyModel, Organization as OrganizationModel, Deal as DealModel, Deal as DealModel, Link as LinkModel, Project as ProjectModel, Sprint as SprintModel, Task as TaskModel, Comment as CommentModel, Message as MessageModel
 from formatters import column_formatters
 from converters import CustomAdminConverter
+from flask_admin.contrib.sqla.tools import is_relationship
+from flask_admin.contrib.sqla import form, filters as sqla_filters, tools
+from flask_admin._compat import string_types, text_type
 
 
 class EnhancedModelView(ModelView):
@@ -86,6 +89,120 @@ class EnhancedModelView(ModelView):
             self._template_args['filtered_objects'] = filtered_objects
         return super().details_view()
 
+    def scaffold_filters(self, name):
+        """
+            Return list of enabled filters
+        """
+        # if :
+        #     import ipdb; ipdb.set_trace()
+
+        attr, joins = tools.get_field_with_path(self.model, name)
+
+        if attr is None:
+            raise Exception('Failed to find field for filter: %s' % name)
+
+        # Figure out filters for related column
+        if is_relationship(attr):
+            filters = []
+
+            for p in self._get_model_iterator(attr.property.mapper.class_):
+                if hasattr(p, 'columns'):
+                    # TODO: Check for multiple columns
+                    column = p.columns[0]
+
+                    if column.foreign_keys:
+                        continue
+
+                    visible_name = '%s / %s' % (self.get_column_name(attr.prop.table.name),
+                                                self.get_column_name(p.key))
+
+                    type_name = type(column.type).__name__
+                    flt = self.filter_converter.convert(type_name,
+                                                        column,
+                                                        visible_name)
+
+                    if flt:
+                        table = column.table
+
+                        if joins:
+                            self._filter_joins[column] = joins
+                        elif tools.need_join(self.model, table):
+                            self._filter_joins[column] = [table]
+
+                        filters.extend(flt)
+
+            return filters
+        else:
+            is_hybrid_property = tools.is_hybrid_property(self.model, name)
+            if is_hybrid_property:
+                column = attr
+                if isinstance(name, string_types):
+                    column.key = name.split('.')[-1]
+            else:
+                columns = tools.get_columns_for_field(attr)
+
+                if len(columns) > 1:
+                    raise Exception(
+                        'Can not filter more than on one column for %s' % name)
+
+                column = columns[0]
+
+            # If filter related to relation column (represented by
+            # relation_name.target_column) we collect here relation name
+            joined_column_name = None
+            if isinstance(name, string_types) and '.' in name:
+                joined_column_name = name.split('.')[0]
+
+            # Join not needed for hybrid properties
+            if (not is_hybrid_property and tools.need_join(self.model, column.table) and
+                    name not in self.column_labels):
+                if joined_column_name:
+                    visible_name = '%s / %s / %s' % (
+                        joined_column_name,
+                        self.get_column_name(column.table.name),
+                        self.get_column_name(column.name)
+                    )
+                else:
+                    visible_name = '%s / %s' % (
+                        self.get_column_name(column.table.name),
+                        self.get_column_name(column.name)
+                    )
+            else:
+                if not isinstance(name, string_types):
+                    visible_name = self.get_column_name(name.property.key)
+                else:
+                    if self.column_labels and name in self.column_labels:
+                        visible_name = self.column_labels[name]
+                    else:
+                        visible_name = self.get_column_name(name)
+                        visible_name = visible_name.replace('.', ' / ')
+
+            type_name = type(column.type).__name__
+
+            flt = self.filter_converter.convert(
+                type_name,
+                column,
+                visible_name,
+                options=self.column_choices.get(name),
+            )
+
+            key_name = column
+            # In case of filter related to relation column filter key
+            # must be named with relation name (to prevent following same
+            # target column to replace previous)
+            if joined_column_name:
+                key_name = "{0}.{1}".format(joined_column_name, column)
+                for f in flt:
+                    f.key_name = key_name
+
+            if joins:
+                self._filter_joins[key_name] = joins
+            elif not is_hybrid_property and tools.need_join(self.model, column.table):
+                self._filter_joins[key_name] = [column.table]
+
+            return flt
+
+
 class TelephoneModelView(EnhancedModelView):
     column_list = column_details_list = (
         'number', 'contact', 'company',)
@@ -102,14 +219,17 @@ class EmailModelView(EnhancedModelView):
     column_searchable_list = ('email',)
     column_sortable_list = ('email', )
 
+
 class UserModelView(EnhancedModelView):
-    column_list = ('firstname', 'lastname', 'emails', 'telephones', 'description')
-    form_rules = column_details_list = ('firstname', 'lastname', 'emails', 'telephones', 'description', 'message_channels', 
-                           'ownsContacts', 'ownsAsBackupContacts', 'ownsCompanies', 'ownsAsBackupCompanies',
-                           'ownsOrganizations', 'ownsSprints', 'promoterProjects', 'guardianProjects', 'comments', 'messages', 'links',)
-    
+    column_list = ('firstname', 'lastname', 'emails',
+                   'telephones', 'description')
+    form_rules = column_details_list = ('firstname', 'lastname', 'emails', 'telephones', 'description', 'message_channels',
+                                        'ownsContacts', 'ownsAsBackupContacts', 'ownsCompanies', 'ownsAsBackupCompanies',
+                                        'ownsOrganizations', 'ownsSprints', 'promoterProjects', 'guardianProjects', 'comments', 'messages', 'links',)
+
     column_filters = ('firstname', 'lastname')
-    form_edit_rules = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'message_channels')
+    form_edit_rules = ('firstname', 'lastname', 'description',
+                       'emails', 'telephones', 'message_channels')
     column_sortable_list = ('firstname', 'lastname')
     column_searchable_list = ('firstname', 'lastname')
 
@@ -158,7 +278,7 @@ class CompanyModelView(EnhancedModelView):
                        'comments', 'owner', 'ownerbackup')
 
     column_searchable_list = ('id', 'name', 'description',)
-    column_list = ( 'name', 'description')
+    column_list = ('name', 'description')
     column_sortable_list = ('name', )
 
     inline_models = [
@@ -208,7 +328,7 @@ class DealModelView(EnhancedModelView):
     form_edit_rules = ('name',  'amount', 'currency', 'deal_type', 'deal_state',
                        'contact', 'company', 'tasks', 'messages', 'comments')
 
-    column_list = ( 'name', 'amount', 'currency',
+    column_list = ('name', 'amount', 'currency',
                    'deal_type', 'deal_state')
     column_searchable_list = (
         'id', 'name', 'amount', 'currency', 'deal_type', 'deal_state')
@@ -235,7 +355,7 @@ class ProjectModelView(EnhancedModelView):
                        'promoter', 'guardian',
                        'users', 'tasks', 'messages', 'comments')
 
-    column_list = ( 'name', 'description', 'start_date', 'deadline', )
+    column_list = ('name', 'description', 'start_date', 'deadline', )
     column_searchable_list = (
         'id', 'name', 'description', 'start_date', 'deadline')
     column_sortable_list = ('name', 'start_date', 'deadline')
