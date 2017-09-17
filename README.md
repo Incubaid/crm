@@ -6,19 +6,33 @@
 - change directory to flaskcrm 
 - `pip3 install -r requirements.txt`
 
+
 ## CRM Manager
 
+
+### Configurations
+Configuration file is `settings.py` contains mode of the deployment `production/development` and database name for sqlite3 backend.
+
+### Overriding app configurations
+You can have a specific configurations used by the app 
+by preceeding the `manage.py` execution by `export EXTRA_CONFIG=CONFIG_FILE`
+```
+export EXTRA_CONFIG=extra.cfg && python3 manage.py -help
+```
+#### PostgreSQL database instead of sqlite3 
+in your `EXTRA_CONFIG` file you set a connection string
+```
+postgresql://user:password@host:port/mydatabase'
+```
 ### Create database
 ```
 python3 manage.py createdb
 ```
 
-
 ### Load database with test fixtures
 ```
-python3 manage.py populate_test_fixtures
+python3 manage.py loadfixtures
 ```
-
 
 ### Dump data into JSON
 - Data directory is configurable and can be changed under ```settings.DATA_DIR```

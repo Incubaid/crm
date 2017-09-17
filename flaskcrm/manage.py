@@ -89,8 +89,8 @@ def createdb():
 
 
 @manager.command
-def populate_test_fixtures():
-    """Populate database with test fixtures."""
+def loadfixtures():
+    """Load test fixtures into database."""
     from tests.fixtures import generate_fixtures
     generate_fixtures()
 
@@ -104,7 +104,7 @@ def startapp(host, port=5000):
 
 @manager.command
 def dumpdata():
-    """Create database and tables."""
+    """Dump data table models into filesystem."""
     # ensure database directory
     data_dir = settings.DATA_DIR
     if not os.path.exists(data_dir):
@@ -124,7 +124,7 @@ def dumpdata():
 
 @manager.command
 def loaddata():
-    """Create database and tables."""
+    """Load tables with data from filesystem."""
     # ensure database directory
 
     resetdb()
