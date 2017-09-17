@@ -64,7 +64,7 @@ def dropdb():
             os.remove(app.config['DBPATH'])
         except:
             raise
-    if database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
+    if not database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
         drop_database(app.config['SQLALCHEMY_DATABASE_URI']) 
 
     print("Database dropped.")
