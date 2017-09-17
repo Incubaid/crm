@@ -1,6 +1,7 @@
 # incubaidCRM
 
 ## Installation
+- ```sudo apt-get install python3-dev libffi-dev```
 - clone `https://github.com/Incubaid/crm`
 - change directory to flaskcrm 
 - `pip3 install -r requirements.txt`
