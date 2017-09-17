@@ -86,7 +86,6 @@ class Base(AdminLinksMixin):
                     return
 
     def as_dict(self):
-
         d = {c.name: getattr(self, c.name) for c in self.__table__.columns}
         d['datetime_fields'] = []
         # ujson only serialize datetimes into epoch
@@ -95,6 +94,11 @@ class Base(AdminLinksMixin):
                 d[k] = v.strftime("%Y-%m-%d %H:%M:%S")
                 d['datetime_fields'].append(k)
         return d
+
+    @property
+    def short_description(self):
+        if hasattr(self, "description"):
+            return "\n".join(self.description.splitlines()[:3])
 
 
 class Telephone(db.Model, Base):
