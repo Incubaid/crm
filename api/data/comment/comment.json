@@ -1,0 +1,19 @@
+[
+{
+    "model": "comment.comment",
+    "pk": "c5d7",
+    "fields": {
+        "seq": 1,
+        "content": "comment",
+        "contact": "0ae6",
+        "organization": "9360",
+        "deal": null,
+        "project": null,
+        "task": null,
+        "sprint": null,
+        "created_at": "2017-09-04T03:37:22.785Z",
+        "modified_at": "2017-09-04T03:37:22.785Z",
+        "owner": "0ae6"
+    }
+}
+]

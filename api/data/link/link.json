@@ -1,0 +1,19 @@
+[
+{
+    "model": "link.link",
+    "pk": "4312",
+    "fields": {
+        "seq": 1,
+        "description": "Google Link",
+        "url": "http://google.com",
+        "contact": "0ae6",
+        "comment": null,
+        "organization": "9360",
+        "deal": null,
+        "project": null,
+        "task": null,
+        "created_at": "2017-09-03T16:40:05.570Z",
+        "modified_at": "2017-09-03T16:40:05.570Z"
+    }
+}
+]

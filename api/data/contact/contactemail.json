@@ -1,0 +1,18 @@
+[
+{
+    "model": "contact.contactemail",
+    "pk": 1,
+    "fields": {
+        "email": "hamdy@codescalers.com",
+        "contact": "0ae6"
+    }
+},
+{
+    "model": "contact.contactemail",
+    "pk": 2,
+    "fields": {
+        "email": "peter@peter.com",
+        "contact": "714c"
+    }
+}
+]

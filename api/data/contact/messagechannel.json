@@ -1,0 +1,38 @@
+[
+{
+    "model": "contact.messagechannel",
+    "pk": 1,
+    "fields": {
+        "contact": "0ae6",
+        "channel": "B",
+        "priority": 1
+    }
+},
+{
+    "model": "contact.messagechannel",
+    "pk": 2,
+    "fields": {
+        "contact": "0ae6",
+        "channel": "S",
+        "priority": 1
+    }
+},
+{
+    "model": "contact.messagechannel",
+    "pk": 3,
+    "fields": {
+        "contact": "714c",
+        "channel": "T",
+        "priority": 1
+    }
+},
+{
+    "model": "contact.messagechannel",
+    "pk": 4,
+    "fields": {
+        "contact": "714c",
+        "channel": "T",
+        "priority": 2
+    }
+}
+]

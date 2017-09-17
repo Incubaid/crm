@@ -1,0 +1,12 @@
+[
+{
+    "model": "task.taskassignment",
+    "pk": "3204",
+    "fields": {
+        "seq": 1,
+        "contact": "0ae6",
+        "task": "9e71",
+        "time_todo": 0.0
+    }
+}
+]

@@ -1,0 +1,21 @@
+[
+{
+    "model": "project.project",
+    "pk": "8159",
+    "fields": {
+        "seq": 1,
+        "name": "proj1",
+        "description": "",
+        "created_at": "2017-09-03T16:50:53.196Z",
+        "modified_at": "2017-09-03T16:50:53.196Z",
+        "start_date": "2017-09-03",
+        "deadline": "2017-09-03",
+        "promoter": "0ae6",
+        "guardian": "714c",
+        "parent": null,
+        "users": [
+            "0ae6"
+        ]
+    }
+}
+]

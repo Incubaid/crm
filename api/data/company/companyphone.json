@@ -1,0 +1,10 @@
+[
+{
+    "model": "company.companyphone",
+    "pk": 1,
+    "fields": {
+        "phone": "01224250597",
+        "company": "b1ea"
+    }
+}
+]

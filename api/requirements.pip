@@ -1,0 +1,7 @@
+django
+graphene-django>=2.0.dev
+django-markdownx
+django-filter
+django-admin-rangefilter
+django-reversion
+django-redis

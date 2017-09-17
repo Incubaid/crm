@@ -1,0 +1,20 @@
+[
+{
+    "model": "message.message",
+    "pk": "5ad7",
+    "fields": {
+        "seq": 1,
+        "title": "message",
+        "content": "",
+        "tosend_time": 1504457900,
+        "send_time": 1504457950,
+        "organization": "9360",
+        "deal": null,
+        "project": null,
+        "task": null,
+        "sprint": null,
+        "channel": "TELEGRAM",
+        "require_confirmation": false
+    }
+}
+]

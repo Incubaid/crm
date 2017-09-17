@@ -107,3 +107,6 @@ ENV/
 # Django
 db.sqlite3
 migrations/0*.py
+
+# node.js
+node_modules/*

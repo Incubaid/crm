@@ -1,0 +1,17 @@
+[
+{
+    "model": "company.company",
+    "pk": "b1ea",
+    "fields": {
+        "seq": 1,
+        "name": "Green It Globeglobe",
+        "description": "",
+        "created_at": "2017-09-03T16:36:32.645Z",
+        "modified_at": "2017-09-03T16:36:32.645Z",
+        "owner": "714c",
+        "owner_backup": null,
+        "isuser": true,
+        "users": []
+    }
+}
+]

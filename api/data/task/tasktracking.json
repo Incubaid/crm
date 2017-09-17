@@ -1,0 +1,13 @@
+[
+{
+    "model": "task.tasktracking",
+    "pk": "36bd",
+    "fields": {
+        "seq": 1,
+        "assignment": "3204",
+        "remark": "",
+        "time_done": 4.0,
+        "epoch": 1504457567
+    }
+}
+]
