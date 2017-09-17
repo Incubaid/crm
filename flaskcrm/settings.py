@@ -1,5 +1,6 @@
 import os
 
+BACKEND = "sqlite3"
 PRODUCTION = False
 DBDIR = os.path.join(os.getcwd(), "db")
 DBPATHDEV = os.path.join(os.getcwd(), "db", "development.db")

@@ -16,8 +16,8 @@ from flask_admin.helpers import get_url
 from flask_script import Manager
 import settings
 
-dbmodels = [User, Company, Contact, Organization, Deal,Project, Sprint, Task]
-extramodels = [Telephone, Email,Link, Comment, Message]
+dbmodels = [User, Company, Contact, Organization, Deal, Project, Sprint, Task]
+extramodels = [Telephone, Email, Link, Comment, Message]
 
 
 app = Flask(__name__)
@@ -53,22 +53,47 @@ def main(host, port):
     app.run(debug=debug, host=host, port=port)
 
 
+@manager.option("-b", "--backend", help="Database backend", default="sqlite3")
+@manager.option("-n", "--name", help="Datbase name", default="development.db")
+@manager.option("-h", "--host", help="Host URL", default="0.0.0.0")
+@manager.option("-p", "--port", help="Port", default=5432)
+@manager.option("-u", "--user", help="Username", default="postgres")
+@manager.option("-P", "--passwd", help="Password", default="postgres")
+def configure(backend="sqlite3", dbname="", host="", port="", user="", passwd=""):
+    if backend == "sqlite3":
+        # SQLALCHEMY_DATABASE_URI = "sqlite:///{}".format(DBPATH)
+        if dbname:
+            DBPATH = app.config['DBPATH']
+        else:
+            DBPATH = os.path.join(os.getcwd(), "db", dbname)
+        app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///{}".format(DBPATH)
+    elif backend == "postgresql":
+        if port:
+            port = int(port)
+        else:
+            port = 5432
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://{user}:{passwd}@{host}:{port}/{dbname}'.format(
+            user=user, passwd=passwd, host=host, port=port, dbname=dbname)
+
+
 @manager.command
 def dropdb():
     """Drop database and tables."""
-    try:
-        os.remove(app.config['DBPATH'])
-    except:
-        raise
+    if app.config['BACKEND'] == 'sqlite3':
+        try:
+            os.remove(app.config['DBPATH'])
+        except:
+            raise
 
 
 @manager.command
 def resetdb():
     """Remove database and create it again."""
-    try:
-        os.remove(app.config['DBPATH'])
-    except:
-        raise
+    if app.config['BACKEND'] == 'sqlite3':
+        try:
+            os.remove(app.config['DBPATH'])
+        except:
+            raise
     db.create_all(app=app)
 
     print("DB Resetted")
@@ -78,8 +103,9 @@ def resetdb():
 def createdb():
     """Create database and tables."""
     # ensure database directory
-    if not os.path.exists(app.config['DBDIR']):
-        os.mkdir(app.config['DBDIR'])
+    if app.config['backend'] == "sqlite3":
+        if not os.path.exists(app.config['DBDIR']):
+            os.mkdir(app.config['DBDIR'])
 
     db.create_all(app=app)
     print("DB created.")
@@ -114,10 +140,12 @@ def dumpdata():
 
         for obj in model.query.all():
 
-            record_path = os.path.abspath(os.path.join(model_dir, '%s_%s.json' % (obj.id, str(obj))))
+            record_path = os.path.abspath(os.path.join(
+                model_dir, '%s_%s.json' % (obj.id, str(obj))))
             data = obj.as_dict()
             with open(record_path, 'w') as f:
                 json.dump(data, f, indent=4)
+
 
 @manager.command
 def loaddata():
@@ -137,14 +165,14 @@ def loaddata():
                 with open(file_path, 'r') as f:
                     data = json.load(f)
                     for field in data['datetime_fields']:
-                        data[field] = datetime.strptime(data[field], "%Y-%m-%d %H:%M:%S")
+                        data[field] = datetime.strptime(
+                            data[field], "%Y-%m-%d %H:%M:%S")
                     for field, value in data.items():
                         if isinstance(value, dict):
                             data[field] = value['name']
                     data.pop('datetime_fields')
                     db.session.add(model(**data))
             db.session.commit()
-
 
 
 if __name__ == "__main__":
