@@ -7,7 +7,7 @@ DBPATHPROD = os.path.join(os.getcwd(), "db", "production.db")
 BOOTSTRAPWITHFIXTURES = os.getenv("BOOTSTRAPWITHFIXTURES", False)
 RESETDB = os.getenv("RESETDB", False)
 DBPATH = DBPATHDEV
-
+BACKEND = "sqlite3"
 
 if PRODUCTION is True:
     DBPATH = DBPATHPROD

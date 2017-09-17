@@ -3,7 +3,7 @@ import sys
 import os
 import ujson as json
 from datetime import datetime
-
+from sqlalchemy_utils import drop_database, create_database, database_exists 
 from flask import Flask
 from flask_migrate import Migrate
 from flask_admin import Admin
@@ -59,33 +59,36 @@ def main(host, port):
 @manager.command
 def dropdb():
     """Drop database and tables."""
-    try:
-        os.remove(app.config['DBPATH'])
-    except:
-        raise
+    if app.config['BACKEND'] == "sqlite3":
+        try:
+            os.remove(app.config['DBPATH'])
+        except:
+            raise
+    if database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
+        drop_database(app.config['SQLALCHEMY_DATABASE_URI']) 
 
-
-@manager.command
-def resetdb():
-    """Remove database and create it again."""
-    try:
-        os.remove(app.config['DBPATH'])
-    except:
-        raise
-    db.create_all(app=app)
-
-    print("DB Resetted")
-
+    print("Database dropped.")
 
 @manager.command
 def createdb():
     """Create database and tables."""
     # ensure database directory
-    if not os.path.exists(app.config['DBDIR']):
-        os.mkdir(app.config['DBDIR'])
-
+    if app.config['BACKEND'] == 'sqlite3':
+        if not os.path.exists(app.config['DBDIR']):
+            os.mkdir(app.config['DBDIR'])
+    if database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
+       create_database(app.config['SQLALCHEMY_DATABASE_URI']) 
+ 
     db.create_all(app=app)
     print("DB created.")
+
+
+@manager.command
+def resetdb():
+    """Remove database and create it again."""
+    dropdb()
+    createdb()
+    print("DB Resetted")
 
 
 @manager.command
@@ -93,7 +96,7 @@ def loadfixtures():
     """Load test fixtures into database."""
     from tests.fixtures import generate_fixtures
     generate_fixtures()
-
+    print("Fixtures loaded.")
 
 @manager.option("-h", "--host", help="host", default="0.0.0.0")
 @manager.option("-p", "--port", help="port", default=5000)
