@@ -206,11 +206,6 @@ class User(db.Model, Base):
     ownsOrganizations = db.relationship("Organization", backref="owner", primaryjoin=("User.id==Organization.owner_id"))
     ownsSprints = db.relationship("Sprint", backref="owner", primaryjoin=("User.id==Sprint.owner_id"))
 
-
-    project_promoter_id = db.Column(
-        db.String(5), db.ForeignKey("projects.promoter_id"))
-    project_guardian_id = db.Column(
-        db.String(5), db.ForeignKey("projects.guardian_id"))       
     promoterProjects = db.relationship("Project", backref="promoter", primaryjoin="User.id==Project.promoter_id")
     guardianProjects = db.relationship("Project", backref="guardian", primaryjoin="User.id==Project.guardian_id")
 

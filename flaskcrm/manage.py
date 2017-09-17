@@ -64,7 +64,7 @@ def dropdb():
             os.remove(app.config['DBPATH'])
         except:
             raise
-    if not database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
+    if database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
         drop_database(app.config['SQLALCHEMY_DATABASE_URI']) 
 
     print("Database dropped.")
@@ -76,7 +76,7 @@ def createdb():
     if app.config['BACKEND'] == 'sqlite3':
         if not os.path.exists(app.config['DBDIR']):
             os.mkdir(app.config['DBDIR'])
-    if database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
+    if not database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
        create_database(app.config['SQLALCHEMY_DATABASE_URI']) 
  
     db.create_all(app=app)
