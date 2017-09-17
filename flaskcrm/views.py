@@ -407,7 +407,7 @@ class CommentModelView(EnhancedModelView):
     form_rules = ('content',
                   'company', 'contact', 'organization', 'project', 'sprint', 'task',
                   'link', 'deal', 'sprint')
-    form_edit_rules = ('content')
+    form_edit_rules = ('content',)
     column_list = ('id', 'content')
     column_searchable_list = ('id', 'content')
     column_sortable_list = ('content',)
