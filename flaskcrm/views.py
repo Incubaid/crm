@@ -355,10 +355,10 @@ class ProjectModelView(EnhancedModelView):
     form_rules = ('name', 'description', 'start_date', 'deadline',
                   'promoter', 'sprints', 'tasks', 'guardian',)
 
-    edit_form_rules = ('name', 'description',
+    form_edit_rules = ('name', 'description',
                        'start_date', 'deadline',
                        'promoter', 'guardian',
-                       'users', 'tasks', 'messages', 'comments')
+                       'tasks', 'messages', 'comments')
 
     column_list = ('name', 'short_description', 'start_date', 'deadline', )
     column_searchable_list = (
@@ -367,11 +367,10 @@ class ProjectModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-         'id', 'title', 'description', 'type', 'priority', ]}),
-        (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']},
-         (CommentModel, {'form_columns': ['id', 'content']}))
+         'id', 'title', 'type', 'priority', ]}),
+        (MessageModel, {'form_columns': ['id', 'title', 'content']}),
+        (CommentModel, {'form_columns': ['id', 'content']})
     ]
-
     mainfilter = "Projects / Id"
 
 
