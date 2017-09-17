@@ -17,10 +17,11 @@ Configuration file is `settings.py` contains mode of the deployment `production/
 You can have a specific configurations used by the app 
 by preceeding the `manage.py` execution by `export EXTRA_CONFIG=CONFIG_FILE`
 ```
-export EXTRA_CONFIG=extra.cfg && python3 manage.py -help
+export EXTRA_CONFIG=extra.cfg
 ```
+
 #### PostgreSQL database instead of sqlite3 
-in your `EXTRA_CONFIG` file you set a connection string
+in your `EXTRA_CONFIG` file you set a connection string or in your `settings.py`
 ```
 BACKEND="postgres"
 SQLALCHEMY_DATABASE_URI="postgresql://user:password@host:port/mydatabase"
