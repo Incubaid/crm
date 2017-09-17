@@ -23,12 +23,13 @@ extramodels = [Telephone, Email,Link, Comment, Message]
 app = Flask(__name__)
 manager = Manager(app)
 app.config.from_pyfile("settings.py")
+
+# Extra configurations to override DB connection.
 if os.getenv("EXTRA_CONFIG", False):
     app.config.from_envvar("EXTRA_CONFIG")
-    print(app.config)
+
 app.secret_key = app.config['SECRET_KEY']
-
-
+# Jinja extra globals.
 app.jinja_env.globals.update(
     getattr=getattr, hasattr=hasattr, type=type, len=len, get_url=get_url)
 

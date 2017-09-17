@@ -22,7 +22,8 @@ export EXTRA_CONFIG=extra.cfg && python3 manage.py -help
 #### PostgreSQL database instead of sqlite3 
 in your `EXTRA_CONFIG` file you set a connection string
 ```
-postgresql://user:password@host:port/mydatabase'
+BACKEND="postgres"
+SQLALCHEMY_DATABASE_URI="postgresql://user:password@host:port/mydatabase"
 ```
 ### Create database
 ```
