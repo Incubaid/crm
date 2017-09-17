@@ -100,7 +100,15 @@ class Base(AdminLinksMixin):
         if hasattr(self, "description"):
             return "\n".join(self.description.splitlines()[:3])
 
-
+    
+    @property
+    def created_at_short(self):
+        return self.created_at.strftime("%Y-%m-%d")
+ 
+    @property
+    def updated_at_short(self):
+        return self.updated_at.strftime("%Y-%m-%d")
+ 
 class Telephone(db.Model, Base):
     __tablename__ = "telephones"
     number = db.Column(db.String(20), nullable=False)
@@ -478,7 +486,7 @@ class Message(db.Model, Base):
     channel = db.Column(db.String(255)) 
     time_tosend = db.Column(db.TIMESTAMP)
     time_sent = db.Column(db.TIMESTAMP)
-
+    author = db.relationship("User", backref="createdMessages", uselist=False)
     # relations
     company_id = db.Column(db.String, db.ForeignKey("companies.id"))
     contact_id = db.Column(db.String, db.ForeignKey("contacts.id"))
