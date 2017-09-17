@@ -439,7 +439,7 @@ class TaskModelView(EnhancedModelView):
                   'contact', 'company', 'organization', 'project', 'sprint', 'deal')
 
     form_edit_rules = ('title', 'description', 'contact', 'state',
-                       'type', 'priority', 'time_done', 'comments')
+                       'type', 'priority', 'time_done', 'comments', 'messages')
     column_list = ('title', 'type', 'priority',
                    'organization', 'company', 'project', 'sprint', 'deal')
     column_searchable_list = ('id', 'title', 'description',
@@ -449,6 +449,8 @@ class TaskModelView(EnhancedModelView):
     inline_models = [
         (CommentModel, {'form_columns': [
          'id', 'content', ]}),
+        (MessageModel, {'form_columns': [
+         'id', 'title', 'content', 'channel']}),
     ]
     form_args = {
         'contact': {
