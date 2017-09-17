@@ -29,7 +29,7 @@ class EnhancedModelView(ModelView):
         },
     }
     column_labels = {
-        'short_description': 'Description'     
+        'short_description': 'Description'
     }
 
     def get_filter_arg_helper(self, filter_name, filter_op='equals'):
@@ -301,7 +301,7 @@ class CompanyModelView(EnhancedModelView):
 
 class OrganizationModelView(EnhancedModelView):
     form_rules = column_filters = column_details_list = ('name', 'description', 'emails', 'owner',
-                                                         'tasks', 'users', 'comments',
+                                                         'tasks', 'users', 'comments', 'messages',
                                                          'links',)
     form_rules = ('name', 'description', 'emails', 'owner',)
 
@@ -325,7 +325,7 @@ class OrganizationModelView(EnhancedModelView):
 
 class DealModelView(EnhancedModelView):
     column_filters = column_details_list = ('id', 'name',  'amount', 'currency', 'deal_type', 'deal_state',
-                                            'contact', 'company')
+                                            'contact', 'company', 'messages')
 
     form_rules = ('name',  'amount', 'currency', 'deal_type', 'deal_state',
                   'contact', 'company', 'comments',)
@@ -351,7 +351,7 @@ class DealModelView(EnhancedModelView):
 
 class ProjectModelView(EnhancedModelView):
     column_filters = column_details_list = ('name', 'description', 'start_date', 'deadline',
-                                            'promoter', 'sprints', 'tasks', 'guardian')
+                                            'promoter', 'sprints', 'tasks', 'messages', 'guardian')
     form_rules = ('name', 'description', 'start_date', 'deadline',
                   'promoter', 'sprints', 'tasks', 'guardian',)
 
