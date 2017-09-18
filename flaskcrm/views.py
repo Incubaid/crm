@@ -240,7 +240,7 @@ class UserModelView(EnhancedModelView):
     inline_models = [
         (TelephoneModel, {'form_columns': ['id', 'number']}),
         (EmailModel, {'form_columns': ['id', 'email']}),
-        (MessageModel, {'form_columns': ['id', 'title', 'channel']}),
+        (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']}),
         (CommentModel, {'form_columns': ['id', 'content']})]
     mainfilter = "Users / Id"
 
@@ -264,7 +264,7 @@ class ContactModelView(EnhancedModelView):
         (EmailModel, {'form_columns': ['id', 'email']}),
         (TaskModel, {'form_columns': [
          'id', 'title', 'description', 'type', 'priority']}),
-        (MessageModel, {'form_columns': ['id', 'title', 'channel']}),
+        (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']}),
         (DealModel, {'form_columns': [
          'id', 'name', 'amount', 'currency', 'deal_type']}),
         (CommentModel, {'form_columns': ['id', 'content']})]
@@ -292,7 +292,7 @@ class CompanyModelView(EnhancedModelView):
             'form_columns': ['id', 'email']}),
         (TaskModel, {'form_columns': [
          'id', 'title', 'description', 'type', 'priority', ]}),
-        (MessageModel, {'form_columns': ['id', 'title', 'channel']}),
+        (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']}),
         (DealModel, {'form_columns': [
          'id', 'name', 'amount', 'currency', 'deal_type', 'description', ]}),
         (CommentModel, {'form_columns': ['id', 'content']})]
