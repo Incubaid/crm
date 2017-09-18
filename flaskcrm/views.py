@@ -442,7 +442,7 @@ class TaskModelView(EnhancedModelView):
 
     form_edit_rules = ('title', 'description', 'contact', 'state',
                        'type', 'priority', 'time_done', 'comments', 'messages')
-    column_list = ('title', 'type', 'priority',
+    column_list = ('title', 'type', 'priority', 'state', 'contact',
                    'organization', 'company', 'project', 'sprint', 'deal')
     column_searchable_list = ('id', 'title', 'description',
                               'type', 'priority')
