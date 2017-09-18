@@ -543,7 +543,32 @@ class Message(db.Model, Base):
     def __str__(self):
         return self.title
 
+    @property
+    def destination(self):
+        emails = []
+        if self.user:
+            emails.extend(self.user.emails) 
+        
+        if self.contact:
+            emails.extend(self.contact.emails)
+        
+        if self.company:
+            emails.extend(self.organization.emails)
+        
+        if self.organization:
+            emails.extend(self.organization.emails)
+        
+        return emails
 
+    
+    @property
+    def destination_emails(self):
+        emails = self.destination_emails
+        if emails:
+            return ",".join([x.email for x in self.destination_emails])
+        return "Not destination yet."
+ 
+    
 class TaskTracking(db.Model, Base):
     __tablename__ = "tasktrackings"
 
