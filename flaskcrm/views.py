@@ -454,6 +454,11 @@ class TaskModelView(EnhancedModelView):
         (MessageModel, {'form_columns': [
          'id', 'title', 'content', 'channel']}),
     ]
+    column_labels = {**EnhancedModelView.column_labels, **{
+        'contact': 'Assignee',
+    
+        }
+    } 
     form_args = {
         'contact': {
             'label': 'Assignee',
