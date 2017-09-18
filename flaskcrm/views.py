@@ -276,13 +276,13 @@ class ContactModelView(EnhancedModelView):
 
 
 class CompanyModelView(EnhancedModelView):
-    form_rules = column_filters = column_details_list = ('name', 'description', 'emails', 'telephones',
+    form_rules = column_filters = column_details_list = ('name', 'description', 'emails', 'telephones', 'vatnumber',
                                                          'deals', 'messages', 'tasks', 'comments', 'owner', 'ownerbackup')
 
-    form_edit_rules = ('name', 'description', 'emails', 'telephones', 'messages', 'tasks', 'deals',
+    form_edit_rules = ('name', 'description', 'emails', 'telephones', 'vatnumber', 'messages', 'tasks', 'deals',
                        'comments', 'owner', 'ownerbackup')
 
-    column_searchable_list = ('id', 'name', 'description',)
+    column_searchable_list = ('id', 'name', 'description', 'vatnumber')
     column_list = ('name', 'short_description')
     column_sortable_list = ('name', )
 
@@ -295,6 +295,7 @@ class CompanyModelView(EnhancedModelView):
         (DealModel, {'form_columns': [
          'id', 'name', 'amount', 'currency', 'deal_type', 'description', ]}),
         (CommentModel, {'form_columns': ['id', 'content']})]
+
 
     mainfilter = "Companies / Id"
 

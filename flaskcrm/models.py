@@ -168,7 +168,7 @@ class Company(db.Model, Base):
     __tablename__ = "companies"
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text())  # should be markdown.
-
+    vatnumber = db.Column(db.String(255))
 
     # relations
     telephones = db.relationship("Telephone", backref="company")
