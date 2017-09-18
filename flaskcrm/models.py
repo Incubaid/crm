@@ -553,7 +553,7 @@ class Message(db.Model, Base):
             emails.extend(self.contact.emails)
         
         if self.company:
-            emails.extend(self.organization.emails)
+            emails.extend(self.company.emails)
         
         if self.organization:
             emails.extend(self.organization.emails)
