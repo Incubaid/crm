@@ -85,14 +85,44 @@ class Base(AdminLinksMixin):
                     self.id = uid
                     return
 
-    def as_dict(self):
-        d = {c.name: getattr(self, c.name) for c in self.__table__.columns}
-        d['datetime_fields'] = []
-        # ujson only serialize datetimes into epoch
-        for k, v in d.items():
+    def as_dict(self, resolve_refs=True):
+
+        d = {
+            'datetime_fields': []
+        }
+
+        for c in self.__table__.columns:
+            k = c.name
+            v = getattr(self, c.name)
+            d[k] = v
+
+            # ujson only serialize datetimes into epoch
             if isinstance(v, datetime) or isinstance(v, date):
                 d[k] = v.strftime("%Y-%m-%d %H:%M:%S")
                 d['datetime_fields'].append(k)
+            # translate F.Ks to dicts
+            elif c.foreign_keys and resolve_refs:
+                if getattr(self, k):
+                    k = k.replace('_id', '')
+                    v = getattr(self, k)
+                    if v:
+                        d[k] = v.as_dict(resolve_refs=False)
+        # list backrefs
+        if resolve_refs:
+            from sqlalchemy import inspect
+            backrefs = set(inspect(self.__class__).attrs.keys()) - set([c.name for c in self.__table__.columns])
+            for backref in  backrefs:
+                d[backref] = d.get(backref, [])
+                v = getattr(self, backref)
+                try:
+                    for item in v:
+                            d[backref].append(item.as_dict(resolve_refs=False))
+                except TypeError:
+                    # not iterable
+                    pass
+
+
+
         return d
 
     @property
@@ -157,6 +187,13 @@ class Contact(db.Model, Base):
     ownerbackup_id = db.Column(db.String(5), db.ForeignKey('users.id')) 
     parent_id = db.Column(db.String(5), db.ForeignKey('users.id'))
 
+    def as_dict(self, *args, **kwargs):
+        d = super(Contact, self).as_dict(*args, **kwargs)
+        # d['emails'] = [e.email for e in self.emails]
+        # d['telephones'] = [t.number for t in self.telephones]
+        # d['messages'] = [m.message for m in self.messages]
+        # d['tasks'] = [m.message for m in self.messages]
+        return d
 
     def __str__(self):
         return "{} {}".format(self.firstname, self.lastname)
