@@ -100,7 +100,12 @@ class Base(AdminLinksMixin):
         if hasattr(self, "description"):
             return "\n".join(self.description.splitlines()[:3])
 
-    
+    @property
+    def short_content(self):
+        if hasattr(self, "content"):
+            return "\n".join(self.content.splitlines()[:3])
+
+
     @property
     def created_at_short(self):
         return self.created_at.strftime("%Y-%m-%d")

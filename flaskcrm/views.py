@@ -29,7 +29,8 @@ class EnhancedModelView(ModelView):
         },
     }
     column_labels = {
-        'short_description': 'Description'
+        'short_description': 'Description',
+        'short_content': 'Content',
     }
 
     def get_filter_arg_helper(self, filter_name, filter_op='equals'):
@@ -409,7 +410,7 @@ class CommentModelView(EnhancedModelView):
                   'company', 'contact', 'organization', 'project', 'sprint', 'task',
                   'link', 'deal', 'sprint')
     form_edit_rules = ('content',)
-    column_list = ('id', 'content')
+    column_list = ('id', 'short_content')
     column_searchable_list = ('id', 'content')
     column_sortable_list = ('content',)
 
@@ -468,7 +469,7 @@ class MessageModelView(EnhancedModelView):
 
     form_edit_rules = ('title', 'author', 'content', 'channel',
                        'time_tosend', 'time_sent',)
-    column_list = ('author', 'title', 'content',
+    column_list = ('author', 'title', 'short_content',
                    'company', 'contact', 'deal', 'organizaton', 'task', 'project', 'sprint')
     column_searchable_list = ('title', 'content')
     column_sortable_list = ('title', 'author')
