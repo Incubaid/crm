@@ -25,7 +25,6 @@ linked to
 - description 
 - techid (str, is to describe some technical identification)
 - category
-- accessmethods (list of accessmethod)
 - cost
 - currency
 - vendor (is link to a company, optional)
@@ -44,8 +43,8 @@ linked to
 - name
 - description
 - type (ethernet, bridge, vxlanbridge, serial)
-- connection 
-- addresses (list)
+- connections (list)
+- netaddresses (list)
 
 ## component
 
@@ -63,7 +62,7 @@ linked to
 - comments
 - istemplate (boolean)
 
-## address
+## netaddress
 
 - description (normally empty)
 - type (OOB, MGMT, PUB, OVERLAY): auto filled in when network range selected
@@ -78,11 +77,9 @@ linked to
 - type (OOB, MGMT, PUB, OVERLAY)
 - techid (str, is to describe some technical identification)
 - state (NEW, OK, DOWN)
-- from
-- to
 - ipv6 (boolean)
 - range e.g. 192.168.10.0/24
-- gateway
+- gateway e.g. 192.168.10.254
 
 ## connection
 
@@ -96,11 +93,6 @@ linked to
 - state (NEW, OK, DOWN)
 
 
-
-## accessmethod
-
-- description
-- 
 
 
 # remarks
