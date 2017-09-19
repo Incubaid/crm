@@ -1,305 +1,440 @@
 from enum import Enum
-from datetime import datetime, date
-from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
+
 from sqlalchemy.event import listen
-import string
-import random
+
+from database import db, BaseModel
 
 
-db = SQLAlchemy()  # init later in app.py
-db.session.autocommit = True
+class Telephone(db.Model, BaseModel):
 
-
-def generate_id(mapper, connect, target):
-    target.generate_id()
-
-class AdminLinksMixin:
-    ADMIN_EDIT_LINK = "/{modelname}/edit/?id={modelid}"
-    #&url=/{modelname}/"
-    ADMIN_LIST_LINK = "/{modelname}/"
-    # &url=/{modelname}/"
-    ADMIN_VIEW_LINK = "/{modelname}/details/?id={modelid}"
-    ADMIN_CREATE_LINK = "/{modelname}/new/?id={modelid}"  # &url=/{modelname}/"
-
-    ADMIN_EDIT_LINK_MODAL = "/{modelname}/edit/?id={modelid}"  # &modal=True"
-    # &modal=True"
-    ADMIN_VIEW_LINK_MODAL = "/{modelname}/details/?id={modelid}"
-    ADMIN_CREATE_LINK_MODAL = "/{modelname}/new/?url=/{modelname}"
-
-    def admin_list_link(self):
-        modelname = self.__class__.__name__.lower()
-        return AdminLinksMixin.ADMIN_LIST_LINK.format(modelname=modelname)
-
-    def admin_edit_link(self):
-        modelname = self.__class__.__name__.lower()
-        return AdminLinksMixin.ADMIN_EDIT_LINK.format(modelname=modelname, modelid=self.id)
-
-    def admin_view_link(self):
-        modelname = self.__class__.__name__.lower()
-
-        return AdminLinksMixin.ADMIN_VIEW_LINK.format(modelname=modelname, modelid=self.id)
-
-    def admin_create_link(self):
-        modelname = self.__class__.__name__.lower()
-
-        return AdminLinksMixin.ADMIN_CREATE_LINK.format(modelname=modelname, modelid=self.id)
-
-    def admin_edit_link_modal(self):
-        modelname = self.__class__.__name__.lower()
-        return AdminLinksMixin.ADMIN_EDIT_LINK_MODAL.format(modelname=modelname, modelid=self.id)
-
-    def admin_view_link_modal(self):
-        modelname = self.__class__.__name__.lower()
-        return AdminLinksMixin.ADMIN_VIEW_LINK_MODAL.format(modelname=modelname, modelid=self.id)
-
-    def admin_create_link_modal(self):
-        modelname = self.__class__.__name__.lower()
-
-        return AdminLinksMixin.ADMIN_CREATE_LINK_MODAL.format(modelname=modelname, modelid=self.id)
-
-    @property
-    def uid(self):
-        return self.id
-
-
-class Base(AdminLinksMixin):
-
-    id = db.Column(db.String(5), primary_key=True)
-    # timestamps
-    created_at = db.Column(
-        db.TIMESTAMP, default=datetime.utcnow, nullable=False)
-    updated_at = db.Column(db.TIMESTAMP, default=datetime.utcnow,
-                           onupdate=datetime.utcnow, nullable=False)    
-
-    def _newuid(self):
-        uid = ''.join(random.sample(string.ascii_lowercase + string.digits, 5))
-        return uid
-
-    def generate_id(self):
-        print("##GENID:{}".format(str(self)))
-        if not self.id:            
-            while True:
-                uid = self._newuid()
-                currentobjs = self.query.filter_by(id=uid)
-                if currentobjs.count() == 0:
-                    self.id = uid
-                    return
-
-    def as_dict(self, resolve_refs=True):
-
-        d = {
-            'datetime_fields': []
-        }
-
-        for c in self.__table__.columns:
-            k = c.name
-            v = getattr(self, c.name)
-            d[k] = v
-
-            # ujson only serialize datetimes into epoch
-            if isinstance(v, datetime) or isinstance(v, date):
-                d[k] = v.strftime("%Y-%m-%d %H:%M:%S")
-                d['datetime_fields'].append(k)
-            # translate F.Ks to dicts
-            elif c.foreign_keys and resolve_refs:
-                if getattr(self, k):
-                    k = k.replace('_id', '')
-                    v = getattr(self, k)
-                    if v:
-                        d[k] = v.as_dict(resolve_refs=False)
-        # list backrefs
-        if resolve_refs:
-            from sqlalchemy import inspect
-            backrefs = set(inspect(self.__class__).attrs.keys()) - set([c.name for c in self.__table__.columns])
-            for backref in  backrefs:
-                d[backref] = d.get(backref, [])
-                v = getattr(self, backref)
-                try:
-                    for item in v:
-                            d[backref].append(item.as_dict(resolve_refs=False))
-                except TypeError:
-                    # not iterable
-                    pass
-
-
-
-        return d
-
-    @property
-    def short_description(self):
-        if hasattr(self, "description"):
-            return "\n".join(self.description.splitlines()[:3])
-
-    @property
-    def short_content(self):
-        if hasattr(self, "content"):
-            return "\n".join(self.content.splitlines()[:3])
-
-
-    @property
-    def created_at_short(self):
-        return self.created_at.strftime("%Y-%m-%d")
- 
-    @property
-    def updated_at_short(self):
-        return self.updated_at.strftime("%Y-%m-%d")
- 
-class Telephone(db.Model, Base):
     __tablename__ = "telephones"
-    number = db.Column(db.String(20), nullable=False)
-    contact_id = db.Column(db.String(5), db.ForeignKey("contacts.id"))
-    company_id = db.Column(db.String(5), db.ForeignKey("companies.id"))
-    user_id = db.Column(db.String(5), db.ForeignKey("users.id"))
+
+    number = db.Column(
+        db.String(20),
+        nullable=False
+    )
+
+    contact_id = db.Column(
+        db.String(5),
+        db.ForeignKey("contacts.id")
+    )
+
+    company_id = db.Column(
+        db.String(5),
+        db.ForeignKey("companies.id")
+    )
+
+    user_id = db.Column(
+        db.String(5),
+        db.ForeignKey("users.id")
+    )
 
     def __str__(self):
         return self.number
 
 
-class Email(db.Model, Base):
+class Email(db.Model, BaseModel):
+
     __tablename__ = "emails"
-    email = db.Column(db.String(150), nullable=False)
-    contact_id = db.Column(db.String(5), db.ForeignKey("contacts.id"))
-    company_id = db.Column(db.String(5), db.ForeignKey("companies.id"))
-    user_id = db.Column(db.String(5), db.ForeignKey("users.id"))
-    organization_id = db.Column(db.String(5), db.ForeignKey("organizations.id"))
+
+    email = db.Column(
+        db.String(150),
+        nullable=False
+    )
+
+    contact_id = db.Column(
+        db.String(5),
+        db.ForeignKey("contacts.id")
+    )
+
+    company_id = db.Column(
+        db.String(5),
+        db.ForeignKey("companies.id")
+    )
+
+    user_id = db.Column(
+        db.String(5),
+        db.ForeignKey("users.id")
+    )
+
+    organization_id = db.Column(
+        db.String(5),
+        db.ForeignKey("organizations.id")
+    )
 
     def __str__(self):
         return self.email
 
 
-class Contact(db.Model, Base):
+class Contact(db.Model, BaseModel):
+
     __tablename__ = "contacts"
-    firstname = db.Column(db.String(15), nullable=False)
-    lastname = db.Column(db.String(15))
-    description = db.Column(db.Text()) 
-    message_channels = db.Column(db.String(20), default="")
+
+    firstname = db.Column(
+        db.String(15),
+        nullable=False
+    )
+
+    lastname = db.Column(
+        db.String(15)
+    )
+
+    description = db.Column(
+        db.Text()
+    )
+
+    message_channels = db.Column(
+        db.String(20),
+        default=''
+    )
 
     # relations
-    telephones = db.relationship("Telephone", backref="contact")
-    emails = db.relationship("Email", backref="contact")
-    deals = db.relationship("Deal", backref="contact")
-    comments = db.relationship("Comment", backref="contact")
-    tasks = db.relationship("Task", backref="contact")
-    messages = db.relationship("Message", backref="contact")
-    links = db.relationship("Link", backref="contact")
+    telephones = db.relationship(
+        "Telephone",
+        backref="contact"
+    )
 
-    owner_id = db.Column(db.String(5), db.ForeignKey('users.id')) 
-    ownerbackup_id = db.Column(db.String(5), db.ForeignKey('users.id')) 
-    parent_id = db.Column(db.String(5), db.ForeignKey('users.id'))
+    emails = db.relationship(
+        "Email",
+        backref="contact"
+    )
 
-    def as_dict(self, *args, **kwargs):
-        d = super(Contact, self).as_dict(*args, **kwargs)
-        # d['emails'] = [e.email for e in self.emails]
-        # d['telephones'] = [t.number for t in self.telephones]
-        # d['messages'] = [m.message for m in self.messages]
-        # d['tasks'] = [m.message for m in self.messages]
-        return d
+    deals = db.relationship(
+        "Deal",
+        backref="contact"
+    )
+
+    comments = db.relationship(
+        "Comment",
+        backref="contact"
+    )
+
+    tasks = db.relationship(
+        "Task",
+        backref="contact"
+    )
+
+    messages = db.relationship(
+        "Message",
+        backref="contact"
+    )
+
+    links = db.relationship(
+        "Link",
+        backref="contact"
+    )
+
+    owner_id = db.Column(
+        db.String(5),
+        db.ForeignKey('users.id')
+    )
+
+    ownerbackup_id = db.Column(
+        db.String(5),
+        db.ForeignKey('users.id')
+    )
+
+    parent_id = db.Column(
+        db.String(5),
+        db.ForeignKey('users.id')
+    )
 
     def __str__(self):
         return "{} {}".format(self.firstname, self.lastname)
 
 
+class CompaniesContacts(db.Model, BaseModel):
 
-class CompaniesContacts(db.Model, Base):
     __tablename__ = 'companies_contacts'
-    company_id = db.Column(db.String(5), db.ForeignKey('companies.id')) 
-    contact_id = db.Column(db.String(5), db.ForeignKey('contacts.id')) 
+
+    company_id = db.Column(
+        db.String(5),
+        db.ForeignKey('companies.id')
+    )
+
+    contact_id = db.Column(
+        db.String(5),
+        db.ForeignKey('contacts.id')
+    )
 
 
-class Company(db.Model, Base):
+class Company(db.Model, BaseModel):
+
     __tablename__ = "companies"
-    name = db.Column(db.String(255), nullable=False)
-    description = db.Column(db.Text())  # should be markdown.
-    vatnumber = db.Column(db.String(255))
 
-    # relations
-    telephones = db.relationship("Telephone", backref="company")
-    emails = db.relationship("Email", backref="company")
-    deals = db.relationship("Deal", backref="company")
-    messages = db.relationship("Message", backref="company")
-    tasks = db.relationship("Task", backref="company")
-    comments = db.relationship("Comment", backref="company")
+    name = db.Column(
+        db.String(255),
+        nullable=False
+    )
 
-    contacts = db.relationship("Contact", secondary="companies_contacts",
-        backref=db.backref("companies"), lazy="dynamic")
+    # should be markdown.
+    description = db.Column(
+        db.Text()
+    )
 
-    owner_id = db.Column(db.String(5), db.ForeignKey('users.id')) 
-    ownerbackup_id = db.Column(db.String(5), db.ForeignKey('users.id'))
+    vatnumber = db.Column(
+        db.String(255)
+    )
+
+    telephones = db.relationship(
+        "Telephone",
+        backref="company"
+    )
+
+    emails = db.relationship(
+        "Email",
+        backref="company"
+    )
+
+    deals = db.relationship(
+        "Deal",
+        backref="company"
+    )
+
+    messages = db.relationship(
+        "Message",
+        backref="company"
+    )
+
+    tasks = db.relationship(
+        "Task",
+        backref="company"
+    )
+
+    comments = db.relationship(
+        "Comment",
+        backref="company"
+    )
+
+    contacts = db.relationship(
+        "Contact",
+        secondary="companies_contacts",
+        backref=db.backref("companies"),
+        lazy="dynamic")
+
+    owner_id = db.Column(
+        db.String(5),
+        db.ForeignKey('users.id')
+    )
+
+    ownerbackup_id = db.Column(
+        db.String(5),
+        db.ForeignKey('users.id')
+    )
 
     def __str__(self):
         return self.name
 
-class User(db.Model, Base):
+
+class User(db.Model, BaseModel):
+
     __tablename__ = "users"
 
-    firstname = db.Column(db.String(15), nullable=False)
-    lastname = db.Column(db.String(15))
-    description = db.Column(db.Text())  # should be markdown.
-    message_channels = db.Column(db.String(10), default="")
+    firstname = db.Column(
+        db.String(15),
+        nullable=False
+    )
 
-    # relations
-    telephones = db.relationship("Telephone", backref="user")
-    emails = db.relationship("Email", backref="user")
+    lastname = db.Column(
+        db.String(15)
+    )
 
-    # organizations = db.relationship("UsersOrganizations", backref="users")
+    # should be markdown.
+    description = db.Column(
+        db.Text()
+    )
 
-    comments = db.relationship("Comment", backref="user")
-    messages = db.relationship("Message", backref="user")
-    links = db.relationship("Link", backref="user")
+    message_channels = db.Column(
+        db.String(10),
+        default=''
+    )
 
-    ownsContacts = db.relationship("Contact", backref="owner", primaryjoin=("User.id==Contact.owner_id"))
-    ownsAsBackupContacts = db.relationship("Contact", backref="ownerbackup", primaryjoin="User.id==Contact.ownerbackup_id")
+    telephones = db.relationship(
+        "Telephone",
+        backref="user"
+    )
 
-    ownsCompanies = db.relationship("Company", backref="owner", primaryjoin=("User.id==Company.owner_id"))
-    ownsAsBackupCompanies = db.relationship("Company", backref="ownerbackup", primaryjoin="User.id==Company.ownerbackup_id")
+    emails = db.relationship(
+        "Email",
+        backref="user"
+    )
 
-    ownsOrganizations = db.relationship("Organization", backref="owner", primaryjoin=("User.id==Organization.owner_id"))
-    ownsSprints = db.relationship("Sprint", backref="owner", primaryjoin=("User.id==Sprint.owner_id"))
+    comments = db.relationship(
+        "Comment",
+        backref="user"
+    )
 
-    promoterProjects = db.relationship("Project", backref="promoter", primaryjoin="User.id==Project.promoter_id")
-    guardianProjects = db.relationship("Project", backref="guardian", primaryjoin="User.id==Project.guardian_id")
+    messages = db.relationship(
+        "Message",
+        backref="user"
+    )
+
+    links = db.relationship(
+        "Link",
+        backref="user"
+    )
+
+    ownsContacts = db.relationship(
+        "Contact",
+        backref="owner",
+        primaryjoin=("User.id==Contact.owner_id")
+    )
+
+    ownsAsBackupContacts = db.relationship(
+        "Contact",
+        backref="ownerbackup",
+        primaryjoin="User.id==Contact.ownerbackup_id"
+    )
+
+    ownsCompanies = db.relationship(
+        "Company",
+        backref="owner",
+        primaryjoin=("User.id==Company.owner_id")
+    )
+
+    ownsAsBackupCompanies = db.relationship(
+        "Company",
+        backref="ownerbackup",
+        primaryjoin="User.id==Company.ownerbackup_id"
+    )
+
+    ownsOrganizations = db.relationship(
+        "Organization",
+        backref="owner",
+        primaryjoin=("User.id==Organization.owner_id")
+    )
+
+    ownsSprints = db.relationship(
+        "Sprint",
+        backref="owner",
+        primaryjoin=("User.id==Sprint.owner_id")
+    )
+
+    promoterProjects = db.relationship(
+        "Project",
+        backref="promoter",
+        primaryjoin="User.id==Project.promoter_id"
+    )
+
+    guardianProjects = db.relationship(
+        "Project",
+        backref="guardian",
+        primaryjoin="User.id==Project.guardian_id"
+    )
 
     def __str__(self):
         return "{} {}".format(self.firstname, self.lastname)
 
-#  manytomany through table.
-class UsersOrganizations(db.Model, Base):
+
+class UsersOrganizations(db.Model, BaseModel):
+    """
+    Many To Many Through table
+    """
     __tablename__ = 'users_organizations'
-    user_id = db.Column(db.String(5), db.ForeignKey('users.id'))
-    organization_id = db.Column(db.String(5), db.ForeignKey('organizations.id')) 
 
-class UsersSprints(db.Model, Base):
+    user_id = db.Column(
+        db.String(5),
+        db.ForeignKey('users.id')
+    )
+
+    organization_id = db.Column(
+        db.String(5),
+        db.ForeignKey('organizations.id')
+    )
+
+
+class UsersSprints(db.Model, BaseModel):
+    """
+        Many To Many Through table
+    """
+
     __tablename__ = 'users_sprints'
-    user_id = db.Column(db.String(5), db.ForeignKey('users.id'))
-    sprint_id = db.Column(db.String(5), db.ForeignKey('sprints.id')) 
 
-class ContactsSprints(db.Model, Base):
+    user_id = db.Column(
+        db.String(5),
+        db.ForeignKey('users.id')
+    )
+
+    sprint_id = db.Column(
+        db.String(5),
+        db.ForeignKey('sprints.id')
+    )
+
+
+class ContactsSprints(db.Model, BaseModel):
+    """
+        Many To Many Through table
+    """
+
     __tablename__ = 'contacts_sprints'
-    contact_id = db.Column(db.String(5), db.ForeignKey('contacts.id'))
-    sprint_id = db.Column(db.String(5), db.ForeignKey('sprints.id')) 
+
+    contact_id = db.Column(
+        db.String(5),
+        db.ForeignKey('contacts.id')
+    )
+
+    sprint_id = db.Column(
+        db.String(5),
+        db.ForeignKey('sprints.id')
+    )
 
 
+class Organization(db.Model, BaseModel):
 
-class Organization(db.Model, Base):
     __tablename__ = "organizations"
 
-    name = db.Column(db.String(255), nullable=False)
-    description = db.Column(db.Text())  # should be markdown.
+    name = db.Column(
+        db.String(255),
+        nullable=False
+    )
 
+    # should be markdown
+    description = db.Column(
+        db.Text()
+    )
 
-    emails = db.relationship("Email", backref="organization")
-    tasks = db.relationship("Task", backref="organization")
-    comments = db.relationship("Comment", backref="organization")
+    emails = db.relationship(
+        "Email",
+        backref="organization"
+    )
+
+    tasks = db.relationship(
+        "Task",
+        backref="organization"
+    )
+
+    comments = db.relationship(
+        "Comment",
+        backref="organization"
+    )
     
-    users = db.relationship("User", secondary="users_organizations",
-        backref=db.backref("organizations"), lazy="dynamic")
+    users = db.relationship(
+        "User",
+        secondary="users_organizations",
+        backref=db.backref("organizations"),
+        lazy="dynamic"
+    )
 
-    links = db.relationship("Link", backref="organization")
-    messages = db.relationship("Message", backref="organization")
+    links = db.relationship(
+        "Link",
+        backref="organization"
+    )
 
-    owner_id = db.Column(db.String(5), db.ForeignKey('users.id')) 
-    parent_id = db.Column(db.String(5), db.ForeignKey("organizations.id"))
+    messages = db.relationship(
+        "Message",
+        backref="organization"
+    )
 
+    owner_id = db.Column(
+        db.String(5),
+        db.ForeignKey('users.id')
+    )
+
+    parent_id = db.Column(
+        db.String(5),
+        db.ForeignKey("organizations.id")
+    )
 
     def __str__(self):
         return self.name
@@ -317,50 +452,137 @@ class DealCurrency(Enum):
     USD, EUR, AED, GBP = range(4)
 
 
-class Deal(db.Model, Base):
+class Deal(db.Model, BaseModel):
+
     __tablename__ = "deals"
-    name = db.Column(db.String(255), nullable=False)
-    description = db.Column(db.Text())  # should be markdown.
-    amount = db.Column(db.Integer)  # default to int.
-    currency = db.Column(db.Enum(DealCurrency), default=DealCurrency.EUR)
-    deal_type = db.Column(db.Enum(DealType), default=DealType.HOSTER)
-    deal_state = db.Column(db.Enum(DealState), default=DealState.NEW)
 
-    closed_at = db.Column(db.TIMESTAMP, nullable=True)  # should be?
+    name = db.Column(
+        db.String(255),
+        nullable=False
+    )
 
-    # relations
-    company_id = db.Column(db.String(5), db.ForeignKey("companies.id"))
-    contact_id = db.Column(db.String(5), db.ForeignKey("contacts.id"))
+    # should be markdown.
+    description = db.Column(
+        db.Text()
+    )
 
-    tasks = db.relationship("Task", backref="deal")
-    comments = db.relationship("Comment", backref="deal")
-    messages = db.relationship("Message", backref="deal")
-    links = db.relationship("Link", backref="deal")
+    amount = db.Column(
+        db.Integer
+    )
+
+    currency = db.Column(
+        db.Enum(
+            DealCurrency),
+            default=DealCurrency.EUR
+    )
+
+    deal_type = db.Column(
+        db.Enum(
+            DealType),
+            default=DealType.HOSTER
+    )
+
+    deal_state = db.Column(
+        db.Enum(
+            DealState),
+            default=DealState.NEW
+    )
+
+    closed_at = db.Column(
+        db.TIMESTAMP,
+        nullable=True
+    )
+
+    company_id = db.Column(
+        db.String(5),
+        db.ForeignKey("companies.id")
+    )
+
+    contact_id = db.Column(
+        db.String(5),
+        db.ForeignKey("contacts.id")
+    )
+
+    tasks = db.relationship(
+        "Task",
+        backref="deal"
+    )
+
+    comments = db.relationship(
+        "Comment",
+        backref="deal"
+    )
+
+    messages = db.relationship(
+        "Message",
+        backref="deal"
+    )
+
+    links = db.relationship(
+        "Link",
+        backref="deal"
+    )
 
     def __str__(self):
         return self.name
 
 
-#  manytomany through table.
-class UsersProjects(db.Model, Base):
+class UsersProjects(db.Model, BaseModel):
+    """
+    Many To Many Through Table
+    """
     __tablename__ = 'users_projects'
-    user_id = db.Column(db.String(5), db.ForeignKey('users.id')) 
-    project_id = db.Column(db.String(5), db.ForeignKey('projects.id'))
 
-class ContactsProjects(db.Model, Base):
+    user_id = db.Column(
+        db.String(5),
+        db.ForeignKey('users.id')
+    )
+
+    project_id = db.Column(
+        db.String(5),
+        db.ForeignKey('projects.id')
+    )
+
+
+class ContactsProjects(db.Model, BaseModel):
+    """
+        Many To Many Through Table
+    """
+
     __tablename__ = 'contacts_projects'
-    contact_id = db.Column(db.String(5), db.ForeignKey('contacts.id'))
-    project_id = db.Column(db.String(5), db.ForeignKey('projects.id'))
+
+    contact_id = db.Column(
+        db.String(5),
+        db.ForeignKey('contacts.id')
+    )
+
+    project_id = db.Column(
+        db.String(5),
+        db.ForeignKey('projects.id')
+    )
 
 
-class Project(db.Model, Base):
+class Project(db.Model, BaseModel):
+
     __tablename__ = "projects"
 
-    name = db.Column(db.String(255), nullable=False)
-    description = db.Column(db.Text())  # should be markdown.
+    name = db.Column(
+        db.String(255),
+        nullable=False
+    )
 
-    start_date = db.Column(db.TIMESTAMP)
-    deadline = db.Column(db.TIMESTAMP)
+    # should be markdown.
+    description = db.Column(
+        db.Text()
+    )
+
+    start_date = db.Column(
+        db.TIMESTAMP
+    )
+
+    deadline = db.Column(
+        db.TIMESTAMP
+    )
 
     # relations
     comments = db.relationship("Comment", backref="project")
@@ -384,78 +606,194 @@ class Project(db.Model, Base):
         return self.name
 
 
-class Sprint(db.Model, Base):
+class Sprint(db.Model, BaseModel):
+
     __tablename__ = "sprints"
-    name = db.Column(db.String(255), nullable=False)
-    description = db.Column(db.Text())  # should be markdown.
-    start_date = db.Column(db.TIMESTAMP)
-    deadline = db.Column(db.TIMESTAMP)
 
-    # relations
-    # users = db.relationship("User", secondary="users_sprints",backref=db.backref("userss"))
-    contacts = db.relationship("Contact", secondary="contacts_sprints",backref=db.backref("sprints"))
+    name = db.Column(
+        db.String(255),
+        nullable=False
+    )
 
-    tasks = db.relationship("Task", backref="sprint")
-    comments = db.relationship("Comment", backref="sprint")
-    links = db.relationship("Link", backref="sprint")
-    messages = db.relationship("Message", backref="sprint")
+    # should be markdown.
+    description = db.Column(
+        db.Text()
+    )
 
-    owner_id = db.Column(db.String(5), db.ForeignKey('users.id')) 
-    project_id = db.Column(db.String(5), db.ForeignKey('projects.id')) 
+    start_date = db.Column(
+        db.TIMESTAMP
+    )
 
-    
-    def percentage_done():
+    deadline = db.Column(
+        db.TIMESTAMP
+    )
+
+    contacts = db.relationship(
+        "Contact",
+        secondary="contacts_sprints",
+        backref=db.backref("sprints")
+    )
+
+    tasks = db.relationship(
+        "Task",
+        backref="sprint"
+    )
+
+    comments = db.relationship(
+        "Comment",
+        backref="sprint"
+    )
+
+    links = db.relationship(
+        "Link",
+        backref="sprint"
+    )
+
+    messages = db.relationship(
+        "Message",
+        backref="sprint"
+    )
+
+    owner_id = db.Column(
+        db.String(5),
+        db.ForeignKey('users.id')
+    )
+
+    project_id = db.Column(
+        db.String(5),
+        db.ForeignKey('projects.id')
+    )
+
+    @property
+    def percentage_done(self):
         pass
 
-    def hours_open():
+    @property
+    def hours_open(self):
         pass
 
-    def hours_open_person_avg():
+    @property
+    def hours_open_person_avg(self):
         pass
 
-    def hours_open_person_max():
+    @property
+    def hours_open_person_max(self):
         pass
 
     def __str__(self):
         return self.name
 
 
-class Comment(db.Model, Base):
+class Comment(db.Model, BaseModel):
+
     __tablename__ = "comments"
 
-    content = db.Column(db.Text())  # should be markdown.
+    # should be markdown.
+    content = db.Column(
+        db.Text()
+    )
 
-    # relations
-    company_id = db.Column(db.String(5), db.ForeignKey("companies.id"))
-    contact_id = db.Column(db.String(5), db.ForeignKey("contacts.id"))
-    user_id = db.Column(db.String(5), db.ForeignKey("users.id"))
-    deal_id = db.Column(db.String(5), db.ForeignKey("deals.id"))
-    task_id = db.Column(db.String(5), db.ForeignKey("tasks.id"))
-    organization_id = db.Column(db.String(5), db.ForeignKey("organizations.id"))
-    project_id = db.Column(db.String(5), db.ForeignKey("projects.id"))
-    sprint_id = db.Column(db.String(5), db.ForeignKey("sprints.id"))
-    link_id = db.Column(db.String(5), db.ForeignKey("links.id"))
+    company_id = db.Column(
+        db.String(5),
+        db.ForeignKey("companies.id")
+    )
+
+    contact_id = db.Column(
+        db.String(5),
+        db.ForeignKey("contacts.id")
+    )
+
+    user_id = db.Column(
+        db.String(5),
+        db.ForeignKey("users.id")
+    )
+
+    deal_id = db.Column(
+        db.String(5),
+        db.ForeignKey("deals.id")
+    )
+
+    task_id = db.Column(
+        db.String(5),
+        db.ForeignKey("tasks.id")
+    )
+
+    organization_id = db.Column(
+        db.String(5),
+        db.ForeignKey("organizations.id")
+    )
+
+    project_id = db.Column(
+        db.String(5),
+        db.ForeignKey("projects.id")
+    )
+
+    sprint_id = db.Column(
+        db.String(5),
+        db.ForeignKey("sprints.id")
+    )
+
+    link_id = db.Column(
+        db.String(5),
+        db.ForeignKey("links.id")
+    )
 
     def __str__(self):
         return self.content
 
 
-class Link(db.Model, Base):
+class Link(db.Model, BaseModel):
+
     __tablename__ = "links"
 
-    url = db.Column(db.String(255), nullable=False)
-    labels = db.Column(db.Text())  
+    url = db.Column(
+        db.String(255),
+        nullable=False
+    )
 
-    # relations
-    contact_id = db.Column(db.String, db.ForeignKey("contacts.id"))
-    user_id = db.Column(db.String, db.ForeignKey("users.id"))
-    deal_id = db.Column(db.String, db.ForeignKey("deals.id"))
-    task_id = db.Column(db.String, db.ForeignKey("tasks.id"))
-    organization_id = db.Column(db.String, db.ForeignKey("organizations.id"))
-    project_id = db.Column(db.String, db.ForeignKey("projects.id"))
-    sprint_id = db.Column(db.String, db.ForeignKey("sprints.id"))
+    labels = db.Column(
+        db.Text()
+    )
 
-    comments = db.relationship("Comment", backref="link")
+    contact_id = db.Column(
+        db.String,
+        db.ForeignKey("contacts.id")
+    )
+
+    user_id = db.Column(
+        db.String,
+        db.ForeignKey("users.id")
+    )
+
+    deal_id = db.Column(
+        db.String,
+        db.ForeignKey("deals.id")
+    )
+
+    task_id = db.Column(
+        db.String,
+        db.ForeignKey("tasks.id")
+    )
+
+    organization_id = db.Column(
+        db.String,
+        db.ForeignKey("organizations.id")
+    )
+
+    project_id = db.Column(
+        db.String,
+        db.ForeignKey("projects.id")
+    )
+
+    sprint_id = db.Column(
+        db.String,
+        db.ForeignKey("sprints.id")
+    )
+
+    comments = db.relationship(
+        "Comment",
+        backref="link"
+    )
 
     def __str__(self):
         return self.url
@@ -468,38 +806,112 @@ class TaskType(Enum):
 class TaskPriority(Enum):
     MINOR, NORMAL, URGENT, CRITICAL = range(4)
 
+
 class TaskState(Enum):
     NEW, PROGRESS, QUESTION, VERIFICATION, CLOSED = range(5)
 
-class Task(db.Model, Base):
+
+class Task(db.Model, BaseModel):
+
     __tablename__ = "tasks"
 
-    title = db.Column(db.String(255), nullable=False)
-    description = db.Column(db.Text())
-    type = db.Column(db.Enum(TaskType), default=TaskType.FEATURE)
-    priority = db.Column(db.Enum(TaskPriority), default=TaskPriority.MINOR)
-    state = db.Column(db.Enum(TaskState), default=TaskState.NEW)
-    
-    assignment_id = db.Column(db.String, db.ForeignKey("users.id"))
+    title = db.Column(
+        db.String(255),
+        nullable=False
+    )
 
-    deadline = db.Column(db.TIMESTAMP, default=datetime.utcnow, nullable=False)
-    eta = db.Column(db.TIMESTAMP, default=datetime.utcnow, nullable=False)
-    
-    time_estimate = db.Column(db.Integer, default=0)  # in hours again
-    time_done = db.Column(db.Integer, default=0)
+    description = db.Column(
+        db.Text()
+    )
 
-    # relations
-    company_id = db.Column(db.String, db.ForeignKey("companies.id"))
-    contact_id = db.Column(db.String, db.ForeignKey("contacts.id"))
-    user_id = db.Column(db.String, db.ForeignKey("users.id"))
-    deal_id = db.Column(db.String, db.ForeignKey("deals.id"))
-    organization_id = db.Column(db.String, db.ForeignKey("organizations.id"))
-    project_id = db.Column(db.String, db.ForeignKey("projects.id"))
+    type = db.Column(
+        db.Enum(TaskType),
+        default=TaskType.FEATURE
+    )
+
+    priority = db.Column(
+        db.Enum(TaskPriority),
+        default=TaskPriority.MINOR
+    )
+
+    state = db.Column(
+        db.Enum(TaskState),
+        default=TaskState.NEW
+    )
+    
+    assignment_id = db.Column(
+        db.String,
+        db.ForeignKey("users.id")
+    )
+
+    deadline = db.Column(
+        db.TIMESTAMP,
+        default=datetime.utcnow,
+        nullable=False)
+
+    eta = db.Column(
+        db.TIMESTAMP,
+        default=datetime.utcnow,
+        nullable=False
+    )
+
+    # in hours
+    time_estimate = db.Column(
+        db.Integer,
+        default=0
+    )
+
+    time_done = db.Column(
+        db.Integer,
+        default=0
+    )
+
+    company_id = db.Column(
+        db.String,
+        db.ForeignKey("companies.id")
+    )
+
+    contact_id = db.Column(
+        db.String,
+        db.ForeignKey("contacts.id")
+    )
+
+    user_id = db.Column(
+        db.String,
+        db.ForeignKey("users.id")
+    )
+
+    deal_id = db.Column(
+        db.String,
+        db.ForeignKey("deals.id")
+    )
+
+    organization_id = db.Column(
+        db.String,
+        db.ForeignKey("organizations.id")
+    )
+
+    project_id = db.Column(
+        db.String,
+        db.ForeignKey("projects.id")
+    )
+
     sprint_id = db.Column(db.String, db.ForeignKey("sprints.id"))
 
-    comments = db.relationship("Comment", backref="task")
-    messages = db.relationship("Message", backref="task")
-    links = db.relationship("Link", backref="task")
+    comments = db.relationship(
+        "Comment",
+        backref="task"
+    )
+
+    messages = db.relationship(
+        "Message",
+        backref="task"
+    )
+
+    links = db.relationship(
+        "Link",
+        backref="task"
+    )
 
     @property
     def percent_completed(self):
@@ -516,29 +928,76 @@ class Task(db.Model, Base):
         return self.title
 
 
+class Message(db.Model, BaseModel):
 
-# class MessageChannel(Enum):
-#     TELEGRAM, EMAIL, SMS, INTERCOM = range(4)
-
-
-class Message(db.Model, Base):
     __tablename__ = "messages"
-    title = db.Column(db.String(255), nullable=False)
-    content = db.Column(db.Text()) 
-    channel = db.Column(db.String(255)) 
-    time_tosend = db.Column(db.TIMESTAMP)
-    time_sent = db.Column(db.TIMESTAMP)
-    author = db.relationship("User", backref="createdMessages", uselist=False)
-    # relations
-    company_id = db.Column(db.String, db.ForeignKey("companies.id"))
-    contact_id = db.Column(db.String, db.ForeignKey("contacts.id"))
-    user_id = db.Column(db.String, db.ForeignKey("users.id"))
-    deal_id = db.Column(db.String, db.ForeignKey("deals.id"))
-    task_id = db.Column(db.String, db.ForeignKey("tasks.id"))
+
+    title = db.Column(
+        db.String(255),
+        nullable=False
+    )
+
+    content = db.Column(
+        db.Text()
+    )
+
+    channel = db.Column(
+        db.String(255)
+    )
+
+    time_tosend = db.Column(
+        db.TIMESTAMP
+    )
+
+    time_sent = db.Column(
+        db.TIMESTAMP
+    )
+
+    author = db.relationship(
+        "User",
+        backref="createdMessages",
+        uselist=False
+    )
+
+    company_id = db.Column(
+        db.String,
+        db.ForeignKey("companies.id")
+    )
+
+    contact_id = db.Column(
+        db.String,
+        db.ForeignKey("contacts.id")
+    )
+
+    user_id = db.Column(
+        db.String,
+        db.ForeignKey("users.id")
+    )
+
+    deal_id = db.Column(
+        db.String,
+        db.ForeignKey("deals.id")
+    )
+
+    task_id = db.Column(
+        db.String,
+        db.ForeignKey("tasks.id")
+    )
+
     organization_id = db.Column(
-        db.String, db.ForeignKey("organizations.id"))
-    project_id = db.Column(db.String, db.ForeignKey("projects.id"))
-    sprint_id = db.Column(db.String, db.ForeignKey("sprints.id"))
+        db.String,
+        db.ForeignKey("organizations.id")
+    )
+
+    project_id = db.Column(
+        db.String,
+        db.ForeignKey("projects.id")
+    )
+
+    sprint_id = db.Column(
+        db.String,
+        db.ForeignKey("sprints.id")
+    )
 
     def __str__(self):
         return self.title
@@ -548,7 +1007,7 @@ class Message(db.Model, Base):
         emails = []
         if self.user:
             emails.extend(self.user.emails) 
-        
+
         if self.contact:
             emails.extend(self.contact.emails)
         
@@ -560,7 +1019,6 @@ class Message(db.Model, Base):
         
         return emails
 
-    
     @property
     def destination_emails(self):
         emails = self.destination_emails
@@ -568,18 +1026,27 @@ class Message(db.Model, Base):
             return ",".join([x.email for x in self.destination_emails])
         return "Not destination yet."
  
-    
-class TaskTracking(db.Model, Base):
+
+class TaskTracking(db.Model, BaseModel):
+
     __tablename__ = "tasktrackings"
 
-    remarks = db.Column(db.Text())  # should be markdown.
-    time_done = db.Column(db.Integer, default=0)
+    # should be markdown.
+    remarks = db.Column(
+        db.Text()
+    )
+
+    time_done = db.Column(
+        db.Integer,
+        default=0
+    )
 
     def __str__(self):
-        return "<TaskTracker %s>" % (self.id)
+        return "<TaskTracker %s>" % self.id
 
 
-for m in [Telephone,Email,Contact, User, Company,CompaniesContacts,UsersOrganizations, Comment, Link, \
-         UsersSprints,Organization, Deal,UsersProjects, ContactsProjects, Project, Sprint, Task, User, \
-         Message, TaskTracking]:
-    listen(m, 'before_insert', generate_id)
+def assign_unique_id( mapper, connect, target):
+    target.id = target.uid
+
+for subclass in db.Model.__subclasses__():
+    listen(subclass, 'before_insert', assign_unique_id)
