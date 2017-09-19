@@ -278,7 +278,7 @@ class User(db.Model, BaseModel):
     ownsContacts = db.relationship(
         "Contact",
         backref="owner",
-        primaryjoin=("User.id==Contact.owner_id")
+        primaryjoin="User.id==Contact.owner_id"
     )
 
     ownsAsBackupContacts = db.relationship(
@@ -290,7 +290,7 @@ class User(db.Model, BaseModel):
     ownsCompanies = db.relationship(
         "Company",
         backref="owner",
-        primaryjoin=("User.id==Company.owner_id")
+        primaryjoin="User.id==Company.owner_id"
     )
 
     ownsAsBackupCompanies = db.relationship(
@@ -302,13 +302,19 @@ class User(db.Model, BaseModel):
     ownsOrganizations = db.relationship(
         "Organization",
         backref="owner",
-        primaryjoin=("User.id==Organization.owner_id")
+        primaryjoin="User.id==Organization.owner_id"
     )
 
     ownsSprints = db.relationship(
         "Sprint",
         backref="owner",
-        primaryjoin=("User.id==Sprint.owner_id")
+        primaryjoin="User.id==Sprint.owner_id"
+    )
+
+    ownsAlerts = db.relationship(
+        "Alert",
+        backref="owner",
+        primaryjoin="User.id==Alert.owner_id"
     )
 
     promoterProjects = db.relationship(
@@ -471,21 +477,18 @@ class Deal(db.Model, BaseModel):
     )
 
     currency = db.Column(
-        db.Enum(
-            DealCurrency),
-            default=DealCurrency.EUR
+        db.Enum(DealCurrency),
+        default=DealCurrency.EUR
     )
 
     deal_type = db.Column(
-        db.Enum(
-            DealType),
-            default=DealType.HOSTER
+        db.Enum(DealType),
+        default=DealType.HOSTER
     )
 
     deal_state = db.Column(
-        db.Enum(
-            DealState),
-            default=DealState.NEW
+        db.Enum(DealState),
+        default=DealState.NEW
     )
 
     closed_at = db.Column(
@@ -584,22 +587,60 @@ class Project(db.Model, BaseModel):
         db.TIMESTAMP
     )
 
-    # relations
-    comments = db.relationship("Comment", backref="project")
-    links = db.relationship("Link", backref="project")
-    tasks = db.relationship("Task", backref="project")
-    messages = db.relationship("Message", backref="project")
+    comments = db.relationship(
+        "Comment",
+        backref="project"
+    )
 
-    sprint_id = db.Column(db.String(5), db.ForeignKey('sprints.id')) 
-    sprints = db.relationship("Sprint", backref="project", primaryjoin=("Project.id==Sprint.project_id"))
-    # users = db.relationship("User", secondary="users_projects",backref=db.backref("users"))
-    contacts = db.relationship("Contact", secondary="contacts_projects",backref=db.backref("projects"))
+    links = db.relationship(
+        "Link",
+        backref="project"
+    )
 
-    # #promoter/guardian
-    promoter_id = db.Column(db.String(5), db.ForeignKey('users.id')) 
-    guardian_id = db.Column(db.String(5), db.ForeignKey('users.id')) 
+    tasks = db.relationship(
+        "Task",
+        backref="project"
+    )
 
-    def percentage_done():
+    messages = db.relationship(
+        "Message",
+        backref="project"
+    )
+
+    sprint_id = db.Column(
+        db.String(5),
+        db.ForeignKey('sprints.id')
+    )
+
+    sprints = db.relationship(
+        "Sprint",
+        backref="project",
+        primaryjoin="Project.id==Sprint.project_id"
+    )
+
+    alert_source_id = db.Column(
+        db.String,
+        db.ForeignKey("alertsources.id")
+    )
+
+    contacts = db.relationship(
+        "Contact",
+        secondary="contacts_projects",
+        backref=db.backref("projects")
+    )
+
+    promoter_id = db.Column(
+        db.String(5),
+        db.ForeignKey('users.id')
+    )
+
+    guardian_id = db.Column(
+        db.String(5),
+        db.ForeignKey('users.id')
+    )
+
+    @property
+    def percentage_done(self):
         pass
 
     def __str__(self):
@@ -738,6 +779,16 @@ class Comment(db.Model, BaseModel):
         db.ForeignKey("links.id")
     )
 
+    alert_id = db.Column(
+        db.String,
+        db.ForeignKey("alerts.id")
+    )
+
+    alert_source_id = db.Column(
+        db.String,
+        db.ForeignKey("alertsources.id")
+    )
+
     def __str__(self):
         return self.content
 
@@ -788,6 +839,16 @@ class Link(db.Model, BaseModel):
     sprint_id = db.Column(
         db.String,
         db.ForeignKey("sprints.id")
+    )
+
+    alert_id = db.Column(
+        db.String,
+        db.ForeignKey("alerts.id")
+    )
+
+    alert_source_id = db.Column(
+        db.String,
+        db.ForeignKey("alertsources.id")
     )
 
     comments = db.relationship(
@@ -896,7 +957,15 @@ class Task(db.Model, BaseModel):
         db.ForeignKey("projects.id")
     )
 
-    sprint_id = db.Column(db.String, db.ForeignKey("sprints.id"))
+    sprint_id = db.Column(
+        db.String,
+        db.ForeignKey("sprints.id")
+    )
+
+    alert_id = db.Column(
+        db.String,
+        db.ForeignKey("alerts.id")
+    )
 
     comments = db.relationship(
         "Comment",
@@ -1043,6 +1112,163 @@ class TaskTracking(db.Model, BaseModel):
 
     def __str__(self):
         return "<TaskTracker %s>" % self.id
+
+
+class AlertProfile(db.Model, BaseModel):
+
+    __tablename__ = "alertprofiles"
+
+    name = db.Column(
+        db.String(255),
+        nullable=False
+    )
+
+    decription = db.Column(
+        db.Text()
+    )
+
+    # toml config.
+    configuration = db.Column(
+        db.Text()
+    )
+
+    alert_id = db.Column(
+        db.String,
+        db.ForeignKey("alerts.id")
+    )
+
+
+class AlertSource(db.Model, BaseModel):
+
+    __tablename__ = "alertsources"
+
+    title = db.Column(
+        db.String(255),
+        nullable=False
+    )
+
+    description = db.Column(
+        db.Text()
+    )
+
+    comments = db.relationship(
+        "Comment",
+        backref="alertsource"
+    )
+
+    links = db.relationship(
+        "Link",
+        backref="alertsource"
+    )
+
+    project = db.relationship(
+        "Project",
+        backref="alertsources",
+        uselist=False
+    )
+
+    alerts = db.relationship(
+        "Alert",
+        backref="source"
+    )
+
+
+    @property
+    def source_id(self):
+        pass
+
+
+class AlertState(Enum):
+    NEW, CONFIRMED, CLOSED = range(3)
+
+
+class AlertUrgency(Enum):
+    CRITICAL, URGENT, NORMAL, MINOR = range(4)
+
+
+class EscalationLevel(Enum):
+    YELLOW, ORANGE, RED, GREEN = range(4)
+
+
+class Alert(db.Model, BaseModel):
+
+    __tablename__ = "alerts"
+
+    title = db.Column(
+        db.String(255),
+        nullable=False
+    )
+
+    # source_id = source.source_id
+    alert_source_id = db.Column(
+        db.String(5),
+        db.ForeignKey("alertsources.id")
+    )
+
+    content = db.Column(
+        db.Text()
+    )
+
+    category = db.Column(
+        db.String(255)
+    )
+
+    device_uid = db.Column(
+        db.String(255)
+    )
+
+    component_uid = db.Column(
+        db.String(255)
+    )
+
+    state = db.Column(
+        db.Enum(AlertState),
+        default=AlertState.NEW
+    )
+
+    urgency = db.Column(
+        db.Enum(AlertUrgency),
+        default=AlertUrgency.CRITICAL
+    )
+
+    escalation_level = db.Column(
+        db.Enum(EscalationLevel),
+        default=EscalationLevel.YELLOW
+    )
+
+    # relations
+    profile = db.relationship(
+        "AlertProfile",
+        backref="alert"
+    )
+
+    tasks = db.relationship(
+        "Task",
+        backref="alert"
+    )
+
+    comments = db.relationship(
+        "Comment",
+        backref="alert"
+    )
+
+    links = db.relationship(
+        "Link",
+        backref="alert"
+    )
+
+    owner_id = db.Column(
+        db.String(5),
+        db.ForeignKey('users.id')
+    )
+
+    @property
+    def start_time(self):
+        pass
+
+    @property
+    def close_time(self):
+        pass
 
 
 def assign_unique_id( mapper, connect, target):
