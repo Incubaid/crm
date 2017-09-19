@@ -3,8 +3,9 @@ import string
 from datetime import datetime, date
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.event import listen
 
-from admin import AdminLinksMixin
+from .admin import AdminLinksMixin
 
 
 db = db = SQLAlchemy()

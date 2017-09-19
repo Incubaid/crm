@@ -1,42 +1,90 @@
 
 import sys
 import os
-import ujson as json
 from datetime import datetime
-from sqlalchemy_utils import drop_database, create_database, database_exists 
-from flask import Flask
+import ujson as json
+
+from sqlalchemy_utils import drop_database, create_database, database_exists
 from flask_migrate import Migrate
+from flask_script import Manager
 from flask_admin import Admin
 from flask_graphql import GraphQLView
-from models import db
-from schema import schema
-from models import *
-from views import *
-from flask_admin.helpers import get_url
-from flask_script import Manager
-import settings
 
-dbmodels = [User, Company, Contact, Organization, Deal,Project, Sprint, Task]
-extramodels = [Telephone, Email,Link, Comment, Message]
+from fixtures import generate_fixtures
+from crm.schema import schema
+from crm.views import *
+from crm.app import app
+from crm.db import db, BaseModel
+from sqlalchemy.event import listen
 
 
-app = Flask(__name__)
-manager = Manager(app)
-app.config.from_pyfile("settings.py")
+# ##########################################################
+# We must import all models to ensure proper creation of DB
+############################################################
+for root, dir, files in os.walk(os.path.join("crm", "apps")):
+    if root.endswith('__') or root == 'crm/apps':
+        continue
+    exec('from crm.apps.%s.models import *' % root.split('/')[-1])
 
-# Extra configurations to override DB connection.
-if os.getenv("EXTRA_CONFIG", False):
-    app.config.from_envvar("EXTRA_CONFIG")
 
-app.secret_key = app.config['SECRET_KEY']
-# Jinja extra globals.
-app.jinja_env.globals.update(
-    getattr=getattr, hasattr=hasattr, type=type, len=len, get_url=get_url)
+# ##########################################################
+# REgister Before insert hook
+############################################################
+def generate_id(mapper, connect, target):
+    target.id = target.uid
+
+for klass in BaseModel.__subclasses__():
+    listen(klass, 'before_insert', generate_id)
 
 
 db.app = app
 db.init_app(app)
 migrate = Migrate(app, db)
+manager = Manager(app)
+
+@manager.command
+def dropdb():
+    """
+    DROP DATABASE TOTALLY
+    """
+    db_uri = app.config['SQLALCHEMY_DATABASE_URI']
+    if db_uri.startswith('sqlite:///'):
+        db_file_path = db_uri.replace('sqlite:///', '')
+        if not os.path.isabs(db_file_path):
+            db_file_path = os.path.abspath(os.path.join('crm', db_file_path))
+        if os.path.exists(db_file_path):
+            os.remove(db_file_path)
+    else:
+        drop_database(db_uri)
+    print("Database dropped.")
+
+
+@manager.command
+def createdb():
+    """
+    CREATE DB TABLES
+    """
+    db_uri = app.config['SQLALCHEMY_DATABASE_URI']
+    if not db_uri.startswith('sqlite:///'):
+       create_database(db_uri)
+    db.create_all(app=app)
+    print("DB created.")
+
+
+@manager.command
+def resetdb():
+    """
+    DROP DB & CREATE DB
+    """
+    dropdb()
+    createdb()
+
+
+@manager.command
+def loadfixtures():
+    """Load test fixtures into database."""
+    generate_fixtures()
+    print("Fixtures loaded.")
 
 
 def main(host, port):
@@ -44,60 +92,18 @@ def main(host, port):
         '/graphql', view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True))
     admin = Admin(app, name="CRM", template_mode="bootstrap3", url="/")
 
-    for m in dbmodels:
+    for m in BaseModel.__subclasses__():
+        if hasattr(m, 'IS_MANY_TO_MANY'):
+            continue
         viewname = m.__name__ + "ModelView"
         viewcls = getattr(sys.modules[__name__], viewname)
-        admin.add_view(viewcls(m, db.session))
-
-    for m in extramodels:
-        viewname = m.__name__ + "ModelView"
-        viewcls = getattr(sys.modules[__name__], viewname)
-        admin.add_view(viewcls(m, db.session, category="Extra"))
-    debug = not app.config['PRODUCTION']
+        if not hasattr(m, 'IS_EXTRA'):
+            admin.add_view(viewcls(m, db.session))
+        else:
+            admin.add_view(viewcls(m, db.session, category="Extra"))
+    debug = app.config['DEBUG']
     app.run(debug=debug, host=host, port=port)
 
-
-@manager.command
-def dropdb():
-    """Drop database and tables."""
-    if app.config['BACKEND'] == "sqlite3":
-        try:
-            os.remove(app.config['DBPATH'])
-        except:
-            raise
-    if database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
-        drop_database(app.config['SQLALCHEMY_DATABASE_URI']) 
-
-    print("Database dropped.")
-
-@manager.command
-def createdb():
-    """Create database and tables."""
-    # ensure database directory
-    if app.config['BACKEND'] == 'sqlite3':
-        if not os.path.exists(app.config['DBDIR']):
-            os.mkdir(app.config['DBDIR'])
-    if not database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
-       create_database(app.config['SQLALCHEMY_DATABASE_URI']) 
- 
-    db.create_all(app=app)
-    print("DB created.")
-
-
-@manager.command
-def resetdb():
-    """Remove database and create it again."""
-    dropdb()
-    createdb()
-    print("DB Resetted")
-
-
-@manager.command
-def loadfixtures():
-    """Load test fixtures into database."""
-    from tests.fixtures import generate_fixtures
-    generate_fixtures()
-    print("Fixtures loaded.")
 
 @manager.option("-h", "--host", help="host", default="0.0.0.0")
 @manager.option("-p", "--port", help="port", default=5000)
@@ -110,11 +116,11 @@ def startapp(host, port=5000):
 def dumpdata():
     """Dump data table models into filesystem."""
     # ensure database directory
-    data_dir = settings.DATA_DIR
+    data_dir = app.config["DATA_DIR"]
     if not os.path.exists(data_dir):
         os.mkdir(data_dir)
 
-    for model in dbmodels + extramodels:
+    for model in BaseModel.__subclasses__():
         model_dir = os.path.abspath(os.path.join(data_dir, model.__name__))
         if not os.path.exists(model_dir):
             os.mkdir(model_dir)
@@ -135,11 +141,11 @@ def loaddata():
     # ensure database directory
 
     resetdb()
-    data_dir = settings.DATA_DIR
+    data_dir = app.config["DATA_DIR"]
     if not os.path.exists(data_dir):
         os.mkdir(data_dir)
 
-    for model in dbmodels + extramodels:
+    for model in BaseModel.__subclasses__():
         model_dir = os.path.abspath(os.path.join(data_dir, model.__name__))
         for root, dirs, files in os.walk(model_dir):
             for file in files:
@@ -163,7 +169,6 @@ def loaddata():
                         data.pop(field)
                     db.session.add(model(**data))
             db.session.commit()
-
 
 
 if __name__ == "__main__":

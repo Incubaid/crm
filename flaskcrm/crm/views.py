@@ -1,15 +1,22 @@
-from itertools import cycle
 from flask_admin.contrib.sqla import ModelView
-import sqlalchemy
-import flask_admin
-from flask_admin.model import typefmt
 from flask_admin.base import expose
-from models import db, Telephone as TelephoneModel, Email as EmailModel, User as UserModel, Contact as ContactModel, Company as CompanyModel, Organization as OrganizationModel, Deal as DealModel, Deal as DealModel, Link as LinkModel, Project as ProjectModel, Sprint as SprintModel, Task as TaskModel, Comment as CommentModel, Message as MessageModel
-from formatters import column_formatters
-from converters import CustomAdminConverter
+from crm.apps.telephone.models import Telephone as TelephoneModel
+from crm.apps.email.models import Email as EmailModel
+from crm.apps.deal.models import Deal as DealModel
+from crm.apps.link.models import Link as LinkModel
+from crm.apps.project.models import  Project as ProjectModel
+from crm.apps.sprint.models import Sprint as SprintModel
+from crm.apps.task.models import  Task as TaskModel
+from crm.apps.message.models import Message as MessageModel
+from crm.apps.comment.models import Comment as CommentModel
+
+from .formatters import column_formatters
+from .converters import CustomAdminConverter
 from flask_admin.contrib.sqla.tools import is_relationship
-from flask_admin.contrib.sqla import form, filters as sqla_filters, tools
-from flask_admin._compat import string_types, text_type
+from flask_admin.contrib.sqla import tools
+from flask_admin._compat import string_types
+
+from .db import db
 
 
 class EnhancedModelView(ModelView):
@@ -489,3 +496,12 @@ class TaskAssignmentModelView(EnhancedModelView):
 class TaskTrackingModelView(EnhancedModelView):
     column_list = column_details_list = ('remarks',
                                          'time_done',)
+
+class AlertModelView(EnhancedModelView):
+    pass
+
+class AlertSourceModelView(EnhancedModelView):
+    pass
+
+class AlertProfileModelView(EnhancedModelView):
+    pass

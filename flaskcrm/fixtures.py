@@ -1,6 +1,20 @@
-from models import db
-from models import *
 from faker import Faker
+
+from crm.apps.company.models import Company
+from crm.apps.contact.models import Contact
+from crm.apps.deal.models import Deal
+from crm.apps.email.models import Email
+from crm.apps.link.models import Link
+from crm.apps.organization.models import Organization
+from crm.apps.project.models import Project
+from crm.apps.sprint.models import Sprint
+from crm.apps.telephone.models import Telephone
+from crm.apps.user.models import User
+from crm.apps.comment.models import Comment
+from crm.apps.task.models import Task
+from crm.apps.message.models import Message
+
+from crm.db import db
 
 fake = Faker()
 
