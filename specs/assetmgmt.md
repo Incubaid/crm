@@ -1,5 +1,18 @@
 
-# new objects
+# principle
+
+- is separate or same DB as CRM 
+- runs from separate flask server (separate UI)
+- will be run from different repo's e.g. per customer
+    - export/import feature will be used as main mechanism to visualize the data
+    - will be merged into a central DB when useful (by copying the exported json files into the central one)
+- 
+
+# model
+
+## user, task, message, link, comment, ...
+
+- import model from crm as part of this new extended model
 
 ## itenvironment
 
@@ -45,6 +58,7 @@ linked to
 - type (ethernet, bridge, vxlanbridge, serial)
 - connections (list)
 - netaddresses (list)
+- macaddress (str)
 
 ## component
 
