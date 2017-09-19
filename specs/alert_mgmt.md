@@ -1,3 +1,8 @@
+
+## principles
+
+- part of CRM app
+
 ## model
 
 source
