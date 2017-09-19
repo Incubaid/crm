@@ -414,7 +414,7 @@ class Organization(db.Model, BaseModel):
         "Comment",
         backref="organization"
     )
-    
+
     users = db.relationship(
         "User",
         secondary="users_organizations",
@@ -899,7 +899,7 @@ class Task(db.Model, BaseModel):
         db.Enum(TaskState),
         default=TaskState.NEW
     )
-    
+
     assignment_id = db.Column(
         db.String,
         db.ForeignKey("users.id")
@@ -1075,17 +1075,17 @@ class Message(db.Model, BaseModel):
     def destination(self):
         emails = []
         if self.user:
-            emails.extend(self.user.emails) 
+            emails.extend(self.user.emails)
 
         if self.contact:
             emails.extend(self.contact.emails)
-        
+
         if self.company:
             emails.extend(self.company.emails)
-        
+
         if self.organization:
             emails.extend(self.organization.emails)
-        
+
         return emails
 
     @property
@@ -1094,7 +1094,7 @@ class Message(db.Model, BaseModel):
         if emails:
             return ",".join([x.email for x in self.destination_emails])
         return "Not destination yet."
- 
+
 
 class TaskTracking(db.Model, BaseModel):
 
@@ -1171,7 +1171,6 @@ class AlertSource(db.Model, BaseModel):
         "Alert",
         backref="source"
     )
-
 
     @property
     def source_id(self):
@@ -1271,7 +1270,7 @@ class Alert(db.Model, BaseModel):
         pass
 
 
-def assign_unique_id( mapper, connect, target):
+def assign_unique_id(mapper, connect, target):
     target.id = target.uid
 
 for subclass in db.Model.__subclasses__():
