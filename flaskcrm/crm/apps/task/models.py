@@ -116,6 +116,11 @@ class Task(db.Model, BaseModel):
         db.ForeignKey("alertsources.id")
     )
 
+    knowledgebase_id = db.Column(
+        db.String,
+        db.ForeignKey("knowledgebases.id")
+    )
+
     comments = db.relationship(
         "Comment",
         backref="task"

@@ -6,6 +6,7 @@ from crm.apps.company.models import Company
 from crm.apps.contact.models import Contact
 from crm.apps.deal.models import Deal
 from crm.apps.email.models import Email
+from crm.apps.knowledge.models import KnowledgeBase, KnowledgeBaseCategory
 from crm.apps.link.models import Link
 from crm.apps.organization.models import Organization
 from crm.apps.project.models import Project
@@ -16,6 +17,16 @@ from crm.apps.comment.models import Comment
 from crm.apps.message.models import Message
 from crm.apps.alert.models import Alert
 
+
+class KnowledgBaseTeype(SQLAlchemyObjectType):
+
+    class Meta:
+        model = KnowledgeBase
+
+class KnowledgeBaseCategoryType(SQLAlchemyObjectType):
+
+    class Meta:
+        model = KnowledgeBaseCategory
 
 class TelephoneType(SQLAlchemyObjectType):
     class Meta:
@@ -114,6 +125,8 @@ class Query(graphene.ObjectType):
     comments = graphene.List(CommentType)
     messages = graphene.List(MessageType)
     alerts = graphene.List(AlertType)
+    knowkedgebases = graphene.List(KnowledgBaseTeype)
+    knowledgebasecategories = graphene.List(KnowledgeBaseCategoryType)
 
     def resolve_telephones(self, args, context, info):
         query = TelephoneType.get_query(context)
@@ -167,11 +180,18 @@ class Query(graphene.ObjectType):
         query = AlertType.get_query(context)
         return query.all()
 
+    def resolve_knowkedgebases(self, args, context, info):
+        query = KnowledgBaseTeype.get_query(context)
+        return query.all()
+
+    def resolve_knowledgebasecategories(self, args, context, info):
+        query = KnowledgeBaseCategoryType.get_query(context)
+        return query.all()
+
 
 schema = graphene.Schema(
     query=Query,
     types=[
-        TelephoneType,
         EmailType,
         ContactType,
         CompanyType,
@@ -182,6 +202,10 @@ schema = graphene.Schema(
         LinkType,
         SprintType,
         CommentType,
-        MessageType
+        MessageType,
+        TelephoneType,
+        KnowledgBaseTeype,
+        KnowledgeBaseCategoryType,
+        AlertType
     ]
 )

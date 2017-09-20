@@ -103,6 +103,11 @@ class User(db.Model, BaseModel):
         primaryjoin="User.id==Project.guardian_id"
     )
 
+    knowledgebases = db.relationship(
+        "KnowledgeBase",
+        backref="author"
+    )
+
     def __str__(self):
         return "{} {}".format(self.firstname, self.lastname)
 

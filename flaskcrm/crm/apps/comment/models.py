@@ -66,5 +66,10 @@ class Comment(db.Model, BaseModel, ExtraMixin):
         db.ForeignKey("alertsources.id")
     )
 
+    knowledgebase_id = db.Column(
+        db.String,
+        db.ForeignKey("knowledgebases.id")
+    )
+
     def __str__(self):
         return self.content
