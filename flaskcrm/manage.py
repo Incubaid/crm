@@ -4,8 +4,8 @@ import os
 from datetime import datetime
 import ujson as json
 
-from sqlalchemy_utils import drop_database, create_database, database_exists
-from flask_migrate import Migrate
+from sqlalchemy_utils import drop_database, create_database
+from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_admin import Admin
 from flask_graphql import GraphQLView
@@ -41,6 +41,9 @@ db.app = app
 db.init_app(app)
 migrate = Migrate(app, db)
 manager = Manager(app)
+
+# python manage.py db init/migrate/upgrade
+manager.add_command('db', MigrateCommand)
 
 @manager.command
 def dropdb():
