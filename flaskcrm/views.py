@@ -256,7 +256,7 @@ class UserModelView(EnhancedModelView):
 
 
 class ContactModelView(EnhancedModelView):
-    form_rules = column_details_list = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'message_channels',
+    form_rules = column_details_list = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'companies', 'message_channels',
                                         'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
     form_edit_rules = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'tasks', 'deals', 'messages', 'comments',
                        'message_channels', 'owner', 'ownerbackup')

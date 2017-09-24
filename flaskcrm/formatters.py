@@ -88,7 +88,7 @@ def format_destination_emails(view, context, model, name):
     return Markup(", ".join(formatted_values))
 
 
-column_formatters = dict(list(zip(["telephones", "users", "contacts", "organizations", "projects",  "deals", "sprints",
+column_formatters = dict(list(zip(["telephones", "users", "contacts", "companies", "organizations", "projects",  "deals", "sprints",
                                    "links", "tasks", "messages"], cycle([format_instrumented_list]))), website=format_url, destination=format_destination_emails, messages=format_messages, comments=format_comments, url=format_url, emails=format_emails, description=format_markdown, content=format_markdown)
 
 column_formatters = {**column_formatters, **
