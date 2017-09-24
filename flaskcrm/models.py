@@ -306,7 +306,7 @@ class Organization(db.Model, Base):
 
 
 class DealState(Enum):
-    NEW, INTERESTED, CONFIRMED, WAITINGCLOSED, CLOSED = range(5)
+    NEW, INTERESTED, CONFIRMED, PENDING, CLOSED = range(5)
 
 
 class DealType(Enum):
