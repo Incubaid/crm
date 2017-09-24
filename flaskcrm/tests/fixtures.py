@@ -69,6 +69,7 @@ def generate_fixtures():
         company = Company(name=companyname,
                           description=description)
         companyphone = Telephone(number=fake.phone_number())
+        company.contacts = [newcontact() for i in range(2)]
         company.telephones = [companyphone]
         company.emails = [companyemail]
         company.website = fake.url()
@@ -91,7 +92,7 @@ def generate_fixtures():
 
         org.promotor = newuser()
         org.guardian = newuser()                           
-
+        org.users = [newuser(), newuser()]
         org.emails = [orgemail]
         org.comments = [newcomment() for i in range(5)]
         org.tasks = [newtask() for i in range(5)]
@@ -111,6 +112,7 @@ def generate_fixtures():
         proj.tasks = [newtask() for i in range(5)]
         proj.messages = [newmsg() for i in range(5)]
         proj.links = [newlink() for i in range(3)]
+        proj.contacts = [newcontact() for i in range(3)]
         proj.users = [newuser(), newuser()]
         db.session.add(proj)
         return proj
@@ -120,6 +122,7 @@ def generate_fixtures():
         sprintdesc = fake.paragraph()
         sprint = Sprint(name=sprintname, description=sprintdesc)
         sprint.users = [newuser() for i in range(2)]
+        sprints.contacts = [newcontact() for i in range(2)]
         sprint.org = neworg()
         sprint.tasks = [newtask() for i in range(5)]
         sprint.comments = [newcomment() for i in range(5)]
