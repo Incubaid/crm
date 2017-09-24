@@ -444,22 +444,22 @@ class LinkModelView(EnhancedModelView):
 
 
 class TaskModelView(EnhancedModelView):
-    column_details_list = ('id', 'title', 'description', 'contact',
+    column_details_list = ('id', 'title', 'description', 'user',
                            'type', 'priority', 'eta', 'state', 'time_done',
                            'company', 'organization', 'project', 'sprint', 'deal',
                            'comments', 'messages')
 
-    column_filters = ('id', 'title', 'description', 'contact',
+    column_filters = ('id', 'title', 'description', 'contact', 'user',
                       'type', 'priority', 'eta', 'time_done',
                       'company', 'organization', 'project', 'sprint', 'deal',
                       'comments', 'messages')
     form_rules = ('title', 'description',
                   'type', 'priority', 'eta', 'time_done',
-                  'contact', 'company', 'organization', 'project', 'sprint', 'deal')
+                  'user', 'company', 'organization', 'project', 'sprint', 'deal')
 
-    form_edit_rules = ('title', 'description', 'contact', 'state',
+    form_edit_rules = ('title', 'description', 'user', 'state',
                        'type', 'priority', 'time_done', 'comments', 'messages')
-    column_list = ('title', 'type', 'priority', 'state', 'contact',
+    column_list = ('title', 'type', 'priority', 'state', 'user',
                    'organization', 'company', 'project', 'sprint', 'deal')
     column_searchable_list = ('id', 'title', 'description',
                               'type', 'priority')
@@ -472,7 +472,7 @@ class TaskModelView(EnhancedModelView):
          'id', 'title', 'content', 'channel']}),
     ]
     column_labels = {**EnhancedModelView.column_labels, **{
-        'contact': 'Assignee',
+        'user': 'Assignee',
 
     }
     }

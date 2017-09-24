@@ -122,7 +122,7 @@ def generate_fixtures():
         sprintdesc = fake.paragraph()
         sprint = Sprint(name=sprintname, description=sprintdesc)
         sprint.users = [newuser() for i in range(2)]
-        sprints.contacts = [newcontact() for i in range(2)]
+        sprint.contacts = [newcontact() for i in range(2)]
         sprint.org = neworg()
         sprint.tasks = [newtask() for i in range(5)]
         sprint.comments = [newcomment() for i in range(5)]
