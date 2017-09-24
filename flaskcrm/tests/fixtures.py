@@ -161,7 +161,7 @@ def generate_fixtures():
         db.session.add(m)
         return m
 
-    for i in range(5):
+    for i in range(3):
         u = newuser()
         db.session.commit()
 

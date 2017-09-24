@@ -169,10 +169,10 @@ class Email(db.Model, Base):
 
 class Contact(db.Model, Base):
     __tablename__ = "contacts"
-    firstname = db.Column(db.String(15), nullable=False)
-    lastname = db.Column(db.String(15))
+    firstname = db.Column(db.String(255), nullable=False)
+    lastname = db.Column(db.String(255))
     description = db.Column(db.Text()) 
-    message_channels = db.Column(db.String(20), default="")
+    message_channels = db.Column(db.String(255), default="")
 
     # relations
     telephones = db.relationship("Telephone", backref="contact")
@@ -199,9 +199,10 @@ class Contact(db.Model, Base):
         return "{} {}".format(self.firstname, self.lastname)
 
 
-
-class CompaniesContacts(db.Model, Base):
+class CompaniesContacts(db.Model):
     __tablename__ = 'companies_contacts'
+    id = db.Column(db.Integer, primary_key=True)
+
     company_id = db.Column(db.String(5), db.ForeignKey('companies.id')) 
     contact_id = db.Column(db.String(5), db.ForeignKey('contacts.id')) 
 
@@ -219,9 +220,7 @@ class Company(db.Model, Base):
     messages = db.relationship("Message", backref="company")
     tasks = db.relationship("Task", backref="company")
     comments = db.relationship("Comment", backref="company")
-
-    contacts = db.relationship("Contact", secondary="companies_contacts",
-        backref=db.backref("companies"), lazy="dynamic")
+    contacts = db.relationship("Contact", secondary="companies_contacts",backref="companies")
 
     owner_id = db.Column(db.String(5), db.ForeignKey('users.id')) 
     ownerbackup_id = db.Column(db.String(5), db.ForeignKey('users.id'))
@@ -229,13 +228,14 @@ class Company(db.Model, Base):
     def __str__(self):
         return self.name
 
+
 class User(db.Model, Base):
     __tablename__ = "users"
 
-    firstname = db.Column(db.String(15), nullable=False)
-    lastname = db.Column(db.String(15))
+    firstname = db.Column(db.String(255), nullable=False)
+    lastname = db.Column(db.String(255))
     description = db.Column(db.Text())  # should be markdown.
-    message_channels = db.Column(db.String(10), default="")
+    message_channels = db.Column(db.String(255), default="")
 
     # relations
     telephones = db.relationship("Telephone", backref="user")
@@ -263,18 +263,21 @@ class User(db.Model, Base):
         return "{} {}".format(self.firstname, self.lastname)
 
 #  manytomany through table.
-class UsersOrganizations(db.Model, Base):
+class UsersOrganizations(db.Model):
     __tablename__ = 'users_organizations'
+    id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(5), db.ForeignKey('users.id'))
     organization_id = db.Column(db.String(5), db.ForeignKey('organizations.id')) 
 
 class UsersSprints(db.Model, Base):
     __tablename__ = 'users_sprints'
+    id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(5), db.ForeignKey('users.id'))
     sprint_id = db.Column(db.String(5), db.ForeignKey('sprints.id')) 
 
 class ContactsSprints(db.Model, Base):
     __tablename__ = 'contacts_sprints'
+    id = db.Column(db.Integer, primary_key=True)
     contact_id = db.Column(db.String(5), db.ForeignKey('contacts.id'))
     sprint_id = db.Column(db.String(5), db.ForeignKey('sprints.id')) 
 
@@ -292,7 +295,7 @@ class Organization(db.Model, Base):
     comments = db.relationship("Comment", backref="organization")
     
     users = db.relationship("User", secondary="users_organizations",
-        backref=db.backref("organizations"), lazy="dynamic")
+        backref=db.backref("organizations"))
 
     links = db.relationship("Link", backref="organization")
     messages = db.relationship("Message", backref="organization")
@@ -393,7 +396,7 @@ class Sprint(db.Model, Base):
 
     # relations
     # users = db.relationship("User", secondary="users_sprints",backref=db.backref("userss"))
-    contacts = db.relationship("Contact", secondary="contacts_sprints",backref=db.backref("sprints"))
+    contacts = db.relationship("Contact", secondary="contacts_sprints",backref="sprints")
 
     tasks = db.relationship("Task", backref="sprint")
     comments = db.relationship("Comment", backref="sprint")
@@ -579,7 +582,7 @@ class TaskTracking(db.Model, Base):
         return "<TaskTracker %s>" % (self.id)
 
 
-for m in [Telephone,Email,Contact, User, Company,CompaniesContacts,UsersOrganizations, Comment, Link, \
+for m in [Telephone,Email,Contact, CompaniesContacts, User, Company,UsersOrganizations, Comment, Link, \
          UsersSprints,Organization, Deal,UsersProjects, ContactsProjects, Project, Sprint, Task, User, \
          Message, TaskTracking]:
     listen(m, 'before_insert', generate_id)
