@@ -31,6 +31,7 @@ class EnhancedModelView(ModelView):
     column_labels = {
         'short_description': 'Description',
         'short_content': 'Content',
+        'vatnumber': 'VAT Number'
     }
 
     def get_filter_arg_helper(self, filter_name, filter_op='equals'):
@@ -300,6 +301,10 @@ class CompanyModelView(EnhancedModelView):
          'id', 'name', 'amount', 'currency', 'deal_type', 'description', ]}),
         (CommentModel, {'form_columns': ['id', 'content']})]
 
+    form_args = {
+        'vatnumber': {'label': 'VAT Number'},
+
+    }
     mainfilter = "Companies / Id"
 
 
