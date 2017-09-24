@@ -53,6 +53,9 @@ class EnhancedModelView(ModelView):
                 TelephoneModelView(TelephoneModel, db.session), self.mainfilter]
             filtered_objects['tasksview'] = [
                 TaskModelView(TaskModel, db.session), self.mainfilter]
+            filtered_objects['contactsview'] = [ContactModelView(ContactModel, db.session), self.mainfilter]
+    
+            filtered_objects['companiesview'] = [CompanyModelView(CompanyModel, db.session), self.mainfilter] 
             filtered_objects['messagesview'] = [MessageModelView(
                 MessageModel, db.session), self.mainfilter]
             filtered_objects['projectsview'] = [ProjectModelView(
@@ -79,6 +82,9 @@ class EnhancedModelView(ModelView):
                 TelephoneModelView(TelephoneModel, db.session), self.mainfilter]
             filtered_objects['tasksview'] = [
                 TaskModelView(TaskModel, db.session), self.mainfilter]
+            filtered_objects['contactsview'] = [ContactModelView(ContactModel, db.session), self.mainfilter]
+    
+            filtered_objects['companiesview'] = [CompanyModelView(CompanyModel, db.session), self.mainfilter] 
             filtered_objects['messagesview'] = [MessageModelView(
                 MessageModel, db.session), self.mainfilter]
             filtered_objects['projectsview'] = [ProjectModelView(
@@ -91,6 +97,7 @@ class EnhancedModelView(ModelView):
                 CommentModel, db.session), self.mainfilter]
             filtered_objects['linksview'] = [LinkModelView(
                 LinkModel, db.session), self.mainfilter]
+
 
             self._template_args['filtered_objects'] = filtered_objects
         return super().details_view()
@@ -255,7 +262,7 @@ class ContactModelView(EnhancedModelView):
                        'message_channels', 'owner', 'ownerbackup')
 
     column_filters = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'message_channels',
-                      'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
+                      'deals', 'comments', 'tasks', 'projects', 'companies', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
     column_searchable_list = ('firstname', 'lastname',)
     column_list = ('firstname', 'lastname', 'emails',
                    'telephones', 'short_description')
