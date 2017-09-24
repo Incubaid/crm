@@ -242,7 +242,7 @@ class User(db.Model, Base):
     emails = db.relationship("Email", backref="user")
 
     # organizations = db.relationship("UsersOrganizations", backref="users")
-
+    tasks = db.relationship("Task", backref="user")
     comments = db.relationship("Comment", backref="user")
     messages = db.relationship("Message", backref="user")
     links = db.relationship("Link", backref="user")
@@ -347,11 +347,13 @@ class Deal(db.Model, Base):
 #  manytomany through table.
 class UsersProjects(db.Model, Base):
     __tablename__ = 'users_projects'
+    id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(5), db.ForeignKey('users.id')) 
     project_id = db.Column(db.String(5), db.ForeignKey('projects.id'))
 
 class ContactsProjects(db.Model, Base):
     __tablename__ = 'contacts_projects'
+    id = db.Column(db.Integer, primary_key=True)
     contact_id = db.Column(db.String(5), db.ForeignKey('contacts.id'))
     project_id = db.Column(db.String(5), db.ForeignKey('projects.id'))
 
@@ -494,7 +496,7 @@ class Task(db.Model, Base):
     # relations
     company_id = db.Column(db.String, db.ForeignKey("companies.id"))
     contact_id = db.Column(db.String, db.ForeignKey("contacts.id"))
-    user_id = db.Column(db.String, db.ForeignKey("users.id"))
+    # user_id = db.Column(db.String, db.ForeignKey("users.id"))
     deal_id = db.Column(db.String, db.ForeignKey("deals.id"))
     organization_id = db.Column(db.String, db.ForeignKey("organizations.id"))
     project_id = db.Column(db.String, db.ForeignKey("projects.id"))
@@ -582,7 +584,7 @@ class TaskTracking(db.Model, Base):
         return "<TaskTracker %s>" % (self.id)
 
 
-for m in [Telephone,Email,Contact, CompaniesContacts, User, Company,UsersOrganizations, Comment, Link, \
-         UsersSprints,Organization, Deal,UsersProjects, ContactsProjects, Project, Sprint, Task, User, \
+for m in [Telephone,Email,Contact, User, Company, Comment, Link, 
+         Organization, Deal, Project, Sprint, Task, User,
          Message, TaskTracking]:
     listen(m, 'before_insert', generate_id)
