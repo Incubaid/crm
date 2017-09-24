@@ -211,7 +211,7 @@ class Company(db.Model, Base):
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text())  # should be markdown.
     vatnumber = db.Column(db.String(255))
-
+    website = db.Column(db.String(255))
     # relations
     telephones = db.relationship("Telephone", backref="company")
     emails = db.relationship("Email", backref="company")

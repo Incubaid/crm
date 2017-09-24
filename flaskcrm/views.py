@@ -279,14 +279,14 @@ class ContactModelView(EnhancedModelView):
 
 
 class CompanyModelView(EnhancedModelView):
-    form_rules = column_filters = column_details_list = ('name', 'description', 'emails', 'telephones', 'vatnumber',
+    form_rules = column_filters = column_details_list = ('name', 'description', 'emails', 'telephones', 'vatnumber', 'website',
                                                          'deals', 'contacts', 'messages', 'tasks', 'comments', 'owner', 'ownerbackup')
 
-    form_edit_rules = ('name', 'description', 'emails', 'telephones', 'vatnumber', 'contacts', 'messages', 'tasks', 'deals',
+    form_edit_rules = ('name', 'description', 'emails', 'telephones', 'vatnumber', 'website', 'contacts', 'messages', 'tasks', 'deals',
                        'comments', 'owner', 'ownerbackup')
 
-    column_searchable_list = ('id', 'name', 'description', 'vatnumber')
-    column_list = ('name', 'short_description')
+    column_searchable_list = ('id', 'name', 'description', 'vatnumber', 'website',)
+    column_list = ('name', 'short_description', 'vatnumber', 'website')
     column_sortable_list = ('name', )
 
     inline_models = [

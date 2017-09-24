@@ -71,6 +71,7 @@ def generate_fixtures():
         companyphone = Telephone(number=fake.phone_number())
         company.telephones = [companyphone]
         company.emails = [companyemail]
+        company.website = fake.url()
         company.owner = newuser()
         company.ownerbackup = newuser()
         db.session.add(company)
