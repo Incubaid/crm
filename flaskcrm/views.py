@@ -328,13 +328,15 @@ class OrganizationModelView(EnhancedModelView):
 
 
 class DealModelView(EnhancedModelView):
-    column_filters = column_details_list = ('id', 'name',  'amount', 'currency', 'deal_type', 'deal_state',
-                                            'contact', 'company', 'messages', 'comments')
+    column_details_list = ('id', 'name', 'description', 'amount', 'currency', 'deal_type', 'deal_state',
+                           'contact', 'company', 'closed_at', 'messages', 'comments')
+    column_filters = ('id', 'name', 'amount', 'currency', 'deal_type', 'deal_state',
+                      'contact', 'company', 'closed_at', 'messages', 'comments')
 
     form_rules = ('name',  'amount', 'currency', 'deal_type', 'deal_state',
                   'contact', 'company', 'comments',)
 
-    form_edit_rules = ('name',  'amount', 'currency', 'deal_type', 'deal_state',
+    form_edit_rules = ('name', 'description',  'amount', 'currency', 'deal_type', 'deal_state',
                        'contact', 'company', 'tasks', 'messages', 'comments')
 
     column_list = ('name', 'amount', 'currency',
