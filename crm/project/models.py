@@ -1,7 +1,7 @@
-from crm.db import db, BaseModel
+from crm.db import db, BaseModel, RootModel
 
 
-class Project(db.Model, BaseModel):
+class Project(db.Model, BaseModel, RootModel):
 
     __tablename__ = "projects"
 

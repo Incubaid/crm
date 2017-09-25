@@ -1,7 +1,7 @@
-from crm.db import db, BaseModel
+from crm.db import db, BaseModel, RootModel
 
 
-class Sprint(db.Model, BaseModel):
+class Sprint(db.Model, BaseModel, RootModel):
 
     __tablename__ = "sprints"
 

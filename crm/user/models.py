@@ -1,7 +1,7 @@
-from crm.db import db, BaseModel
+from crm.db import db, BaseModel, RootModel
 
 
-class User(db.Model, BaseModel):
+class User(db.Model, BaseModel, RootModel):
 
     __tablename__ = "users"
 

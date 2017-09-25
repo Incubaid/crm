@@ -1,7 +1,7 @@
-from crm.db import db, BaseModel
+from crm.db import db, BaseModel, RootModel
 
 
-class Contact(db.Model, BaseModel):
+class Contact(db.Model, BaseModel, RootModel):
 
     __tablename__ = "contacts"
 

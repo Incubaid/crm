@@ -1,6 +1,6 @@
 from enum import Enum
 
-from crm.db import db, BaseModel
+from crm.db import db, BaseModel, RootModel
 
 
 class DealState(Enum):
@@ -15,7 +15,7 @@ class DealCurrency(Enum):
     USD, EUR, AED, GBP = range(4)
 
 
-class Deal(db.Model, BaseModel):
+class Deal(db.Model, BaseModel, RootModel):
 
     __tablename__ = "deals"
 

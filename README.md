@@ -9,3 +9,4 @@
 
 **Advanced**
 - [Add custom command](docs/AddCommand.md)
+- [Model conventions](docs/ModelConventions.md)

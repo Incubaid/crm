@@ -1,9 +1,8 @@
 import os
 import ujson as json
-from datetime import datetime
 
-from crm.db import BaseModel, db
-from crm import app, migrate
+from crm.db import BaseModel, db, RootModel
+from crm import app
 
 from fixtures import generate_fixtures
 
@@ -23,6 +22,10 @@ def dumpdata():
         os.mkdir(data_dir)
 
     for model in BaseModel.__subclasses__():
+        # Root models are 'Company', 'Contact', 'Deal', 'Sprint', 'Project', 'Organization','User'
+        if not model in RootModel.__subclasses__():
+            continue
+
         model_dir = os.path.abspath(os.path.join(data_dir, model.__name__))
         if not os.path.exists(model_dir):
             os.mkdir(model_dir)
@@ -40,39 +43,50 @@ def dumpdata():
 
 @app.cli.command()
 def loaddata():
-    """Load tables with data from filesystem."""
-    # ensure database directory
+    """
+        Load tables with data from filesystem.
+    """
+    # ensure data dir exists
     from crm import app
     data_dir = app.config["DATA_DIR"]
     if not os.path.exists(data_dir):
         os.mkdir(data_dir)
+        return
 
-    # Delete all data
+    # Keep track of inserted IDs
+    # DO NOT check if object exists in DB before insertion to increase performance
+    # example: {model_name: [], another_model_name:[]}
+    added_object_ids = {}
+
+    # example: {model_name1: model_obj1,model_name12 model_obj2}
+    models = {}
+
+    # Initialize our dicts
     for model in BaseModel.__subclasses__():
+        models[model.__name__] = model
+        added_object_ids[model.__name__] = []
+
+    # Delete all data in db
+    for model in models.values():
         model.query.delete()
 
-    for model in BaseModel.__subclasses__():
+    # START loading
+    for model in models.values():
+        # Root models are 'Company', 'Contact', 'Deal', 'Sprint', 'Project', 'Organization','User'
+        if not model in RootModel.__subclasses__():
+            continue
 
         model_dir = os.path.abspath(os.path.join(data_dir, model.__name__))
+
         for root, dirs, files in os.walk(model_dir):
             for file in files:
                 file_path = os.path.abspath(os.path.join(root, file))
                 with open(file_path, 'r') as f:
                     data = json.load(f)
-                    excluded = []
-
-                    if 'datetime_fields' in data:
-                        for field in data['datetime_fields']:
-                            data[field] = datetime.strptime(data[field], "%Y-%m-%d %H:%M:%S")
-                    for field, value in data.items():
-                        if isinstance(value, dict):
-                            if 'id' in value:
-                                excluded.append(field)
-                            else: # enum
-                                data[field] = value['name']
-                        if isinstance(value, list):
-                            excluded.append(field)
-                    for field in excluded:
-                        data.pop(field)
-                    db.session.add(model(**data))
+                    objects = model.from_dict(data)
+                    for obj in objects:
+                        if obj.id in added_object_ids[obj.__class__.__name__]:
+                            continue
+                        added_object_ids[obj.__class__.__name__].append(obj.id)
+                        db.session.add(obj)
             db.session.commit()

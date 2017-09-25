@@ -9,12 +9,12 @@ export FLASK_APP=app.py
 **Run these commands First time Only**
 - To create migrations folder ```flask db init```
 - Create migrations ```flask db migrate```
-- Change db ```flask db upgrade```
+- create db tables ```flask db upgrade```
 
 
 **Run in Dev Mode**
 ```
-export env=dev
+export ENV=dev
 flask run
 ```
 If you want to load fixture data
