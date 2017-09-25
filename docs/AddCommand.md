@@ -1,7 +1,7 @@
 ## AddCommand
 
 - open ```cli.py```
-- add your command function with a docorator by ```@app.cli.command()```
+- surround your command function with a docorator ```@app.cli.command()```
 - Example
     ```python
     @app.cli.command()
