@@ -19,6 +19,10 @@ class Company(db.Model, BaseModel):
         db.String(255)
     )
 
+    website = db.Column(
+        db.String(255)
+    )
+
     telephones = db.relationship(
         "Telephone",
         backref="company"
@@ -52,8 +56,8 @@ class Company(db.Model, BaseModel):
     contacts = db.relationship(
         "Contact",
         secondary="companies_contacts",
-        backref=db.backref("companies"),
-        lazy="dynamic")
+        backref='companies',
+    )
 
     owner_id = db.Column(
         db.String(5),

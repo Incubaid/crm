@@ -6,12 +6,12 @@ class User(db.Model, BaseModel):
     __tablename__ = "users"
 
     firstname = db.Column(
-        db.String(15),
+        db.String(255),
         nullable=False
     )
 
     lastname = db.Column(
-        db.String(15)
+        db.String(255)
     )
 
     # should be markdown.
@@ -20,7 +20,7 @@ class User(db.Model, BaseModel):
     )
 
     message_channels = db.Column(
-        db.String(10),
+        db.String(255),
         default=''
     )
 
@@ -31,6 +31,11 @@ class User(db.Model, BaseModel):
 
     emails = db.relationship(
         "Email",
+        backref="user"
+    )
+
+    tasks = db.relationship(
+        "Task",
         backref="user"
     )
 
@@ -112,11 +117,16 @@ class User(db.Model, BaseModel):
         return "{} {}".format(self.firstname, self.lastname)
 
 
-class UsersOrganizations(db.Model, BaseModel):
+class UsersOrganizations(db.Model):
     """
     Many To Many Through table
     """
     __tablename__ = 'users_organizations'
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
 
     user_id = db.Column(
         db.String(5),
@@ -131,12 +141,17 @@ class UsersOrganizations(db.Model, BaseModel):
     IS_MANY_TO_MANY = True
 
 
-class UsersSprints(db.Model, BaseModel):
+class UsersSprints(db.Model):
     """
         Many To Many Through table
     """
 
     __tablename__ = 'users_sprints'
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
 
     user_id = db.Column(
         db.String(5),
@@ -150,11 +165,16 @@ class UsersSprints(db.Model, BaseModel):
 
     IS_MANY_TO_MANY = True
 
-class UsersProjects(db.Model, BaseModel):
+class UsersProjects(db.Model):
     """
     Many To Many Through Table
     """
     __tablename__ = 'users_projects'
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
 
     user_id = db.Column(
         db.String(5),

@@ -81,10 +81,6 @@ class Task(db.Model, BaseModel):
         db.ForeignKey("contacts.id")
     )
 
-    user_id = db.Column(
-        db.String,
-        db.ForeignKey("users.id")
-    )
 
     deal_id = db.Column(
         db.String,
@@ -149,6 +145,7 @@ class Task(db.Model, BaseModel):
 
     def __str__(self):
         return self.title
+
 
 class TaskTracking(db.Model, BaseModel):
 

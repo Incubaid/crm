@@ -83,8 +83,10 @@ def generate_fixtures():
         company = Company(name=companyname,
                           description=description)
         companyphone = Telephone(number=fake.phone_number())
+        company.contacts = [newcontact() for i in range(2)]
         company.telephones = [companyphone]
         company.emails = [companyemail]
+        company.website = fake.url()
         company.owner = newuser()
         company.ownerbackup = newuser()
         db.session.add(company)
@@ -103,8 +105,8 @@ def generate_fixtures():
                            description=description)
 
         org.promotor = newuser()
-        org.guardian = newuser()                           
-
+        org.guardian = newuser()
+        org.users = [newuser(), newuser()]
         org.emails = [orgemail]
         org.comments = [newcomment() for i in range(5)]
         org.tasks = [newtask() for i in range(5)]
@@ -120,10 +122,11 @@ def generate_fixtures():
         proj = Project(name=projname, description=projdesc)
         proj.comments = [newcomment() for i in range(5)]
         proj.promotor = newuser()
-        proj.guardian = newuser()        
+        proj.guardian = newuser()
         proj.tasks = [newtask() for i in range(5)]
         proj.messages = [newmsg() for i in range(5)]
         proj.links = [newlink() for i in range(3)]
+        proj.contacts = [newcontact() for i in range(3)]
         proj.users = [newuser(), newuser()]
         db.session.add(proj)
         return proj
@@ -133,6 +136,7 @@ def generate_fixtures():
         sprintdesc = fake.paragraph()
         sprint = Sprint(name=sprintname, description=sprintdesc)
         sprint.users = [newuser() for i in range(2)]
+        sprint.contacts = [newcontact() for i in range(2)]
         sprint.org = neworg()
         sprint.tasks = [newtask() for i in range(5)]
         sprint.comments = [newcomment() for i in range(5)]
@@ -174,10 +178,10 @@ def generate_fixtures():
         db.session.add(m)
         return m
 
-    for i in range(5):
-
+    for i in range(3):
         u = newuser()
         db.session.commit()
+
         tu = newcontact()
         db.session.commit()
 

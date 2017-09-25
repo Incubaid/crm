@@ -33,8 +33,7 @@ class Organization(db.Model, BaseModel):
     users = db.relationship(
         "User",
         secondary="users_organizations",
-        backref=db.backref("organizations"),
-        lazy="dynamic"
+        backref="organizations"
     )
 
     links = db.relationship(

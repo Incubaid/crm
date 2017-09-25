@@ -6,12 +6,12 @@ class Contact(db.Model, BaseModel):
     __tablename__ = "contacts"
 
     firstname = db.Column(
-        db.String(15),
+        db.String(255),
         nullable=False
     )
 
     lastname = db.Column(
-        db.String(15)
+        db.String(255)
     )
 
     description = db.Column(
@@ -19,7 +19,7 @@ class Contact(db.Model, BaseModel):
     )
 
     message_channels = db.Column(
-        db.String(20),
+        db.String(255),
         default=''
     )
 
@@ -78,12 +78,17 @@ class Contact(db.Model, BaseModel):
         return "{} {}".format(self.firstname, self.lastname)
 
 
-class ContactsSprints(db.Model, BaseModel):
+class ContactsSprints(db.Model):
     """
         Many To Many Through table
     """
 
     __tablename__ = 'contacts_sprints'
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
 
     contact_id = db.Column(
         db.String(5),
@@ -97,9 +102,15 @@ class ContactsSprints(db.Model, BaseModel):
 
     IS_MANY_TO_MANY = True
 
-class CompaniesContacts(db.Model, BaseModel):
+
+class CompaniesContacts(db.Model):
 
     __tablename__ = 'companies_contacts'
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
 
     company_id = db.Column(
         db.String(5),
@@ -114,12 +125,18 @@ class CompaniesContacts(db.Model, BaseModel):
     IS_MANY_TO_MANY = True
 
 
-class ContactsProjects(db.Model, BaseModel):
+class ContactsProjects(db.Model):
     """
         Many To Many Through Table
     """
 
     __tablename__ = 'contacts_projects'
+
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
 
     contact_id = db.Column(
         db.String(5),

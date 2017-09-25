@@ -26,7 +26,7 @@ class Sprint(db.Model, BaseModel):
     contacts = db.relationship(
         "Contact",
         secondary="contacts_sprints",
-        backref=db.backref("sprints")
+        backref="sprints"
     )
 
     tasks = db.relationship(
