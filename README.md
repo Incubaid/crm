@@ -12,6 +12,7 @@
 
 **Advanced**
 - [Add custom command](docs/AddCommand.md)
+- [Add middleware](docs/Middlewares.md)
 - [Model conventions](docs/ModelConventions.md)
 
 **Specs**

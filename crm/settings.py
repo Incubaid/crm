@@ -23,7 +23,6 @@ DATA_DIR = 'data'
 # Leave as the last line
 ########################
 
-
 exec("from crm.settings_%s import *" % os.getenv("ENV", 'dev'))
 
 if not globals()['SQLALCHEMY_DATABASE_URI']:

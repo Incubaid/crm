@@ -30,7 +30,7 @@ class Deal(db.Model, BaseModel, RootModel):
     )
 
     amount = db.Column(
-        db.Integer
+        db.Float()
     )
 
     currency = db.Column(

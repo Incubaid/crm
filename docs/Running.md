@@ -15,6 +15,8 @@ export FLASK_APP=app.py
 **Run in Dev Mode**
 ```
 export ENV=dev
+python app.py # (if you want DEBUG mode activated)
+## OR##
 flask run
 ```
 If you want to load fixture data
