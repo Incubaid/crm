@@ -3,12 +3,10 @@ from faker import Faker
 from crm.company.models import Company
 from crm.contact.models import Contact
 from crm.deal.models import Deal
-from crm.email.models import Email
 from crm.link.models import Link
 from crm.organization.models import Organization
 from crm.project.models import Project
 from crm.sprint.models import Sprint
-from crm.telephone.models import Telephone
 from crm.user.models import User
 from crm.comment.models import Comment
 from crm.task.models import Task
@@ -22,10 +20,11 @@ fake = Faker()
 
 def generate_fixtures():
 
-    def newemail():
-        em = Email(email=fake.email())
-        db.session.add(em)
-        return em
+    def newemails():
+        return ','.join([fake.email(), fake.email()])
+
+    def newphones():
+        return ','.join([fake.phone_number(), fake.phone_number()])
 
     def newlink():
         labels = "critical, minor, urgent, fixed, inprogress"
@@ -35,20 +34,17 @@ def generate_fixtures():
 
         return l
 
+
+
     def newcontact():
-        phonenumber = fake.phone_number()
         firstname = fake.first_name()
         lastname = fake.last_name()
-        phoneobj = Telephone(number=phonenumber)
 
-        email = newemail()
         u = Contact(firstname=firstname, lastname=lastname)
-        u.telephones = [phoneobj]
-        u.emails = [email]
+        u.telephones = newphones()
+        u.emails = newemails()
         u.owner = newuser()
         u.ownerbackup = newuser()
-
-        db.session.add(phoneobj)
 
         u.comments = [newcomment() for i in range(2)]
         u.tasks = [newtask() for i in range(2)]
@@ -59,33 +55,29 @@ def generate_fixtures():
 
 
     def newuser():
-        phonenumber = fake.phone_number()
         firstname = fake.first_name()
         lastname = fake.last_name()
-        phoneobj = Telephone(number=phonenumber)
-        email = newemail()
         u = User(firstname=firstname, lastname=lastname)
         u.description = fake.paragraph()
-        u.telephones = [phoneobj]
-        u.emails = [email]
-        db.session.add(phoneobj)
-
+        u.telephones = newphones()
+        u.emails = newemails()
         u.comments = [newcomment() for i in range(2)]
         u.messages = [newmsg() for i in range(2)]
         u.links = [newlink() for i in range(3)]
+        u.ownsTasks = [newtask(), newtask()]
+        u.tasks = [newtask(), newtask()]
         db.session.add(u)
+
         return u
 
     def newcompany():
         companyname = fake.company()
-        companyemail = newemail()
         description = fake.catch_phrase()
         company = Company(name=companyname,
                           description=description)
-        companyphone = Telephone(number=fake.phone_number())
         company.contacts = [newcontact() for i in range(2)]
-        company.telephones = [companyphone]
-        company.emails = [companyemail]
+        company.telephones = newphones()
+        company.emails = newemails()
         company.website = fake.url()
         company.owner = newuser()
         company.ownerbackup = newuser()
@@ -93,12 +85,10 @@ def generate_fixtures():
         company.comments = [newcomment() for i in range(5)]
         company.messages = [newmsg() for i in range(20)]
 
-        db.session.add(companyphone)
         return company
 
     def neworg():
         orgname = fake.company() + "org"
-        orgemail = newemail()
         description = fake.catch_phrase()
 
         org = Organization(name=orgname,
@@ -107,7 +97,7 @@ def generate_fixtures():
         org.promotor = newuser()
         org.guardian = newuser()
         org.users = [newuser(), newuser()]
-        org.emails = [orgemail]
+        org.emails = newemails()
         org.comments = [newcomment() for i in range(5)]
         org.tasks = [newtask() for i in range(5)]
         org.messages = [newmsg() for i in range(20)]

@@ -1,8 +1,7 @@
 from crm.db import db, BaseModel
-from crm.admin.mixins import ExtraMixin
 
 
-class Comment(db.Model, BaseModel, ExtraMixin):
+class Comment(db.Model, BaseModel):
 
     __tablename__ = "comments"
 
@@ -56,20 +55,20 @@ class Comment(db.Model, BaseModel, ExtraMixin):
         db.ForeignKey("links.id")
     )
 
-    alert_id = db.Column(
-        db.String,
-        db.ForeignKey("alerts.id")
-    )
+    # alert_id = db.Column(
+    #     db.String,
+    #     db.ForeignKey("alerts.id")
+    # )
+    #
+    # alert_source_id = db.Column(
+    #     db.String,
+    #     db.ForeignKey("alertsources.id")
+    # )
 
-    alert_source_id = db.Column(
-        db.String,
-        db.ForeignKey("alertsources.id")
-    )
-
-    knowledgebase_id = db.Column(
-        db.String,
-        db.ForeignKey("knowledgebases.id")
-    )
+    # knowledgebase_id = db.Column(
+    #     db.String,
+    #     db.ForeignKey("knowledgebases.id")
+    # )
 
     def __str__(self):
         return self.content

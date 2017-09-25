@@ -44,10 +44,3 @@ class AdminLinksMixin(object):
 
     def admin_create_link_modal(self):
         return self._format_link(AdminLinksMixin.ADMIN_CREATE_LINK_MODAL)
-
-
-class ExtraMixin(object):
-    """
-    Only models of CATEGORY=EXTRA inherit this
-    """
-    IS_EXTRA = True

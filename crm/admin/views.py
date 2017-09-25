@@ -1,7 +1,5 @@
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.base import expose
-from crm.telephone.models import Telephone as TelephoneModel
-from crm.email.models import Email as EmailModel
 from crm.deal.models import Deal as DealModel
 from crm.link.models import Link as LinkModel
 from crm.project.models import  Project as ProjectModel
@@ -9,6 +7,8 @@ from crm.sprint.models import Sprint as SprintModel
 from crm.task.models import  Task as TaskModel
 from crm.message.models import Message as MessageModel
 from crm.comment.models import Comment as CommentModel
+from crm.contact.models import Contact as ContactModel
+from crm.company.models import Company as CompanyModel
 
 from .formatters import column_formatters
 from .converters import CustomAdminConverter
@@ -34,6 +34,10 @@ class EnhancedModelView(ModelView):
         'updated_at': {
             'readonly': True,
         },
+
+        'OwnsTasks': {
+            'label': 'Tasks assigned',
+        },
     }
     column_labels = {
         'short_description': 'Description',
@@ -54,10 +58,7 @@ class EnhancedModelView(ModelView):
     def edit_view(self):
         if self.mainfilter:
             filtered_objects = {}
-            filtered_objects['emailsview'] = [
-                EmailModelView(EmailModel, db.session), self.mainfilter]
-            filtered_objects['telephonesview'] = [
-                TelephoneModelView(TelephoneModel, db.session), self.mainfilter]
+
             filtered_objects['tasksview'] = [
                 TaskModelView(TaskModel, db.session), self.mainfilter]
             filtered_objects['contactsview'] = [ContactModelView(ContactModel, db.session), self.mainfilter]
@@ -83,10 +84,6 @@ class EnhancedModelView(ModelView):
     def details_view(self):
         if self.mainfilter:
             filtered_objects = {}
-            filtered_objects['emailsview'] = [
-                EmailModelView(EmailModel, db.session), self.mainfilter]
-            filtered_objects['telephonesview'] = [
-                TelephoneModelView(TelephoneModel, db.session), self.mainfilter]
             filtered_objects['tasksview'] = [
                 TaskModelView(TaskModel, db.session), self.mainfilter]
             filtered_objects['contactsview'] = [ContactModelView(ContactModel, db.session), self.mainfilter]
@@ -222,40 +219,21 @@ class EnhancedModelView(ModelView):
             return flt
 
 
-class TelephoneModelView(EnhancedModelView):
-    column_list = column_details_list = (
-        'number', 'contact', 'company',)
-
-    column_filters = (
-        'number', 'contact', 'company', 'user')
-    column_searchable_list = ('number',)
-    column_sortable_list = ('number',)
-
-
-class EmailModelView(EnhancedModelView):
-    form_rules = column_filters = column_list = column_details_list = (
-        'email', 'contact', 'company', 'organization', 'user')
-    column_searchable_list = ('email',)
-    column_sortable_list = ('email',)
-
-
 class UserModelView(EnhancedModelView):
     column_list = ('firstname', 'lastname', 'emails',
                    'telephones',)
     form_rules = column_details_list = (
     'firstname', 'lastname', 'emails', 'telephones', 'description', 'message_channels',
-    'ownsContacts', 'ownsAsBackupContacts', 'ownsCompanies', 'ownsAsBackupCompanies',
+    'ownsContacts', 'ownsTasks', 'tasks', 'ownsAsBackupContacts', 'ownsCompanies', 'ownsAsBackupCompanies',
     'ownsOrganizations', 'ownsSprints', 'promoterProjects', 'guardianProjects', 'comments', 'messages', 'links',)
 
     column_filters = ('firstname', 'lastname')
     form_edit_rules = ('firstname', 'lastname', 'description',
-                       'emails', 'telephones', 'message_channels', 'messages')
+                       'emails', 'telephones', 'message_channels', 'ownsTasks', 'tasks', 'messages')
     column_sortable_list = ('firstname', 'lastname')
     column_searchable_list = ('firstname', 'lastname')
 
     inline_models = [
-        (TelephoneModel, {'form_columns': ['id', 'number']}),
-        (EmailModel, {'form_columns': ['id', 'email']}),
         (MessageModel, {'form_columns': [
             'id', 'title', 'content', 'channel']}),
         (CommentModel, {'form_columns': ['id', 'content']})]
@@ -281,8 +259,6 @@ class ContactModelView(EnhancedModelView):
     column_sortable_list = ('firstname', 'lastname')
 
     inline_models = [
-        (TelephoneModel, {'form_columns': ['id', 'number']}),
-        (EmailModel, {'form_columns': ['id', 'email']}),
         (TaskModel, {'form_columns': [
             'id', 'title', 'description', 'type', 'priority']}),
         (MessageModel, {'form_columns': [
@@ -312,8 +288,6 @@ class CompanyModelView(EnhancedModelView):
     column_sortable_list = ('name',)
 
     inline_models = [
-        (TelephoneModel, {'form_columns': ['id', 'number']}), (EmailModel, {
-            'form_columns': ['id', 'email']}),
         (TaskModel, {'form_columns': [
             'id', 'title', 'description', 'type', 'priority', ]}),
         (MessageModel, {'form_columns': [
@@ -343,8 +317,6 @@ class OrganizationModelView(EnhancedModelView):
     column_sortable_list = ('name',)
 
     inline_models = [
-        (EmailModel, {
-            'form_columns': ['id', 'email']}),
         (TaskModel, {'form_columns': [
             'id', 'title', 'type', 'priority', ]}),
         (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']},
@@ -485,16 +457,6 @@ class TaskModelView(EnhancedModelView):
         (MessageModel, {'form_columns': [
             'id', 'title', 'content', 'channel']}),
     ]
-    column_labels = {**EnhancedModelView.column_labels, **{
-        'user': 'Assignee',
-
-    }
-                     }
-    form_args = {
-        'contact': {
-            'label': 'Assignee',
-        }
-    }
 
 
 class MessageModelView(EnhancedModelView):
@@ -521,17 +483,17 @@ class TaskTrackingModelView(EnhancedModelView):
     column_list = column_details_list = ('remarks',
                                          'time_done',)
 
-class AlertModelView(EnhancedModelView):
-    pass
-
-class AlertSourceModelView(EnhancedModelView):
-    pass
-
-class AlertProfileModelView(EnhancedModelView):
-    pass
-
-class KnowledgeBaseModelView(EnhancedModelView):
-    pass
-
-class KnowledgeBaseCategoryModelView(EnhancedModelView):
-    pass
+# class AlertModelView(EnhancedModelView):
+#     pass
+#
+# class AlertSourceModelView(EnhancedModelView):
+#     pass
+#
+# class AlertProfileModelView(EnhancedModelView):
+#     pass
+#
+# class KnowledgeBaseModelView(EnhancedModelView):
+#     pass
+#
+# class KnowledgeBaseCategoryModelView(EnhancedModelView):
+#     pass

@@ -44,7 +44,7 @@ class Task(db.Model, BaseModel):
         default=TaskState.NEW
     )
 
-    assignment_id = db.Column(
+    assignee_id = db.Column(
         db.String,
         db.ForeignKey("users.id")
     )
@@ -102,20 +102,20 @@ class Task(db.Model, BaseModel):
         db.ForeignKey("sprints.id")
     )
 
-    alert_id = db.Column(
-        db.String,
-        db.ForeignKey("alerts.id")
-    )
+    # alert_id = db.Column(
+    #     db.String,
+    #     db.ForeignKey("alerts.id")
+    # )
+    #
+    # alert_source_id = db.Column(
+    #     db.String,
+    #     db.ForeignKey("alertsources.id")
+    # )
 
-    alert_source_id = db.Column(
-        db.String,
-        db.ForeignKey("alertsources.id")
-    )
-
-    knowledgebase_id = db.Column(
-        db.String,
-        db.ForeignKey("knowledgebases.id")
-    )
+    # knowledgebase_id = db.Column(
+    #     db.String,
+    #     db.ForeignKey("knowledgebases.id")
+    # )
 
     comments = db.relationship(
         "Comment",

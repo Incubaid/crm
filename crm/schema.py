@@ -5,38 +5,27 @@ from graphene_sqlalchemy import SQLAlchemyObjectType
 from crm.company.models import Company
 from crm.contact.models import Contact
 from crm.deal.models import Deal
-from crm.email.models import Email
-from crm.knowledge.models import KnowledgeBase, KnowledgeBaseCategory
+# from crm.knowledge.models import KnowledgeBase, KnowledgeBaseCategory
 from crm.link.models import Link
 from crm.organization.models import Organization
 from crm.project.models import Project
 from crm.sprint.models import Sprint
-from crm.telephone.models import Telephone
 from crm.task.models import Task, TaskTracking
 from crm.comment.models import Comment
 from crm.message.models import Message
-from crm.alert.models import Alert
+# from crm.alert.models import Alert
 
 
-class KnowledgBaseTeype(SQLAlchemyObjectType):
-
-    class Meta:
-        model = KnowledgeBase
-
-class KnowledgeBaseCategoryType(SQLAlchemyObjectType):
-
-    class Meta:
-        model = KnowledgeBaseCategory
-
-class TelephoneType(SQLAlchemyObjectType):
-    class Meta:
-        model = Telephone
-
-
-class EmailType(SQLAlchemyObjectType):
-
-    class Meta:
-        model = Email
+# class KnowledgBaseTeype(SQLAlchemyObjectType):
+#
+#     class Meta:
+#         model = KnowledgeBase
+#
+#
+# class KnowledgeBaseCategoryType(SQLAlchemyObjectType):
+#
+#     class Meta:
+#         model = KnowledgeBaseCategory
 
 
 class ContactType(SQLAlchemyObjectType):
@@ -104,16 +93,14 @@ class MessageType(SQLAlchemyObjectType):
     class Meta:
         model = Message
 
-class AlertType(SQLAlchemyObjectType):
-
-    class Meta:
-        model = Alert
+# class AlertType(SQLAlchemyObjectType):
+#
+#     class Meta:
+#         model = Alert
 
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
-    telephones = graphene.List(TelephoneType)
-    emails = graphene.List(EmailType)
     contacts = graphene.List(ContactType)
     companies = graphene.List(CompanyType)
     organizations = graphene.List(OrganizationType)
@@ -124,17 +111,9 @@ class Query(graphene.ObjectType):
     tasks = graphene.List(TaskType)
     comments = graphene.List(CommentType)
     messages = graphene.List(MessageType)
-    alerts = graphene.List(AlertType)
-    knowkedgebases = graphene.List(KnowledgBaseTeype)
-    knowledgebasecategories = graphene.List(KnowledgeBaseCategoryType)
-
-    def resolve_telephones(self, args, context, info):
-        query = TelephoneType.get_query(context)
-        return query.all()
-
-    def resolve_emails(self, args, context, info):
-        query = EmailType.get_query(context)
-        return query.all()
+    # alerts = graphene.List(AlertType)
+    # knowkedgebases = graphene.List(KnowledgBaseTeype)
+    # knowledgebasecategories = graphene.List(KnowledgeBaseCategoryType)
 
     def resolve_contacts(self, args, context, info):
         query = ContactType.get_query(context)
@@ -175,24 +154,23 @@ class Query(graphene.ObjectType):
     def resolve_links(self, args, context, info):
         query = LinkType.get_query(context)
         return query.all()
-
-    def resolve_alerts(self, args, context, info):
-        query = AlertType.get_query(context)
-        return query.all()
-
-    def resolve_knowkedgebases(self, args, context, info):
-        query = KnowledgBaseTeype.get_query(context)
-        return query.all()
-
-    def resolve_knowledgebasecategories(self, args, context, info):
-        query = KnowledgeBaseCategoryType.get_query(context)
-        return query.all()
+    #
+    # def resolve_alerts(self, args, context, info):
+    #     query = AlertType.get_query(context)
+    #     return query.all()
+    #
+    # def resolve_knowkedgebases(self, args, context, info):
+    #     query = KnowledgBaseTeype.get_query(context)
+    #     return query.all()
+    #
+    # def resolve_knowledgebasecategories(self, args, context, info):
+    #     query = KnowledgeBaseCategoryType.get_query(context)
+    #     return query.all()
 
 
 schema = graphene.Schema(
     query=Query,
     types=[
-        EmailType,
         ContactType,
         CompanyType,
         OrganizationType,
@@ -203,9 +181,8 @@ schema = graphene.Schema(
         SprintType,
         CommentType,
         MessageType,
-        TelephoneType,
-        KnowledgBaseTeype,
-        KnowledgeBaseCategoryType,
-        AlertType
+        # KnowledgBaseTeype,
+        # KnowledgeBaseCategoryType,
+        # AlertType
     ]
 )

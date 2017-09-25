@@ -23,14 +23,14 @@ class Company(db.Model, BaseModel):
         db.String(255)
     )
 
-    telephones = db.relationship(
-        "Telephone",
-        backref="company"
+    # Comma  separated emails
+    emails = db.Column(
+        db.Text()
     )
 
-    emails = db.relationship(
-        "Email",
-        backref="company"
+    # Comma separated phones
+    telephones = db.Column(
+        db.Text()
     )
 
     deals = db.relationship(

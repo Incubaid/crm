@@ -15,9 +15,9 @@ class Organization(db.Model, BaseModel):
         db.Text()
     )
 
-    emails = db.relationship(
-        "Email",
-        backref="organization"
+    # Comma  separated emails
+    emails = db.Column(
+        db.Text()
     )
 
     tasks = db.relationship(

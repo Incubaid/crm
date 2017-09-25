@@ -23,17 +23,6 @@ class Contact(db.Model, BaseModel):
         default=''
     )
 
-    # relations
-    telephones = db.relationship(
-        "Telephone",
-        backref="contact"
-    )
-
-    emails = db.relationship(
-        "Email",
-        backref="contact"
-    )
-
     deals = db.relationship(
         "Deal",
         backref="contact"
@@ -72,6 +61,16 @@ class Contact(db.Model, BaseModel):
     parent_id = db.Column(
         db.String(5),
         db.ForeignKey('users.id')
+    )
+
+    # Comma  separated emails
+    emails = db.Column(
+        db.Text()
+    )
+
+    # Comma separated phones
+    telephones = db.Column(
+        db.Text()
     )
 
     def __str__(self):

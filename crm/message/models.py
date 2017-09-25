@@ -1,8 +1,7 @@
 from crm.db import db, BaseModel
-from crm.admin.mixins import ExtraMixin
 
 
-class Message(db.Model, BaseModel, ExtraMixin):
+class Message(db.Model, BaseModel):
 
     __tablename__ = "messages"
 

@@ -24,19 +24,26 @@ class User(db.Model, BaseModel):
         default=''
     )
 
-    telephones = db.relationship(
-        "Telephone",
-        backref="user"
+    # Comma  separated emails
+    emails = db.Column(
+        db.Text()
     )
 
-    emails = db.relationship(
-        "Email",
-        backref="user"
+    # Comma separated phones
+    telephones = db.Column(
+        db.Text()
     )
 
+    # Tasks Linked to this user (may be someone is doing it for him) like create account
     tasks = db.relationship(
         "Task",
         backref="user"
+    )
+
+    ownsTasks = db.relationship(
+        "Task",
+        backref="assignee",
+        primaryjoin="User.id==Task.assignee_id"
     )
 
     comments = db.relationship(
@@ -90,11 +97,11 @@ class User(db.Model, BaseModel):
         primaryjoin="User.id==Sprint.owner_id"
     )
 
-    ownsAlerts = db.relationship(
-        "Alert",
-        backref="owner",
-        primaryjoin="User.id==Alert.owner_id"
-    )
+    # ownsAlerts = db.relationship(
+    #     "Alert",
+    #     backref="owner",
+    #     primaryjoin="User.id==Alert.owner_id"
+    # )
 
     promoterProjects = db.relationship(
         "Project",
@@ -108,10 +115,10 @@ class User(db.Model, BaseModel):
         primaryjoin="User.id==Project.guardian_id"
     )
 
-    knowledgebases = db.relationship(
-        "KnowledgeBase",
-        backref="author"
-    )
+    # knowledgebases = db.relationship(
+    #     "KnowledgeBase",
+    #     backref="author"
+    # )
 
     def __str__(self):
         return "{} {}".format(self.firstname, self.lastname)

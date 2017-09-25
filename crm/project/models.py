@@ -54,10 +54,10 @@ class Project(db.Model, BaseModel):
         primaryjoin="Project.id==Sprint.project_id"
     )
 
-    alert_source_id = db.Column(
-        db.String,
-        db.ForeignKey("alertsources.id")
-    )
+    # alert_source_id = db.Column(
+    #     db.String,
+    #     db.ForeignKey("alertsources.id")
+    # )
 
     contacts = db.relationship(
         "Contact",

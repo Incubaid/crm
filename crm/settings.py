@@ -24,4 +24,8 @@ DATA_DIR = 'data'
 ########################
 
 
-exec("from crm.settings_%s import *" % os.getenv("env", 'dev'))
+exec("from crm.settings_%s import *" % os.getenv("ENV", 'dev'))
+
+if not globals()['SQLALCHEMY_DATABASE_URI']:
+    print('Missing SQLALCHEMY_DATABASE_URI')
+    exit(1)

@@ -14,6 +14,7 @@ from flask_admin import Admin
 
 from .settings import LOGGING_CONF
 from .db import BaseModel, db
+from crm.admin.config import NAV_BAR_ORDER
 
 
 class CRM(object):
@@ -96,18 +97,23 @@ class CRM(object):
         """
         admin = Admin(self._app, name="CRM", template_mode="bootstrap3", url="/")
 
-        for m in BaseModel.__subclasses__():
-            if hasattr(m, 'IS_MANY_TO_MANY'):
-                continue
-            viewname = m.__name__ + "ModelView"
-            admin_views =__import__('crm.admin.views', globals(), locals(), ['object'])
-            with warnings.catch_warnings():
-                warnings.filterwarnings('ignore', 'Fields missing from ruleset', UserWarning)
+        admin_views = __import__('crm.admin.views', globals(), locals(), ['object'])
+
+        all_models = {}
+        for model in BaseModel.__subclasses__():
+            all_models[model.__name__] = model
+
+        with warnings.catch_warnings():
+            warnings.filterwarnings('ignore', 'Fields missing from ruleset', UserWarning)
+            for main_model in NAV_BAR_ORDER['MAIN']:
+                viewname = main_model + "ModelView"
                 viewcls = getattr(admin_views, viewname)
-                if not hasattr(m, 'IS_EXTRA'):
-                    admin.add_view(viewcls(m, db.session))
-                else:
-                    admin.add_view(viewcls(m, db.session, category="Extra"))
+                admin.add_view(viewcls(all_models[main_model], db.session))
+
+            for extra_model in NAV_BAR_ORDER['EXTRA']:
+                viewname = extra_model + "ModelView"
+                viewcls = getattr(admin_views, viewname)
+                admin.add_view(viewcls(all_models[extra_model], db.session, category="Extra"))
 
     @staticmethod
     def initialize_logger():

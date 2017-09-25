@@ -1,8 +1,7 @@
 from crm.db import db, BaseModel
-from crm.admin.mixins import ExtraMixin
 
 
-class Link(db.Model, BaseModel, ExtraMixin):
+class Link(db.Model, BaseModel):
 
     __tablename__ = "links"
 
@@ -50,15 +49,15 @@ class Link(db.Model, BaseModel, ExtraMixin):
         db.ForeignKey("sprints.id")
     )
 
-    alert_id = db.Column(
-        db.String,
-        db.ForeignKey("alerts.id")
-    )
-
-    alert_source_id = db.Column(
-        db.String,
-        db.ForeignKey("alertsources.id")
-    )
+    # alert_id = db.Column(
+    #     db.String,
+    #     db.ForeignKey("alerts.id")
+    # )
+    #
+    # alert_source_id = db.Column(
+    #     db.String,
+    #     db.ForeignKey("alertsources.id")
+    # )
 
     comments = db.relationship(
         "Comment",

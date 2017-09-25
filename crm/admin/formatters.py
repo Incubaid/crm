@@ -76,8 +76,16 @@ def format_markdown(view, context, model, name):
 def format_emails(view, context, model, name):
     value = getattr(model, name)
     out = "<ul>"
-    for x in value:
+    for x in value.split(','):
         out += '<li><a href="mailto:{email}">{email}</a></li>'.format(email=x)
+    out += "</ul>"
+    return Markup(out)
+
+def format_telephones(view, context, model, name):
+    value = getattr(model, name)
+    out = "<ul>"
+    for x in value.split(','):
+        out += '<li>{telephone}</li>'.format(telephone=x)
     out += "</ul>"
     return Markup(out)
 
@@ -88,8 +96,8 @@ def format_destination_emails(view, context, model, name):
     return Markup(", ".join(formatted_values))
 
 
-column_formatters = dict(list(zip(["telephones", "users", "contacts", "companies", "organizations", "projects",  "deals", "sprints",
-                                   "links", "tasks", "messages"], cycle([format_instrumented_list]))), website=format_url, destination=format_destination_emails, messages=format_messages, comments=format_comments, url=format_url, emails=format_emails, description=format_markdown, content=format_markdown)
+column_formatters = dict(list(zip(["users", "contacts", "companies", "organizations", "projects",  "deals", "sprints",
+                                   "links", "tasks", "messages"], cycle([format_instrumented_list]))), telephones=format_telephones, website=format_url, destination=format_destination_emails, messages=format_messages, comments=format_comments, url=format_url, emails=format_emails, description=format_markdown, content=format_markdown)
 
 column_formatters = {**column_formatters, **
                      dict(list(zip(["created_at", "updated_at", "closed_at", "start_date", "deadline", "eta"], cycle([format_datetime]))))}
