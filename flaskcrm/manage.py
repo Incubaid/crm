@@ -4,7 +4,7 @@ import os
 import ujson as json
 from datetime import datetime
 from sqlalchemy_utils import drop_database, create_database, database_exists 
-from flask import Flask
+from flask import Flask, request
 from flask_migrate import Migrate
 from flask_admin import Admin
 from flask_graphql import GraphQLView
@@ -14,6 +14,7 @@ from models import *
 from views import *
 from flask_admin.helpers import get_url
 from flask_script import Manager
+import requests
 import settings
 
 dbmodels = [User, Company, Contact, Organization, Deal,Project, Sprint, Task]
@@ -36,6 +37,50 @@ app.jinja_env.globals.update(
 
 db.app = app
 db.init_app(app)
+
+
+@app.before_first_request
+def before_first_request():
+    # if "graphql" in request.url or "api" in request.url:
+    #     return
+    caddyoauth = request.cookies.get("caddyoauth")
+    if caddyoauth is None: 
+        raise RuntimeError("Accessing without oauth info")
+    from jose import jwt
+    claims = jwt.get_unverified_claims(caddyoauth)
+    username = claims['username']
+    # print(jwt)
+    #{'exp': 1506345564, 'iss': 'itsyouonline', 'username': 'thabet', 'azp': 'simplecrm', 'scope': ['']}
+    # print(claims)
+    headers = {'Authorization': 'bearer {}'.format(caddyoauth)}
+    userinfourl = "https://itsyou.online/api/users/{}/info".format(username)
+    response = requests.get(userinfourl, headers=headers)
+    response.raise_for_status()
+    info = response.json()
+    email = info['emailaddresses'][0]['emailaddress']
+    emailobjs = Email.query.filter_by(email=email)
+    phone = info['phonenumbers'][0]['phonenumber']
+    # print(info)
+    if emailobjs.count() == 0:
+        firstname = info['firstname']
+        lastname = info['lastname']
+        if not firstname:
+            firstname = username
+        if not lastname:
+            lastname = username
+        emailobj = Email(email=email)
+        phoneobj = Telephone(number=phone)
+        u = User(firstname=firstname, lastname=lastname, emails=[emailobj], telephones=[phoneobj])
+        db.session.add(u)
+        db.session.commit()
+        # print("SIGNED UP USER: ", u)
+        # register a new user on the system
+# {'validatedemailaddresses': [], 'username': 'thabet', 'validatedphonenumbers': [], 'digitalwallet': [],
+#  'phonenumbers': [{'label': 'main', 'phonenumber': '+201143344150'}], 'publicKeys': [], 
+# 'emailaddresses': [{'emailaddress': 'thabeta@greenitglobe.com', 'label': 'main'}], 'firstname': '',
+#  'addresses': [{'nr': '72', 'label': 'main', 'city': 'Heliopolis / Cairo', 'country': 'Egypt', 'street': 'Nozhastreet', 'other': '', 'postalcode': '11341'}],
+#  'lastname': '', 'organizations': None, 'bankaccounts': [], 'ownerof': {'emailaddresses': []}, 'github': {'html_url': '', 'login': '', 'id': 0, 'avatar_url': '', 'name': ''}, 'avatar': [], 'facebook': {'link': '', 'id': '', 'name': '', 'picture': ''}}
+
 migrate = Migrate(app, db)
 
 
