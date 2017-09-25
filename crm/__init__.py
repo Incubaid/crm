@@ -5,7 +5,8 @@ from logging.config import dictConfig
 
 import jinja2
 
-from flask import Flask
+from flask import Flask, request
+import requests
 from flask_admin.helpers import get_url
 from sqlalchemy.event import listen
 from flask_migrate import Migrate, MigrateCommand
@@ -145,6 +146,40 @@ app = crm.app
 
 db.app = app
 db.init_app(app)
+
+
+
+@app.before_first_request
+def before_first_request():
+    from crm.user.models import User
+    # if "graphql" in request.url or "api" in request.url:
+    #     return
+    caddyoauth = request.cookies.get("caddyoauth")
+    if caddyoauth is None: 
+        raise RuntimeError("Accessing without oauth info")
+    from jose import jwt
+    claims = jwt.get_unverified_claims(caddyoauth)
+    username = claims['username']
+
+    headers = {'Authorization': 'bearer {}'.format(caddyoauth)}
+    userinfourl = "https://itsyou.online/api/users/{}/info".format(username)
+    response = requests.get(userinfourl, headers=headers)
+    response.raise_for_status()
+    info = response.json()
+    email = info['emailaddresses'][0]['emailaddress']
+    userobjs = User.query.filter(User.emails.contains(email))
+    phone = info['phonenumbers'][0]['phonenumber']
+    if userobjs.count() == 0:
+        firstname = info['firstname']
+        lastname = info['lastname']
+        if not firstname:
+            firstname = username
+        if not lastname:
+            lastname = username
+        u = User(firstname=firstname, lastname=lastname, emails=email, telephones=phone)
+        db.session.add(u)
+        db.session.commit()
+
 migrate = Migrate(app, db)
 
 manager = Manager(app)
