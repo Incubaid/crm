@@ -1,7 +1,7 @@
 import os
 import ujson as json
 
-from sqlalchemy_utils import create_database, database_exists
+from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from crm.db import BaseModel, db, RootModel
 from crm import app
@@ -77,8 +77,10 @@ def loaddata():
         added_object_ids[model.__name__] = []
 
     # Delete all data in db
-    for model in models.values():
-        model.query.delete()
+    if database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
+        drop_database(app.config['SQLALCHEMY_DATABASE_URI'])
+    create_database(app.config['SQLALCHEMY_DATABASE_URI'])
+    db.create_all(app=app)
 
     # START loading
     for model in models.values():
