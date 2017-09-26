@@ -21,7 +21,6 @@ from flask_admin.model.form import InlineFormAdmin
 from flask_admin import form
 from crm.db import db
 from crm.settings import IMAGES_DIR
-from werkzeug import secure_filename
 from flask import request
 from wtforms import fields
 from hashlib import md5
@@ -30,8 +29,8 @@ from hashlib import md5
 class EnhancedModelView(ModelView):
     can_view_details = True
     column_formatters = column_formatters
-    create_modal = True
-    edit_modal = True
+    # create_modal = True
+    # edit_modal = True
     model_form_converter = CustomAdminConverter
     mainfilter = ""
 
@@ -261,8 +260,53 @@ class ImageModelView(EnhancedModelView):
     form_extra_fields = {
         'path': form.ImageUploadField('Image',
                                       IMAGES_DIR,
-                                      thumbnail_size=(100, 100, True))
+                                      thumbnail_size=(100, 100, True)),
     }
+# from wtforms.fields import StringField
+# from wtforms.widgets import HTMLString
+
+# class ImagePreviewWidget(object):
+#     """
+#     Render a basic ``<input>`` field.
+
+#     This is used as the basis for most of the other input fields.
+
+#     By default, the `_value()` method will be called upon the associated field
+#     to provide the ``value=`` HTML attribute.
+#     """
+
+#     def __call__(self, field, **kwargs):
+#         kwargs.setdefault('id', field.id)
+#         import ipdb; ipdb.set_trace()
+#         return HTMLString('3aaa')
+
+
+# class ImagePreviewField(StringField):
+#     widget = ImagePreviewWidget()
+
+# Customized inline form handler
+class InlineImageModelForm(InlineFormAdmin):
+    form_excluded_columns = ('path', 'name', 'created_at', 'updated_at')
+    form_label = 'Image'
+
+    def __init__(self,):
+        return super(InlineImageModelForm, self).__init__(ImageModel)
+
+    def postprocess_form(self, form_class):
+        form_class.upload = fields.FileField('Image')
+        # form_class.preview = ImagePreviewField()
+        return form_class
+
+
+    def on_model_change(self, form, model):
+        file_data = request.files.get(form.upload.name)
+        if file_data:
+            newname = md5(file_data.stream.getvalue()).hexdigest()+".png"
+            if not os.path.exists(os.path.join(IMAGES_DIR, newname)):
+                model.path = newname
+                model.name = file_data.filename
+                file_data.save(os.path.join(IMAGES_DIR, newname))
+
 
 
 class ContactModelView(EnhancedModelView):

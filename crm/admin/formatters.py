@@ -113,11 +113,16 @@ def format_images(view, context, model, name):
     return Markup(out)
 
 
+def format_image(view, context, model, name):
+    value = getattr(model, name)
+    out = '<img width="100" height="100" src="{}"></img>'.format(value.imgurl)
+    return Markup(out)
+
 column_formatters = dict(list(zip(["users", "contacts", "companies", "organizations", "projects",  "deals", "sprints",
                                    "links", "tasks", "messages"], cycle([format_instrumented_list]))),
                          telephones=format_telephones, website=format_url, destination=format_destination_emails,
                          messages=format_messages, comments=format_comments, url=format_url, emails=format_emails,
-                         images=format_images,
+                         images=format_images, image=format_image,
                          )
 
 column_formatters = {**column_formatters, **
