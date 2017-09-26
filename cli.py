@@ -1,10 +1,20 @@
 import os
 import ujson as json
 
+from sqlalchemy_utils import create_database, database_exists
+
 from crm.db import BaseModel, db, RootModel
 from crm import app
 
 from fixtures import generate_fixtures
+
+
+@app.cli.command()
+def createdb():
+    if not database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
+        create_database(app.config['SQLALCHEMY_DATABASE_URI'])
+    db.create_all(app=app)
+    print("DB created.")
 
 
 @app.cli.command()
