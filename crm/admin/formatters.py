@@ -75,6 +75,8 @@ def format_markdown(view, context, model, name):
 
 def format_emails(view, context, model, name):
     value = getattr(model, name)
+    if not value:
+        return ''
     out = "<ul>"
     for x in value.split(','):
         out += '<li><a href="mailto:{email}">{email}</a></li>'.format(email=x)
@@ -83,6 +85,8 @@ def format_emails(view, context, model, name):
 
 def format_telephones(view, context, model, name):
     value = getattr(model, name)
+    if not value:
+        return ''
     out = "<ul>"
     for x in value.split(','):
         out += '<li>{telephone}</li>'.format(telephone=x)
