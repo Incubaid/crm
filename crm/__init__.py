@@ -12,7 +12,7 @@ from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_admin import Admin
 
-from .settings import LOGGING_CONF
+from .settings import LOGGING_CONF, STATIC_DIR, IMAGES_DIR, STATIC_URL_PATH
 from .db import BaseModel, db
 from crm.admin.config import NAV_BAR_ORDER
 
@@ -26,12 +26,21 @@ class CRM(object):
         from .db import db
         self.initialize_logger()
         self._db = db
-        self._app = Flask(__name__)
+        self._app = Flask(__name__, static_folder=STATIC_DIR,
+                          static_url_path=STATIC_URL_PATH)
+        self.ensure_static_dir()
         self.register_template_dirs()
         self.update_jinja_env()
         self.load_settings()
         self.init_db()
         self.inti_admin_app()
+
+    def ensure_static_dir(self):
+        """
+        Ensure the existence of static directory (one level above crm dir)
+        """
+        if not os.path.exists(IMAGES_DIR):
+            os.makedirs(IMAGES_DIR)
 
     def register_template_dirs(self):
         """
@@ -46,8 +55,8 @@ class CRM(object):
                 template_dirs.append(os.path.abspath(os.path.join(root, dir)))
         template_loader = jinja2.ChoiceLoader([
             self._app.jinja_loader,
-                jinja2.FileSystemLoader(template_dirs),
-            ]
+            jinja2.FileSystemLoader(template_dirs),
+        ]
         )
         self._app.jinja_loader = template_loader
 
@@ -95,16 +104,19 @@ class CRM(object):
         """
         Initialize admin app
         """
-        admin = Admin(self._app, name="CRM", template_mode="bootstrap3", url="/")
+        admin = Admin(self._app, name="CRM",
+                      template_mode="bootstrap3", url="/")
 
-        admin_views = __import__('crm.admin.views', globals(), locals(), ['object'])
+        admin_views = __import__(
+            'crm.admin.views', globals(), locals(), ['object'])
 
         all_models = {}
         for model in BaseModel.__subclasses__():
             all_models[model.__name__] = model
 
         with warnings.catch_warnings():
-            warnings.filterwarnings('ignore', 'Fields missing from ruleset', UserWarning)
+            warnings.filterwarnings(
+                'ignore', 'Fields missing from ruleset', UserWarning)
             for main_model in NAV_BAR_ORDER['MAIN']:
                 viewname = main_model + "ModelView"
                 viewcls = getattr(admin_views, viewname)
@@ -113,7 +125,8 @@ class CRM(object):
             for extra_model in NAV_BAR_ORDER['EXTRA']:
                 viewname = extra_model + "ModelView"
                 viewcls = getattr(admin_views, viewname)
-                admin.add_view(viewcls(all_models[extra_model], db.session, category="Extra"))
+                admin.add_view(
+                    viewcls(all_models[extra_model], db.session, category="Extra"))
 
     @staticmethod
     def initialize_logger():

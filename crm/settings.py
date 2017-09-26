@@ -1,5 +1,5 @@
 import os
-
+from os.path import dirname
 LOGGING_CONF = {
     'version': 1,
     'formatters': {'default': {
@@ -16,8 +16,13 @@ LOGGING_CONF = {
 }
 
 
-
 DATA_DIR = 'data'
+
+# ../crm.
+STATIC_DIR = os.path.abspath(os.path.join(
+    dirname(dirname(__file__)), 'static'))
+STATIC_URL_PATH = "/" + os.path.relpath(STATIC_DIR)
+IMAGES_DIR = os.path.join(STATIC_DIR, "uploads", "images")
 
 ######################
 # Leave as the last line

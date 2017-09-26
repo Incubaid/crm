@@ -1,3 +1,4 @@
+import os
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.base import expose
 from flask_admin.form.rules import FieldSet
@@ -10,14 +11,20 @@ from crm.message.models import Message as MessageModel
 from crm.comment.models import Comment as CommentModel
 from crm.contact.models import Contact as ContactModel
 from crm.company.models import Company as CompanyModel
-
+from crm.image.models import Image as ImageModel
 from .formatters import column_formatters
 from .converters import CustomAdminConverter
 from flask_admin.contrib.sqla.tools import is_relationship
 from flask_admin.contrib.sqla import tools
 from flask_admin._compat import string_types
-
+from flask_admin.model.form import InlineFormAdmin
+from flask_admin import form
 from crm.db import db
+from crm.settings import IMAGES_DIR
+from werkzeug import secure_filename
+from flask import request
+from wtforms import fields
+from hashlib import md5
 
 
 class EnhancedModelView(ModelView):
@@ -245,22 +252,35 @@ class UserModelView(EnhancedModelView):
     mainfilter = "Users / Id"
 
 
+class ImageModelView(EnhancedModelView):
+    column_list = ('name', 'path')
+    form_rules = column_details_list = ('name', 'path')
+
+    form_edit_rules = ('name', 'path')
+
+    form_extra_fields = {
+        'path': form.ImageUploadField('Image',
+                                      IMAGES_DIR,
+                                      thumbnail_size=(100, 100, True))
+    }
+
+
 class ContactModelView(EnhancedModelView):
     form_rules = (
-        'firstname', 'lastname', 'description', 'bio', 'belief_statement',
+        'firstname', 'lastname', 'images', 'description', 'bio', 'belief_statement',
         FieldSet(['street_number', 'street_name',
                   'zip_code', 'country']),
         'emails', 'telephones', 'companies', 'message_channels',
         'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
 
     column_details_list = (
-        'firstname', 'lastname', 'description', 'bio', 'belief_statement',
+        'firstname', 'lastname', 'description', 'images', 'bio', 'belief_statement',
         'address',
         'emails', 'telephones', 'companies', 'message_channels',
         'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
 
     form_edit_rules = (
-        'firstname', 'lastname', 'description', 'bio', 'belief_statement',
+        'firstname', 'lastname', 'images', 'description', 'bio', 'belief_statement',
         FieldSet(['street_number', 'street_name',
                   'zip_code', 'country']),
         'emails', 'telephones', 'companies', 'tasks', 'deals', 'messages',
@@ -277,6 +297,13 @@ class ContactModelView(EnhancedModelView):
     column_sortable_list = ('firstname', 'lastname')
 
     inline_models = [
+        # (ImageModel,  {'form_extra_fields': {
+        #     'path': form.ImageUploadField('Image',
+        #                                   base_path=os.path.join(
+        #                                       MEDIA_DIR, "images"),
+        #                                   thumbnail_size=(100, 100, True))},
+        #                'form_columns': ['path']}),
+        InlineImageModelForm(),
         (TaskModel, {'form_columns': [
             'id', 'title', 'description', 'type', 'priority']}),
         (MessageModel, {'form_columns': [

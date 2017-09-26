@@ -3,6 +3,7 @@ from itertools import cycle
 from sqlalchemy.orm.collections import InstrumentedList
 from jinja2 import Markup
 from flask_misaka import markdown
+from crm.settings import IMAGES_DIR
 
 
 def format_instrumented_list(view, context, model, name):
@@ -83,6 +84,7 @@ def format_emails(view, context, model, name):
     out += "</ul>"
     return Markup(out)
 
+
 def format_telephones(view, context, model, name):
     value = getattr(model, name)
     if not value:
@@ -96,14 +98,26 @@ def format_telephones(view, context, model, name):
 
 def format_destination_emails(view, context, model, name):
     value = getattr(model, name)
-    formatted_values  = ['<a href="mailto:{email}">{email}</a>'.format(email=x.email) for x in value]
+    formatted_values = [
+        '<a href="mailto:{email}">{email}</a>'.format(email=x.email) for x in value]
     return Markup(", ".join(formatted_values))
+
+
+def format_images(view, context, model, name):
+    value = getattr(model, name)
+    out = "<ul>"
+    for x in value:
+        out += '<li><img width="100" height="100" src="{}"></img></li>'.format(
+            x.imgurl)
+    out += "</ul>"
+    return Markup(out)
 
 
 column_formatters = dict(list(zip(["users", "contacts", "companies", "organizations", "projects",  "deals", "sprints",
                                    "links", "tasks", "messages"], cycle([format_instrumented_list]))),
                          telephones=format_telephones, website=format_url, destination=format_destination_emails,
                          messages=format_messages, comments=format_comments, url=format_url, emails=format_emails,
+                         images=format_images,
                          )
 
 column_formatters = {**column_formatters, **

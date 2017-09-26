@@ -2,9 +2,7 @@ import enum
 from crm.db import db, BaseModel, RootModel
 from crm.countries import countries
 
-# countries = dict(zip(countries.values(), countries.values()))
 CountriesEnum = enum.Enum('Countries', countries)
-
 CountriesEnum.__str__ = lambda self: self.value
 
 
@@ -23,27 +21,37 @@ class Contact(db.Model, BaseModel, RootModel):
     description = db.Column(
         db.Text()
     )
+
+    images = db.relationship("Image", backref="contact")
+
     bio = db.Column(
         db.Text()
     )
+
     belief_statement = db.Column(
         db.Text()
     )
+
     message_channels = db.Column(
         db.String(255),
         default=''
     )
+
     street_name = db.Column(
         db.String(255)
     )
+
     street_number = db.Column(
         db.Integer
     )
+
     zip_code = db.Column(
         db.String(255)
     )
+
     country = db.Column(db.Enum(CountriesEnum),
                         default=CountriesEnum.BE)
+
     deals = db.relationship(
         "Deal",
         backref="contact"
