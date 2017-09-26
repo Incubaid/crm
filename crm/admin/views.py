@@ -1,10 +1,11 @@
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.base import expose
+from flask_admin.form.rules import FieldSet
 from crm.deal.models import Deal as DealModel
 from crm.link.models import Link as LinkModel
-from crm.project.models import  Project as ProjectModel
+from crm.project.models import Project as ProjectModel
 from crm.sprint.models import Sprint as SprintModel
-from crm.task.models import  Task as TaskModel
+from crm.task.models import Task as TaskModel
 from crm.message.models import Message as MessageModel
 from crm.comment.models import Comment as CommentModel
 from crm.contact.models import Contact as ContactModel
@@ -61,9 +62,11 @@ class EnhancedModelView(ModelView):
 
             filtered_objects['tasksview'] = [
                 TaskModelView(TaskModel, db.session), self.mainfilter]
-            filtered_objects['contactsview'] = [ContactModelView(ContactModel, db.session), self.mainfilter]
+            filtered_objects['contactsview'] = [ContactModelView(
+                ContactModel, db.session), self.mainfilter]
 
-            filtered_objects['companiesview'] = [CompanyModelView(CompanyModel, db.session), self.mainfilter]
+            filtered_objects['companiesview'] = [
+                CompanyModelView(CompanyModel, db.session), self.mainfilter]
             filtered_objects['messagesview'] = [MessageModelView(
                 MessageModel, db.session), self.mainfilter]
             filtered_objects['projectsview'] = [ProjectModelView(
@@ -86,9 +89,11 @@ class EnhancedModelView(ModelView):
             filtered_objects = {}
             filtered_objects['tasksview'] = [
                 TaskModelView(TaskModel, db.session), self.mainfilter]
-            filtered_objects['contactsview'] = [ContactModelView(ContactModel, db.session), self.mainfilter]
+            filtered_objects['contactsview'] = [ContactModelView(
+                ContactModel, db.session), self.mainfilter]
 
-            filtered_objects['companiesview'] = [CompanyModelView(CompanyModel, db.session), self.mainfilter]
+            filtered_objects['companiesview'] = [
+                CompanyModelView(CompanyModel, db.session), self.mainfilter]
             filtered_objects['messagesview'] = [MessageModelView(
                 MessageModel, db.session), self.mainfilter]
             filtered_objects['projectsview'] = [ProjectModelView(
@@ -171,7 +176,7 @@ class EnhancedModelView(ModelView):
 
             # Join not needed for hybrid properties
             if (not is_hybrid_property and tools.need_join(self.model, column.table) and
-                        name not in self.column_labels):
+                    name not in self.column_labels):
                 if joined_column_name:
                     visible_name = '%s / %s / %s' % (
                         joined_column_name,
@@ -223,9 +228,9 @@ class UserModelView(EnhancedModelView):
     column_list = ('firstname', 'lastname', 'emails',
                    'telephones',)
     form_rules = column_details_list = (
-    'firstname', 'lastname', 'emails', 'telephones', 'description', 'message_channels',
-    'ownsContacts', 'ownsTasks', 'tasks', 'ownsAsBackupContacts', 'ownsCompanies', 'ownsAsBackupCompanies',
-    'ownsOrganizations', 'ownsSprints', 'promoterProjects', 'guardianProjects', 'comments', 'messages', 'links',)
+        'firstname', 'lastname', 'emails', 'telephones', 'description', 'message_channels',
+        'ownsContacts', 'ownsTasks', 'tasks', 'ownsAsBackupContacts', 'ownsCompanies', 'ownsAsBackupCompanies',
+        'ownsOrganizations', 'ownsSprints', 'promoterProjects', 'guardianProjects', 'comments', 'messages', 'links',)
 
     column_filters = ('firstname', 'lastname')
     form_edit_rules = ('firstname', 'lastname', 'description',
@@ -241,13 +246,26 @@ class UserModelView(EnhancedModelView):
 
 
 class ContactModelView(EnhancedModelView):
-    form_rules = column_details_list = (
-    'firstname', 'lastname', 'description', 'bio', 'belief_statement', 'emails', 'telephones', 'companies', 'message_channels',
-    'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
+    form_rules = (
+        'firstname', 'lastname', 'description', 'bio', 'belief_statement',
+        FieldSet(['street_number', 'street_name',
+                  'zip_code', 'country']),
+        'emails', 'telephones', 'companies', 'message_channels',
+        'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
+
+    column_details_list = (
+        'firstname', 'lastname', 'description', 'bio', 'belief_statement',
+        'address',
+        'emails', 'telephones', 'companies', 'message_channels',
+        'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
+
     form_edit_rules = (
-    'firstname', 'lastname', 'description', 'bio', 'belief_statement', 'emails', 'telephones', 'companies', 'tasks', 'deals', 'messages',
-    'comments',
-    'message_channels', 'owner', 'ownerbackup')
+        'firstname', 'lastname', 'description', 'bio', 'belief_statement',
+        FieldSet(['street_number', 'street_name',
+                  'zip_code', 'country']),
+        'emails', 'telephones', 'companies', 'tasks', 'deals', 'messages',
+        'comments',
+        'message_channels', 'owner', 'ownerbackup')
 
     column_filters = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'message_channels',
                       'deals', 'comments', 'tasks', 'projects', 'companies', 'messages', 'sprints', 'links', 'owner',
@@ -276,14 +294,15 @@ class ContactModelView(EnhancedModelView):
 
 class CompanyModelView(EnhancedModelView):
     form_rules = column_filters = column_details_list = (
-    'name', 'description', 'emails', 'telephones', 'vatnumber', 'website',
-    'deals', 'contacts', 'messages', 'tasks', 'comments', 'owner', 'ownerbackup')
+        'name', 'description', 'emails', 'telephones', 'vatnumber', 'website',
+        'deals', 'contacts', 'messages', 'tasks', 'comments', 'owner', 'ownerbackup')
 
     form_edit_rules = (
-    'name', 'description', 'emails', 'telephones', 'vatnumber', 'website', 'contacts', 'messages', 'tasks', 'deals',
-    'comments', 'owner', 'ownerbackup')
+        'name', 'description', 'emails', 'telephones', 'vatnumber', 'website', 'contacts', 'messages', 'tasks', 'deals',
+        'comments', 'owner', 'ownerbackup')
 
-    column_searchable_list = ('id', 'name', 'description', 'vatnumber', 'website',)
+    column_searchable_list = (
+        'id', 'name', 'description', 'vatnumber', 'website',)
     column_list = ('name', 'short_description', 'vatnumber', 'website')
     column_sortable_list = ('name',)
 
@@ -327,9 +346,9 @@ class OrganizationModelView(EnhancedModelView):
 
 class DealModelView(EnhancedModelView):
     column_details_list = ('id', 'name', 'description', 'amount', 'currency', 'deal_type', 'deal_state',
-                           'contact', 'company', 'closed_at', 'messages', 'comments')
+                           'contact', 'company', 'closed_at', 'tasks', 'messages', 'comments')
     column_filters = ('id', 'name', 'amount', 'currency', 'deal_type', 'deal_state',
-                      'contact', 'company', 'closed_at', 'messages', 'comments')
+                      'contact', 'company', 'closed_at', 'tasks', 'messages', 'comments')
 
     form_rules = ('name', 'amount', 'currency', 'deal_type', 'deal_state',
                   'contact', 'company', 'comments',)
@@ -435,7 +454,7 @@ class TaskModelView(EnhancedModelView):
                            'company', 'organization', 'project', 'sprint', 'deal',
                            'comments', 'messages')
 
-    column_filters = ('id', 'title', 'description', 'contact', 'user',
+    column_filters = ('id', 'title', 'description', 'contact', 'user', 'assignee',
                       'type', 'priority', 'eta', 'time_done',
                       'company', 'organization', 'project', 'sprint', 'deal',
                       'comments', 'messages')
@@ -443,7 +462,7 @@ class TaskModelView(EnhancedModelView):
                   'type', 'priority', 'eta', 'time_done',
                   'user', 'contact', 'company', 'organization', 'project', 'sprint', 'deal')
 
-    form_edit_rules = ('title', 'description', 'user', 'contact', 'state', 
+    form_edit_rules = ('title', 'description', 'user', 'contact', 'state',
                        'type', 'priority', 'time_done', 'comments', 'messages')
     column_list = ('title', 'type', 'priority', 'state', 'user', 'contact',
                    'organization', 'company', 'project', 'sprint', 'deal')

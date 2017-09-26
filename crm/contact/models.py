@@ -1,4 +1,11 @@
+import enum
 from crm.db import db, BaseModel, RootModel
+from crm.countries import countries
+
+# countries = dict(zip(countries.values(), countries.values()))
+CountriesEnum = enum.Enum('Countries', countries)
+
+CountriesEnum.__str__ = lambda self: self.value
 
 
 class Contact(db.Model, BaseModel, RootModel):
@@ -13,7 +20,6 @@ class Contact(db.Model, BaseModel, RootModel):
     lastname = db.Column(
         db.String(255)
     )
-
     description = db.Column(
         db.Text()
     )
@@ -27,7 +33,17 @@ class Contact(db.Model, BaseModel, RootModel):
         db.String(255),
         default=''
     )
-
+    street_name = db.Column(
+        db.String(255)
+    )
+    street_number = db.Column(
+        db.Integer
+    )
+    zip_code = db.Column(
+        db.String(255)
+    )
+    country = db.Column(db.Enum(CountriesEnum),
+                        default=CountriesEnum.BE)
     deals = db.relationship(
         "Deal",
         backref="contact"
@@ -77,6 +93,10 @@ class Contact(db.Model, BaseModel, RootModel):
     telephones = db.Column(
         db.Text()
     )
+
+    @property
+    def address(self):
+        return "{} {}, {}".format(self.street_number, self.street_name, self.country)
 
     def __str__(self):
         return "{} {}".format(self.firstname, self.lastname)
@@ -135,7 +155,6 @@ class ContactsProjects(db.Model):
     """
 
     __tablename__ = 'contacts_projects'
-
 
     id = db.Column(
         db.Integer,
