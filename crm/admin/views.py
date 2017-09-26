@@ -430,7 +430,7 @@ class LinkModelView(EnhancedModelView):
 
 
 class TaskModelView(EnhancedModelView):
-    column_details_list = ('id', 'title', 'description', 'user',
+    column_details_list = ('id', 'title', 'description', 'user', 'contact',
                            'type', 'priority', 'eta', 'state', 'time_done',
                            'company', 'organization', 'project', 'sprint', 'deal',
                            'comments', 'messages')
@@ -441,11 +441,11 @@ class TaskModelView(EnhancedModelView):
                       'comments', 'messages')
     form_rules = ('title', 'description',
                   'type', 'priority', 'eta', 'time_done',
-                  'user', 'company', 'organization', 'project', 'sprint', 'deal')
+                  'user', 'contact', 'company', 'organization', 'project', 'sprint', 'deal')
 
-    form_edit_rules = ('title', 'description', 'user', 'state',
+    form_edit_rules = ('title', 'description', 'user', 'contact', 'state', 
                        'type', 'priority', 'time_done', 'comments', 'messages')
-    column_list = ('title', 'type', 'priority', 'state', 'user',
+    column_list = ('title', 'type', 'priority', 'state', 'user', 'contact',
                    'organization', 'company', 'project', 'sprint', 'deal')
     column_searchable_list = ('id', 'title', 'description',
                               'type', 'priority')
