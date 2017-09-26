@@ -17,7 +17,12 @@ class Contact(db.Model, BaseModel, RootModel):
     description = db.Column(
         db.Text()
     )
-
+    bio = db.Column(
+        db.Text()
+    )
+    belief_statement = db.Column(
+        db.Text()
+    )
     message_channels = db.Column(
         db.String(255),
         default=''
