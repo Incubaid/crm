@@ -262,39 +262,47 @@ class ImageModelView(EnhancedModelView):
                                       IMAGES_DIR,
                                       thumbnail_size=(100, 100, True)),
     }
-# from wtforms.fields import StringField
-# from wtforms.widgets import HTMLString
+from wtforms.fields import StringField
+from wtforms.widgets import HTMLString
 
-# class ImagePreviewWidget(object):
-#     """
-#     Render a basic ``<input>`` field.
+class ImagePreviewWidget(object):
+    """
+    Render a basic ``<input>`` field.
 
-#     This is used as the basis for most of the other input fields.
+    This is used as the basis for most of the other input fields.
 
-#     By default, the `_value()` method will be called upon the associated field
-#     to provide the ``value=`` HTML attribute.
-#     """
+    By default, the `_value()` method will be called upon the associated field
+    to provide the ``value=`` HTML attribute.
+    """
 
-#     def __call__(self, field, **kwargs):
-#         kwargs.setdefault('id', field.id)
-#         import ipdb; ipdb.set_trace()
-#         return HTMLString('3aaa')
+    def __call__(self, field, **kwargs):
+        objpk = kwargs.get('pk', None)
+        obj = kwargs.get('obj', None)
+        kwargs.setdefault('id', field.id)
+        # import ipdb; ipdb.set_trace()
+        if obj is not None:
+           return HTMLString(obj.as_image)
+        return ""
 
+from flask_admin.model.fields import InlineFieldList, InlineModelFormField
 
-# class ImagePreviewField(StringField):
-#     widget = ImagePreviewWidget()
+class ImagePreviewField(StringField):
+    widget = ImagePreviewWidget()
 
 # Customized inline form handler
 class InlineImageModelForm(InlineFormAdmin):
     form_excluded_columns = ('path', 'name', 'created_at', 'updated_at')
     form_label = 'Image'
 
+    # form_extra_fields = {
+    #     'preview': ImagePreviewField()
+    # }
     def __init__(self,):
         return super(InlineImageModelForm, self).__init__(ImageModel)
 
     def postprocess_form(self, form_class):
         form_class.upload = fields.FileField('Image')
-        # form_class.preview = ImagePreviewField()
+        form_class.preview = ImagePreviewField(form_class)
         return form_class
 
 

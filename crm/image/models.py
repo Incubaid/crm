@@ -28,9 +28,9 @@ class Image(db.Model, BaseModel, RootModel):
             self.imgurl)
         # return os.path.join(IMAGES_DIR, self.path)
 
-    # @as_image.setter
-    # def set_as_image(self, val):
-    #     self.___ig = val
+    @as_image.setter
+    def set_as_image(self, val):
+        self.___ig = val
 
 
     def __str__(self):

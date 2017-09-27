@@ -64,12 +64,16 @@ class CRM(object):
         """
         Update JINJA extra globals
         """
+        def update_dict(d, k, v):
+            d[k] = v
+            return d
         self._app.jinja_env.globals.update(
             getattr=getattr,
             hasattr=hasattr,
             type=type,
             len=len,
-            get_url=get_url
+            get_url=get_url,
+            update_dict=update_dict,
         )
 
     def load_settings(self):
