@@ -47,10 +47,13 @@
         {% endfor %}
     {% else %}
         {% for f in form if f.widget.input_type != 'hidden' %}
+          {% set kwargs = {} %}       
           {% if form_opts %}
             {% set kwargs = form_opts.widget_args.get(f.short_name, {}) %}
-          {% else %}
-            {% set kwargs = {} %}
+          {% endif %}
+          {% if form._obj %}
+          {% do update_dict(kwargs, 'pk', form._obj.id) %}
+          {% do update_dict(kwargs, 'obj', form._obj)  %}
           {% endif %}
           {{ render_tabular_field(form, f, kwargs) }}
         {% endfor %}

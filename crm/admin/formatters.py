@@ -105,18 +105,23 @@ def format_destination_emails(view, context, model, name):
 
 def format_images(view, context, model, name):
     value = getattr(model, name)
+    if not value:
+        return ''
     out = "<ul>"
     for x in value:
-        out += '<li><img width="100" height="100" src="{}"></img></li>'.format(
-            x.imgurl)
+        if x.path:
+            out += '<li>{}</li>'.format(
+                x.as_image)
     out += "</ul>"
     return Markup(out)
 
 
 def format_image(view, context, model, name):
     value = getattr(model, name)
-    out = '<img width="100" height="100" src="{}"></img>'.format(value.imgurl)
-    return Markup(out)
+    if not value:
+        return ''
+
+    return Markup(value.as_image)
 
 column_formatters = dict(list(zip(["users", "contacts", "companies", "organizations", "projects",  "deals", "sprints",
                                    "links", "tasks", "messages"], cycle([format_instrumented_list]))),

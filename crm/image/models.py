@@ -24,14 +24,9 @@ class Image(db.Model, BaseModel, RootModel):
 
     @property
     def as_image(self):
-        return '<li><img width="100" height="100" src="{}"></img></li>'.format(
+        return '<img width="100" height="100" src="{}"></img>'.format(
             self.imgurl)
         # return os.path.join(IMAGES_DIR, self.path)
-
-    # @as_image.setter
-    # def set_as_image(self, val):
-    #     self.___ig = val
-
 
     def __str__(self):
         return self.path
