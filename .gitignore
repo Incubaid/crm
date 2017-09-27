@@ -107,3 +107,11 @@ db/
 
 # data dir
 data
+
+# db
+db.prod
+db.dev
+db.testing
+
+# migrations
+migrations
