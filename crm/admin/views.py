@@ -1,7 +1,18 @@
 import os
+from hashlib import md5
+from flask import request
+from flask_admin.model.fields import InlineFieldList, InlineModelFormField
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.base import expose
 from flask_admin.form.rules import FieldSet
+from flask_admin.contrib.sqla.tools import is_relationship
+from flask_admin.contrib.sqla import tools
+from flask_admin._compat import string_types
+from flask_admin.model.form import InlineFormAdmin
+from flask_admin import form
+from wtforms.fields import StringField
+from wtforms.widgets import HTMLString
+from wtforms import fields
 from crm.deal.models import Deal as DealModel
 from crm.link.models import Link as LinkModel
 from crm.project.models import Project as ProjectModel
@@ -14,16 +25,9 @@ from crm.company.models import Company as CompanyModel
 from crm.image.models import Image as ImageModel
 from .formatters import column_formatters
 from .converters import CustomAdminConverter
-from flask_admin.contrib.sqla.tools import is_relationship
-from flask_admin.contrib.sqla import tools
-from flask_admin._compat import string_types
-from flask_admin.model.form import InlineFormAdmin
-from flask_admin import form
+
 from crm.db import db
 from crm.settings import IMAGES_DIR
-from flask import request
-from wtforms import fields
-from hashlib import md5
 
 
 class EnhancedModelView(ModelView):
@@ -42,7 +46,7 @@ class EnhancedModelView(ModelView):
             'readonly': True,
         },
 
-        'OwnsTasks': {
+        'ownsTasks': {
             'label': 'Tasks assigned',
         },
     }
@@ -120,9 +124,6 @@ class EnhancedModelView(ModelView):
         """
             Return list of enabled filters
         """
-        # if :
-        #     import ipdb; ipdb.set_trace()
-
         attr, joins = tools.get_field_with_path(self.model, name)
 
         if attr is None:
@@ -262,8 +263,7 @@ class ImageModelView(EnhancedModelView):
                                       IMAGES_DIR,
                                       thumbnail_size=(100, 100, True)),
     }
-from wtforms.fields import StringField
-from wtforms.widgets import HTMLString
+
 
 class ImagePreviewWidget(object):
     """
@@ -279,42 +279,35 @@ class ImagePreviewWidget(object):
         objpk = kwargs.get('pk', None)
         obj = kwargs.get('obj', None)
         kwargs.setdefault('id', field.id)
-        # import ipdb; ipdb.set_trace()
         if obj is not None:
-           return HTMLString(obj.as_image)
+            return HTMLString(obj.as_image)
         return ""
 
-from flask_admin.model.fields import InlineFieldList, InlineModelFormField
 
 class ImagePreviewField(StringField):
     widget = ImagePreviewWidget()
 
-# Customized inline form handler
+
 class InlineImageModelForm(InlineFormAdmin):
     form_excluded_columns = ('path', 'name', 'created_at', 'updated_at')
     form_label = 'Image'
 
-    # form_extra_fields = {
-    #     'preview': ImagePreviewField()
-    # }
     def __init__(self,):
         return super(InlineImageModelForm, self).__init__(ImageModel)
 
     def postprocess_form(self, form_class):
         form_class.upload = fields.FileField('Image')
-        form_class.preview = ImagePreviewField(form_class)
+        form_class.preview = ImagePreviewField("")
         return form_class
-
 
     def on_model_change(self, form, model):
         file_data = request.files.get(form.upload.name)
         if file_data:
-            newname = md5(file_data.stream.getvalue()).hexdigest()+".png"
+            newname = md5(file_data.stream.getvalue()).hexdigest() + ".png"
+            model.path = newname
+            model.name = file_data.filename
             if not os.path.exists(os.path.join(IMAGES_DIR, newname)):
-                model.path = newname
-                model.name = file_data.filename
                 file_data.save(os.path.join(IMAGES_DIR, newname))
-
 
 
 class ContactModelView(EnhancedModelView):
@@ -349,12 +342,6 @@ class ContactModelView(EnhancedModelView):
     column_sortable_list = ('firstname', 'lastname')
 
     inline_models = [
-        # (ImageModel,  {'form_extra_fields': {
-        #     'path': form.ImageUploadField('Image',
-        #                                   base_path=os.path.join(
-        #                                       MEDIA_DIR, "images"),
-        #                                   thumbnail_size=(100, 100, True))},
-        #                'form_columns': ['path']}),
         InlineImageModelForm(),
         (TaskModel, {'form_columns': [
             'id', 'title', 'description', 'type', 'priority']}),
