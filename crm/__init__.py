@@ -66,7 +66,7 @@ class CRM(object):
         """
         def update_dict(d, k, v):
             d[k] = v
-            return d
+
         self._app.jinja_env.globals.update(
             getattr=getattr,
             hasattr=hasattr,
@@ -75,6 +75,7 @@ class CRM(object):
             get_url=get_url,
             update_dict=update_dict,
         )
+        self._app.jinja_env.add_extension('jinja2.ext.do')
 
     def load_settings(self):
         """
