@@ -3,3 +3,6 @@
 - DB Hooks are functions/callbacks to be executed on some action
 like Model update/delete/create
 - In order to add a new hook, add it and register it in file ```hooks.py```
+
+**WARNING**
+- DB hooks are not working when you execute command ```flask loaddata```
