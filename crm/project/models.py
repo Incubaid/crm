@@ -43,10 +43,6 @@ class Project(db.Model, BaseModel, RootModel):
         backref="project"
     )
 
-    sprint_id = db.Column(
-        db.String(5),
-        db.ForeignKey('sprints.id')
-    )
 
     sprints = db.relationship(
         "Sprint",
