@@ -324,7 +324,7 @@ class Deal(db.Model, Base):
     __tablename__ = "deals"
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text())  # should be markdown.
-    amount = db.Column(db.Integer)  # default to int.
+    amount = db.Column(db.Float)  # default to float.
     currency = db.Column(db.Enum(DealCurrency), default=DealCurrency.EUR)
     deal_type = db.Column(db.Enum(DealType), default=DealType.HOSTER)
     deal_state = db.Column(db.Enum(DealState), default=DealState.NEW)
