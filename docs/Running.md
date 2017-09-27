@@ -7,6 +7,7 @@ export FLASK_APP=app.py
 ```
 
 **Run these commands First time Only**
+- *ONLY IN CASE OF POSTGRES* : ```flask createdb```
 - To create migrations folder ```flask db init```
 - Create migrations ```flask db migrate```
 - create db tables ```flask db upgrade```
