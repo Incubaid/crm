@@ -266,14 +266,6 @@ class ImageModelView(EnhancedModelView):
 
 
 class ImagePreviewWidget(object):
-    """
-    Render a basic ``<input>`` field.
-
-    This is used as the basis for most of the other input fields.
-
-    By default, the `_value()` method will be called upon the associated field
-    to provide the ``value=`` HTML attribute.
-    """
 
     def __call__(self, field, **kwargs):
         objpk = kwargs.get('pk', None)
@@ -289,7 +281,8 @@ class ImagePreviewField(StringField):
 
 
 class InlineImageModelForm(InlineFormAdmin):
-    form_excluded_columns = ('path', 'name', 'created_at', 'updated_at')
+    form_excluded_columns = ('path', 'name', 'created_at',
+                             'updated_at', 'author_last', 'author_original')
     form_label = 'Image'
 
     def __init__(self,):
