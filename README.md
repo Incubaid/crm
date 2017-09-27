@@ -11,10 +11,11 @@
 
 
 **Advanced**
+- [DB Migrations](docs/Migrations.md)
 - [Add custom command](docs/AddCommand.md)
 - [Add middleware](docs/Middlewares.md)
 - [Add new hook](docs/DBHooks.md)
-- [Model conventions](docs/ModelConventions.md)
+- [Project structure](docs/Structure.md)
 
 **Specs**
 - [Requirements](specs/Requirements.md)
