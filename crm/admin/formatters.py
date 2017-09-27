@@ -13,7 +13,7 @@ def format_instrumented_list(view, context, model, name):
     if isinstance(value, InstrumentedList):
         out = "<ul>"
         for x in value:
-            if x is None:  # items can be created from empty forms in the form. let's fix that in the model
+            if x is None:
                 continue
             if hasattr(x, "admin_view_link"):
                 out += "<li><a href='{}'>{}</a></li>".format(
@@ -43,8 +43,13 @@ def format_messages(view, context, model, name):
         out = "<ul>"
         for x in value:
             if hasattr(x, "admin_view_link"):
-                out += "<li>({authorname}/{messagetitle}/{createdate}) wrote: <br/>{messagecontent}<a href='{messageadminlink}'> Read more...</a></li>".format(
-                    authorname=str(x.author), messagetitle=x.title, createdate=str(x.created_at_short), messageadminlink=getattr(x, "admin_view_link")(), messagecontent=x.content)
+                out += "<li>({authorname}/{messagetitle}/{createdate}) wrote: <br/>"
+                "{messagecontent}<a href='{messageadminlink}'> Read more...</a></li>".format(
+                    authorname=str(x.author),
+                    messagetitle=x.title,
+                    createdate=str(x.created_at_short),
+                    messageadminlink=getattr(x, "admin_view_link")(),
+                    messagecontent=x.content)
             else:
                 out += str(x)
         out += "</ul>"
@@ -123,7 +128,8 @@ def format_image(view, context, model, name):
 
     return Markup(value.as_image)
 
-column_formatters = dict(list(zip(["users", "contacts", "companies", "organizations", "projects",  "deals", "sprints",
+column_formatters = dict(
+    list(zip(["users", "contacts", "companies", "organizations", "projects",  "deals", "sprints",
                                    "links", "tasks", "messages"], cycle([format_instrumented_list]))),
                          telephones=format_telephones, website=format_url, destination=format_destination_emails,
                          messages=format_messages, comments=format_comments, url=format_url, emails=format_emails,

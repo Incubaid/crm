@@ -8,7 +8,6 @@ from sqlalchemy import inspect
 from sqlalchemy.orm.collections import InstrumentedList
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from crm.admin.mixins import AdminLinksMixin
-from flask import request
 
 db = SQLAlchemy()
 db.session.autocommit = True

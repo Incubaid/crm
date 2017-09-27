@@ -7,7 +7,6 @@ import jinja2
 
 from flask import Flask
 from flask_admin.helpers import get_url
-from sqlalchemy.event import listen
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_admin import Admin
@@ -17,23 +16,11 @@ from .db import BaseModel, db
 from crm.admin.config import NAV_BAR_ORDER
 
 
-def get_current_username():
-    from flask import request
-    from jose.jwt import get_unverified_claims
-
-    jwt = request.cookies['caddyoauth']
-    claims = get_unverified_claims(jwt)
-    username = claims.get('username', 'Unknown')
-
-    return username
-
-
 class CRM(object):
     """
     A wrapper arounf Flask app that initializes the app in a manner suitable to
     production.
     """
-
     def __init__(self):
         from .db import db
         self.initialize_logger()
@@ -93,7 +80,8 @@ class CRM(object):
         self._app.config.from_pyfile("./settings.py")
         self._app.secret_key = self._app.config['SECRET_KEY']
 
-    def init_db(self):
+    @staticmethod
+    def init_db():
         """
         All models should be imported ahead to ensure the BaseModel.__subclasses__()
         containing all models registered in app.
@@ -107,22 +95,6 @@ class CRM(object):
                     continue
                 package = root.replace('/', '.')
                 exec('from %s.models import *' % package)
-
-        def generate_id(mapper, connect, target):
-            target.id = target.uid
-
-        def generate_author_last(mapper, connect, target):
-            target.author_last = get_current_username()
-
-        def generate_author_original(mapper, connect, target):
-            target.author_original = get_current_username()
-
-        for klass in BaseModel.__subclasses__():
-            listen(klass, 'before_insert', generate_id)
-            listen(klass, 'before_insert', generate_author_original)
-
-        for klass in BaseModel.__subclasses__():
-            listen(klass, 'before_update', generate_author_last)
 
     def inti_admin_app(self):
         """

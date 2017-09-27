@@ -13,6 +13,7 @@
 **Advanced**
 - [Add custom command](docs/AddCommand.md)
 - [Add middleware](docs/Middlewares.md)
+- [Add new hook](docs/DBHooks.md)
 - [Model conventions](docs/ModelConventions.md)
 
 **Specs**
@@ -21,3 +22,4 @@
 - [Asset Management](specs/Assetmanagement.md)
 - [Implementation](specs/Implementation.md)
 - [Redis](specs/Redis.md)
+- [Beta2 Test](specs/Beta2Test.md)
