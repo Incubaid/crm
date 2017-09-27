@@ -52,8 +52,8 @@
             {% set kwargs = form_opts.widget_args.get(f.short_name, {}) %}
           {% endif %}
           {% if form._obj %}
-          {% do update_dict(kwargs, 'pk', form._obj.id) %}
-          {% do update_dict(kwargs, 'obj', form._obj)  %}
+          {% do kwargs.update({'pk': form._obj.id}) %}
+          {% do kwargs.update({'obj': form._obj})  %}
           {% endif %}
           {{ render_tabular_field(form, f, kwargs) }}
         {% endfor %}

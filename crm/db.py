@@ -5,10 +5,10 @@ from datetime import datetime, date
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import inspect
-from sqlalchemy.orm.collections import  InstrumentedList
+from sqlalchemy.orm.collections import InstrumentedList
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from crm.admin.mixins import AdminLinksMixin
-
+from flask import request
 
 db = SQLAlchemy()
 db.session.autocommit = True
@@ -39,6 +39,14 @@ class BaseModel(AdminLinksMixin):
         default=datetime.utcnow,
         onupdate=datetime.utcnow,
         nullable=False
+    )
+    # author_last and author_original ARE UPDATED FROM THE USER IN CURRENT FLASK
+    # REQUEST
+    author_last = db.Column(
+        db.String(255),
+    )
+    author_original = db.Column(
+        db.String(255),
     )
 
     @property
@@ -88,7 +96,7 @@ class BaseModel(AdminLinksMixin):
         we use ujson which serializes dates into epoch
         then when we need to load data from JSON files again, we need to be
         aware of datetime/date fields so that we can deserialize epoch fields
-        
+
         :return: datetime/date fields
         :rtype: list
         """
@@ -104,7 +112,7 @@ class BaseModel(AdminLinksMixin):
         If we are serializing object, we serialize all fields then we go into
         F.K fields and Back reference fields and serialize objects there (one level)
         i.e we don't care about their F.Ks nor Back reference fields
-    
+
         :param resolve_refs: Resolve F.K & Back reference fields into dicts or not
         :type: resolve_refs: bool
         :return: Model object as dict
@@ -120,7 +128,7 @@ class BaseModel(AdminLinksMixin):
                 data[column] = value.as_dict(resolve_refs=False)
             # Back references -- resolve them (only 1 level)
             elif isinstance(value, InstrumentedList):
-                data[column] = [] # Leave empty if resolve_refs == False
+                data[column] = []  # Leave empty if resolve_refs == False
                 if resolve_refs:
                     for item in value:
                         data[column].append(item.as_dict(resolve_refs=False))
@@ -141,7 +149,7 @@ class BaseModel(AdminLinksMixin):
         that is connected to our model object with back reference relation
         Basically we need to return list of models representing all data in the passed 
         dictionary.
-        
+
         :param data: Dictionary of model object we want to deserialize into many model objects
         :type data: dict
         :return: list of model objects
@@ -160,7 +168,8 @@ class BaseModel(AdminLinksMixin):
 
             for field, value in data.items():
                 # Make datetime from epoch -- If field type is TIMESTAMP
-                # Remember that when serializing, ujson converts datetime objects to epoch
+                # Remember that when serializing, ujson converts datetime
+                # objects to epoch
                 prop = getattr(all_models[model_name], field).property
                 if hasattr(prop, 'columns') and isinstance(prop.columns[0].type, TIMESTAMP):
                     if value:

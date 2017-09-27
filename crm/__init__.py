@@ -17,11 +17,23 @@ from .db import BaseModel, db
 from crm.admin.config import NAV_BAR_ORDER
 
 
+def get_current_username():
+    from flask import request
+    from jose.jwt import get_unverified_claims
+
+    jwt = request.cookies['caddyoauth']
+    claims = get_unverified_claims(jwt)
+    username = claims.get('username', 'Unknown')
+
+    return username
+
+
 class CRM(object):
     """
-    A wrapper arounf Flask app that initializes the app in a manner suitable to 
+    A wrapper arounf Flask app that initializes the app in a manner suitable to
     production.
     """
+
     def __init__(self):
         from .db import db
         self.initialize_logger()
@@ -64,8 +76,6 @@ class CRM(object):
         """
         Update JINJA extra globals
         """
-        def update_dict(d, k, v):
-            d[k] = v
 
         self._app.jinja_env.globals.update(
             getattr=getattr,
@@ -73,7 +83,6 @@ class CRM(object):
             type=type,
             len=len,
             get_url=get_url,
-            update_dict=update_dict,
         )
         self._app.jinja_env.add_extension('jinja2.ext.do')
 
@@ -102,8 +111,18 @@ class CRM(object):
         def generate_id(mapper, connect, target):
             target.id = target.uid
 
+        def generate_author_last(mapper, connect, target):
+            target.author_last = get_current_username()
+
+        def generate_author_original(mapper, connect, target):
+            target.author_original = get_current_username()
+
         for klass in BaseModel.__subclasses__():
             listen(klass, 'before_insert', generate_id)
+            listen(klass, 'before_insert', generate_author_original)
+
+        for klass in BaseModel.__subclasses__():
+            listen(klass, 'before_update', generate_author_last)
 
     def inti_admin_app(self):
         """
