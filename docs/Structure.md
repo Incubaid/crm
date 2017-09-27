@@ -13,9 +13,8 @@ so the main entry point is ```app:app```
 - ```app.py``` module imports ```crm.app``` which is the actual flask application defined in
 ```crm/__init__.py``` and where all logic of initializing application happens
 - module ```app.py``` imports ```from cli import *``` to register custom flask commands
-- module ```app.py imports ```from middlewares import *``` to register middlewares
-- module ```app.py imports ```from hooks import *``` to register DB hooks
-
+- module ```app.py``` imports ```from middlewares import *``` to register middlewares
+- module ```app.py``` imports ```from hooks import *``` to register DB hooks
 
 **Flask sub applications**
 - under package ```crm``` we have many sub applications i.e ```crm.contact```
