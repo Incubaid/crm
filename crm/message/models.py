@@ -25,11 +25,15 @@ class Message(db.Model, BaseModel):
     time_sent = db.Column(
         db.TIMESTAMP
     )
-
+    message_author_id = db.Column(
+        db.String,
+        db.ForeignKey("users.id")
+    )
     author = db.relationship(
         "User",
         backref="createdMessages",
-        uselist=False
+        uselist=False,
+        foreign_keys=[message_author_id]
     )
 
     company_id = db.Column(

@@ -1,6 +1,6 @@
 from sqlalchemy.event import listen
 
-from crm.utils import get_current_username
+from crm.utils import get_current_user
 from crm.db import BaseModel
 
 
@@ -28,7 +28,9 @@ def update_last_author(mapper, connect, target):
     :param connect: 
     :param target: Target model
     """
-    target.author_last = get_current_username()
+    current_user = get_current_user()
+    if current_user is not None:
+        target.author_last_id = current_user.id
 
 
 def update_original_author(mapper, connect, target):
@@ -42,7 +44,9 @@ def update_original_author(mapper, connect, target):
     :param connect: 
     :param target: Target model
     """
-    target.author_original = get_current_username()
+    current_user = get_current_user()
+    if current_user is not None:
+        target.author_original_id = current_user.id
 
 
 for klass in BaseModel.__subclasses__():
