@@ -24,7 +24,6 @@ Jinja2==2.8
 Mako==1.0.7
 MarkupSafe==1.0
 misaka==2.1.0
-pkg-resources==0.0.0
 promise==2.0.2
 psycopg2==2.7.3.1
 pycparser==2.18
