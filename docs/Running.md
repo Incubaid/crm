@@ -12,6 +12,15 @@ export FLASK_APP=app.py
 - Create migrations ```flask db migrate```
 - create db tables ```flask db upgrade```
 
+**Disable IYO integration**
+
+If you're just testing stuff locally, then you may need to run the CRM behind
+caddy server otherwise you may need to disable IYO authentication in order for the app
+to work locally.
+You can do so, by commenting these 2 middlewares in ```middlewares.py``` module
+- before_first_request
+- authenticate
+
 
 **Run in Dev Mode**
 ```
