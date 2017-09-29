@@ -109,9 +109,11 @@ db/
 data
 
 # db
-db.prod
-db.dev
-db.testing
+*.db
 
 # migrations
 migrations
+
+# static
+static
+
