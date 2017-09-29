@@ -1,5 +1,5 @@
 import os
-from hashlib import md5
+import uuid
 from flask import request
 from flask_admin.model.fields import InlineFieldList, InlineModelFormField
 from flask_admin.contrib.sqla import ModelView
@@ -50,7 +50,7 @@ class EnhancedModelView(ModelView):
             'label': 'Tasks assigned',
         },
 
-        
+
     }
     column_labels = {
         'short_description': 'Description',
@@ -297,8 +297,10 @@ class InlineImageModelForm(InlineFormAdmin):
 
     def on_model_change(self, form, model):
         file_data = request.files.get(form.upload.name)
+        ext = file_data.filename.split('.')[-1]
+
         if file_data:
-            newname = md5(file_data.stream.getvalue()).hexdigest() + ".png"
+            newname = '%s.%s' % (str(uuid.uuid4()), ext)
             model.path = newname
             model.name = file_data.filename
             if not os.path.exists(os.path.join(IMAGES_DIR, newname)):
