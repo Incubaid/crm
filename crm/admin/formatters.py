@@ -104,7 +104,7 @@ def format_telephones(view, context, model, name):
 def format_destination_emails(view, context, model, name):
     value = getattr(model, name)
     formatted_values = [
-        '<a href="mailto:{email}">{email}</a>'.format(email=x.email) for x in value]
+        '<a href="mailto:{email}">{email}</a>'.format(email=item) for item in value]
     return Markup(", ".join(formatted_values))
 
 
