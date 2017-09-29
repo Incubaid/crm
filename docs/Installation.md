@@ -10,7 +10,7 @@ sudo apt-get install python3-dev libffi-dev
 ```
     virtualenv -p python3 crm_env
     . crm_env/bin/activate
-    pip install -p requirements.pip
+    pip3 install -p requirements.pip
     export FLASK_APP=app.py
     flask run
 

@@ -40,22 +40,57 @@ class BaseModel(AdminLinksMixin):
         onupdate=datetime.utcnow,
         nullable=False
     )
+
     @declared_attr
     def author_last_id(cls):
-        return db.Column(db.String(5), db.ForeignKey('users.id'))
+        """
+        Last Author is. User id who made the latest modifications
+        :return: String Column representing USer ID
+        :rtype: db.Column
+        """
+        return db.Column(
+            db.String(5),
+            db.ForeignKey('users.id'),
+            nullable=True
+        )
 
     @declared_attr
     def author_last(cls):
-        return db.relationship("User", uselist=False, primaryjoin="User.id==%s.author_last_id"%cls.__name__)
+        """
+        Last Author is. User who made the latest modifications
+        :return: Relationship column
+        :rtype: db.relationship
+        """
+        return db.relationship(
+            "User",
+            uselist=False,
+            primaryjoin="User.id==%s.author_last_id"%cls.__name__
+        )
 
     @declared_attr
     def author_original_id(cls):
-        return db.Column(db.String(5), db.ForeignKey('users.id'))
-    
+        """
+        Original Author is. User id who made first created record
+        :return: String Column representing USer ID
+        :rtype: db.Column
+        """
+        return db.Column(
+            db.String(5),
+            db.ForeignKey('users.id'),
+            nullable=True
+        )
+
     @declared_attr
     def author_original(cls):
-        return db.relationship("User", uselist=False, primaryjoin="User.id==%s.author_original_id" % cls.__name__)
-
+        """
+        Original Author is. User who made first created record
+        :rtype: db.Column
+        """
+        return db.relationship(
+            "User",
+            uselist=False,
+            primaryjoin="User.id==%s.author_original_id" % cls.__name__,
+        )
 
     @property
     def uid(self):

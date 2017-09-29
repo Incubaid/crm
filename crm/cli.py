@@ -6,7 +6,7 @@ from sqlalchemy_utils import create_database, database_exists, drop_database
 from crm.db import BaseModel, db, RootModel
 from crm import app
 
-from fixtures import generate_fixtures
+from crm.fixtures import generate_fixtures
 
 
 @app.cli.command()

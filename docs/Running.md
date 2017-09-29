@@ -12,27 +12,25 @@ export FLASK_APP=app.py
 - Create migrations ```flask db migrate```
 - create db tables ```flask db upgrade```
 
-**Disable IYO integration**
-
-If you're just testing stuff locally, then you may need to run the CRM behind
-caddy server otherwise you may need to disable IYO authentication in order for the app
-to work locally.
-You can do so, by commenting these 2 middlewares in ```middlewares.py``` module
-- before_first_request
-- authenticate
-
 
 **Run in Dev Mode**
-```
-export ENV=dev
-python app.py # (if you want DEBUG mode activated)
-## OR##
-flask run
-```
-If you want to load fixture data
-```
-flask laodfixtures
-```
+
+- By default CRM app requires IYO authentication. So a typical setup is to use caddy
+in front of CRM app where caddy can do the (IYO) authentication
+- If you want to disable (IYO) aut for during development, comment out the ```authenticate()``` method
+in ```crm.middlewares```
+
+- To run in development mode
+    ```
+    export ENV=dev
+    python app.py # (if you want DEBUG mode activated)
+    ## OR##
+    flask run
+    ```
+- If you want to load fixture data
+    ```
+    flask laodfixtures
+    ```
 
 **Run in [Uwsgi](https://uwsgi-docs.readthedocs.io/en/latest/) / production Mode**
 ```
@@ -43,14 +41,13 @@ uwsgi --ini uwsgi.ini
 If you want uwsgi to use virtualenv; edit uwsgi.ini and add ```virtualenv = <path>```
 
 **Dump data into json**
-```
-flask dumpdata
-```
+- command : ```flask dumpdata```
+- default Directory is set in ```settings.DATA_DIR```
+
 
 **Load data from json**
-```
-flask loaddata
-```
+- command: ```flask loaddata```
+
 
 
 
