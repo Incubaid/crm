@@ -49,6 +49,8 @@ class EnhancedModelView(ModelView):
         'ownsTasks': {
             'label': 'Tasks assigned',
         },
+
+        
     }
     column_labels = {
         'short_description': 'Description',
@@ -405,15 +407,15 @@ class OrganizationModelView(EnhancedModelView):
 
 class DealModelView(EnhancedModelView):
     column_details_list = ('id', 'name', 'description', 'amount', 'currency', 'deal_type', 'deal_state',
-                           'contact', 'company', 'closed_at', 'tasks', 'messages', 'comments')
+                           'contact', 'company', 'closed_at', 'tasks', 'messages', 'comments', 'is_paid')
     column_filters = ('id', 'name', 'amount', 'currency', 'deal_type', 'deal_state',
-                      'contact', 'company', 'closed_at', 'tasks', 'messages', 'comments')
+                      'contact', 'company', 'closed_at', 'tasks', 'messages', 'comments', 'is_paid')
 
     form_rules = ('name', 'amount', 'currency', 'deal_type', 'deal_state',
-                  'contact', 'company', 'comments',)
+                  'contact', 'company', 'comments')
 
     form_edit_rules = ('name', 'description', 'amount', 'currency', 'deal_type', 'deal_state',
-                       'contact', 'company', 'tasks', 'messages', 'comments')
+                       'contact', 'company', 'tasks', 'messages', 'comments', 'is_paid')
 
     column_list = ('name', 'amount', 'currency',
                    'deal_type', 'deal_state')
