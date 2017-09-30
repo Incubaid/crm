@@ -82,6 +82,11 @@ class Task(db.Model, BaseModel):
     )
 
 
+    user_id = db.Column(
+        db.String,
+        db.ForeignKey("users.id")
+    )
+
     deal_id = db.Column(
         db.String,
         db.ForeignKey("deals.id")

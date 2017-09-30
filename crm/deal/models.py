@@ -83,6 +83,10 @@ class Deal(db.Model, BaseModel, RootModel):
         backref="deal"
     )
 
+    is_paid = db.Column(
+        db.Boolean()
+    )
+
     def __str__(self):
         return self.name
 

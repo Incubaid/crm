@@ -37,7 +37,8 @@ class User(db.Model, BaseModel, RootModel):
     # Tasks Linked to this user (may be someone is doing it for him) like create account
     tasks = db.relationship(
         "Task",
-        backref="user"
+        backref="user",
+        primaryjoin="User.id==Task.user_id"
     )
 
     ownsTasks = db.relationship(
@@ -48,17 +49,23 @@ class User(db.Model, BaseModel, RootModel):
 
     comments = db.relationship(
         "Comment",
-        backref="user"
+        backref="user",
+        primaryjoin="User.id==Comment.user_id"
+
     )
 
     messages = db.relationship(
         "Message",
-        backref="user"
+        backref="user",
+        primaryjoin="User.id==Message.user_id"
+
     )
 
     links = db.relationship(
         "Link",
-        backref="user"
+        backref="user",
+        primaryjoin="User.id==Link.user_id"
+
     )
 
     ownsContacts = db.relationship(

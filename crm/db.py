@@ -8,6 +8,7 @@ from sqlalchemy import inspect
 from sqlalchemy.orm.collections import InstrumentedList
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from crm.admin.mixins import AdminLinksMixin
+from sqlalchemy.ext.declarative import declared_attr
 
 db = SQLAlchemy()
 db.session.autocommit = True
@@ -39,14 +40,57 @@ class BaseModel(AdminLinksMixin):
         onupdate=datetime.utcnow,
         nullable=False
     )
-    # author_last and author_original ARE UPDATED FROM THE USER IN CURRENT FLASK
-    # REQUEST
-    author_last = db.Column(
-        db.String(255),
-    )
-    author_original = db.Column(
-        db.String(255),
-    )
+
+    @declared_attr
+    def author_last_id(cls):
+        """
+        Last Author is. User id who made the latest modifications
+        :return: String Column representing USer ID
+        :rtype: db.Column
+        """
+        return db.Column(
+            db.String(5),
+            db.ForeignKey('users.id'),
+            nullable=True
+        )
+
+    @declared_attr
+    def author_last(cls):
+        """
+        Last Author is. User who made the latest modifications
+        :return: Relationship column
+        :rtype: db.relationship
+        """
+        return db.relationship(
+            "User",
+            uselist=False,
+            primaryjoin="User.id==%s.author_last_id"%cls.__name__
+        )
+
+    @declared_attr
+    def author_original_id(cls):
+        """
+        Original Author is. User id who made first created record
+        :return: String Column representing USer ID
+        :rtype: db.Column
+        """
+        return db.Column(
+            db.String(5),
+            db.ForeignKey('users.id'),
+            nullable=True
+        )
+
+    @declared_attr
+    def author_original(cls):
+        """
+        Original Author is. User who made first created record
+        :rtype: db.Column
+        """
+        return db.relationship(
+            "User",
+            uselist=False,
+            primaryjoin="User.id==%s.author_original_id" % cls.__name__,
+        )
 
     @property
     def uid(self):

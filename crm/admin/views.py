@@ -1,5 +1,5 @@
 import os
-from hashlib import md5
+import uuid
 from flask import request
 from flask_admin.model.fields import InlineFieldList, InlineModelFormField
 from flask_admin.contrib.sqla import ModelView
@@ -49,6 +49,8 @@ class EnhancedModelView(ModelView):
         'ownsTasks': {
             'label': 'Tasks assigned',
         },
+
+
     }
     column_labels = {
         'short_description': 'Description',
@@ -295,8 +297,10 @@ class InlineImageModelForm(InlineFormAdmin):
 
     def on_model_change(self, form, model):
         file_data = request.files.get(form.upload.name)
+        ext = file_data.filename.split('.')[-1]
+
         if file_data:
-            newname = md5(file_data.stream.getvalue()).hexdigest() + ".png"
+            newname = '%s.%s' % (str(uuid.uuid4()), ext)
             model.path = newname
             model.name = file_data.filename
             if not os.path.exists(os.path.join(IMAGES_DIR, newname)):
@@ -405,15 +409,15 @@ class OrganizationModelView(EnhancedModelView):
 
 class DealModelView(EnhancedModelView):
     column_details_list = ('id', 'name', 'description', 'amount', 'currency', 'deal_type', 'deal_state',
-                           'contact', 'company', 'closed_at', 'tasks', 'messages', 'comments')
+                           'contact', 'company', 'closed_at', 'tasks', 'messages', 'comments', 'is_paid')
     column_filters = ('id', 'name', 'amount', 'currency', 'deal_type', 'deal_state',
-                      'contact', 'company', 'closed_at', 'tasks', 'messages', 'comments')
+                      'contact', 'company', 'closed_at', 'tasks', 'messages', 'comments', 'is_paid')
 
     form_rules = ('name', 'amount', 'currency', 'deal_type', 'deal_state',
-                  'contact', 'company', 'comments',)
+                  'contact', 'company', 'comments')
 
     form_edit_rules = ('name', 'description', 'amount', 'currency', 'deal_type', 'deal_state',
-                       'contact', 'company', 'tasks', 'messages', 'comments')
+                       'contact', 'company', 'tasks', 'messages', 'comments', 'is_paid')
 
     column_list = ('name', 'amount', 'currency',
                    'deal_type', 'deal_state')
@@ -539,14 +543,14 @@ class TaskModelView(EnhancedModelView):
 
 class MessageModelView(EnhancedModelView):
     form_rules = column_filters = ('title', 'content', 'channel', 'time_tosend', 'time_sent',
-                                   'company', 'contact', 'user', 'organization', 'project', 'sprint', 'deal', 'task')
+                                   'company', 'contact', 'author', 'organization', 'project', 'sprint', 'deal', 'task')
     column_details_list = ('id', 'title', 'destination', 'author', 'content', 'company',
-                           'contact', 'organization', 'project', 'sprint', 'deal', 'task')
+                           'contact', 'organization', 'project', 'sprint', 'deal', 'task', 'updated_at', 'time_tosend', 'time_sent')
 
     form_edit_rules = ('title', 'author', 'content', 'channel',
                        'time_tosend', 'time_sent',)
     column_list = ('author', 'title', 'short_content',
-                   'company', 'contact', 'deal', 'organizaton', 'task', 'project', 'sprint')
+                   'company', 'contact', 'deal', 'organizaton', 'task', 'project', 'sprint', 'updated_at', 'author', 'time_tosend', 'time_sent')
     column_searchable_list = ('title', 'content')
     column_sortable_list = ('title', 'author')
 
