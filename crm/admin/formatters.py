@@ -37,22 +37,20 @@ def format_datetime(view, context, model, name):
 
 def format_messages(view, context, model, name):
     value = getattr(model, name)
-    out = ""
+    out = "<ul>"
 
     if isinstance(value, InstrumentedList):
-        out = "<ul>"
         for x in value:
             if hasattr(x, "admin_view_link"):
-                out += "<li>({authorname}/{messagetitle}/{createdate}) wrote: <br/>"
-                "{messagecontent}<a href='{messageadminlink}'> Read more...</a></li>".format(
-                    authorname=str(x.author),
+                out += "<li>({authorname}/{messagetitle}/{createdate}) wrote: <br/> {messagecontent}<a href='{messageadminlink}'> Read more...</a></li>".format(
+                    authorname=str(x.user),
                     messagetitle=x.title,
                     createdate=str(x.created_at_short),
                     messageadminlink=getattr(x, "admin_view_link")(),
                     messagecontent=x.content)
             else:
                 out += str(x)
-        out += "</ul>"
+    out += "</ul>"
     return Markup(out)
 
 
