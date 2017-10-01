@@ -11,6 +11,7 @@ def api():
         try:
             execresult = schema.execute(query)
             if execresult.errors:
+                # TODO: in case of errors do we return
                 return jsonify(error=execresult.errors)
             return jsonify(execresult.data)
         except Exception as ex:

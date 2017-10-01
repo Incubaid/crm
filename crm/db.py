@@ -51,7 +51,7 @@ class BaseModel(AdminLinksMixin):
         return db.Column(
             db.String(5),
             db.ForeignKey('users.id'),
-            nullable=True
+            nullable=True,
         )
 
     @declared_attr
@@ -64,7 +64,8 @@ class BaseModel(AdminLinksMixin):
         return db.relationship(
             "User",
             uselist=False,
-            primaryjoin="User.id==%s.author_last_id"%cls.__name__
+            primaryjoin="User.id==%s.author_last_id" % cls.__name__,
+            cascade="save-update"
         )
 
     @declared_attr
@@ -77,7 +78,7 @@ class BaseModel(AdminLinksMixin):
         return db.Column(
             db.String(5),
             db.ForeignKey('users.id'),
-            nullable=True
+            nullable=True,
         )
 
     @declared_attr
@@ -90,6 +91,8 @@ class BaseModel(AdminLinksMixin):
             "User",
             uselist=False,
             primaryjoin="User.id==%s.author_original_id" % cls.__name__,
+            cascade="save-update"
+
         )
 
     @property
