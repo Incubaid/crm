@@ -551,10 +551,10 @@ class TaskModelView(EnhancedModelView):
                       'company', 'organization', 'project', 'sprint', 'deal',
                       'comments', 'messages')
     form_rules = ('title', 'description',
-                  'type', 'priority', 'eta', 'time_done',
+                  'type', 'priority', 'eta', 'time_done', 'assignee',
                   'user', 'contact', 'company', 'organization', 'project', 'sprint', 'deal')
 
-    form_edit_rules = ('title', 'description', 'user', 'contact', 'state',
+    form_edit_rules = ('title', 'description', 'assignee', 'user', 'contact', 'state',
                        'type', 'priority', 'time_done', 'comments', 'messages')
     column_list = ('title', 'type', 'priority', 'state', 'user', 'contact',
                    'organization', 'company', 'project', 'sprint', 'deal')
