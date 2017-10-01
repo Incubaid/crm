@@ -516,7 +516,7 @@ class CommentModelView(EnhancedModelView):
     column_filters = ('id', 'content',
                       'company', 'contact', 'user', 'organization', 'project', 'sprint', 'task',
                       'link', 'deal', 'sprint',)
-    form_rules = ('content',
+    form_rules = ('content', 'user',
                   'company', 'contact', 'organization', 'project', 'sprint', 'task',
                   'link', 'deal', 'sprint')
     form_edit_rules = ('content',)
@@ -532,7 +532,7 @@ class LinkModelView(EnhancedModelView):
     column_filters = ('url', 'contact', 'user', 'organization', 'task', 'project',
                       'deal', 'sprint', 'labels', 'comments',)
 
-    form_rules = ('url', 'contact', 'organization', 'task', 'project',
+    form_rules = ('url', 'user', 'contact', 'organization', 'task', 'project',
                   'deal', 'sprint', 'labels',)
     form_edit_rules = ('url', 'labels')
     column_list = ('url', 'labels')
