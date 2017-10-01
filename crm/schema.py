@@ -1,7 +1,7 @@
 import graphene
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType
-
+from crm.user.models import User
 from crm.company.models import Company
 from crm.contact.models import Contact
 from crm.deal.models import Deal
@@ -26,6 +26,12 @@ from crm.message.models import Message
 #
 #     class Meta:
 #         model = KnowledgeBaseCategory
+
+
+class UserType(SQLAlchemyObjectType):
+
+    class Meta:
+        model = User
 
 
 class ContactType(SQLAlchemyObjectType):
@@ -101,6 +107,7 @@ class MessageType(SQLAlchemyObjectType):
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
+    users = graphene.List(UserType)
     contacts = graphene.List(ContactType)
     companies = graphene.List(CompanyType)
     organizations = graphene.List(OrganizationType)
@@ -114,6 +121,10 @@ class Query(graphene.ObjectType):
     # alerts = graphene.List(AlertType)
     # knowkedgebases = graphene.List(KnowledgBaseTeype)
     # knowledgebasecategories = graphene.List(KnowledgeBaseCategoryType)
+
+    def resolve_users(self, args, context, info):
+        query = UserType.get_query(context)
+        return query.all()
 
     def resolve_contacts(self, args, context, info):
         query = ContactType.get_query(context)
@@ -171,6 +182,7 @@ class Query(graphene.ObjectType):
 schema = graphene.Schema(
     query=Query,
     types=[
+        UserType,
         ContactType,
         CompanyType,
         OrganizationType,
