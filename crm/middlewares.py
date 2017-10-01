@@ -83,12 +83,16 @@ def authenticate():
             user = users[0]
         else:
             user = User(
-               username=username,
+                username=username,
+                firstname=info['firstname'],
+                lastname=info['lastname'],
                 emails=email,
                 telephones=phone
             )
 
             db.session.add(user)
             db.session.commit()
-
-    session['user'] = user
+    session['user'] = {'username': user.username,
+                       'firstname': user.firstname,
+                       'lastname': user.lastname,
+                       'emails': user.emails, 'id': user.id}

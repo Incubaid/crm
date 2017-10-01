@@ -126,13 +126,23 @@ def format_image(view, context, model, name):
 
     return Markup(value.as_image)
 
+
+def format_author(view, context, model, name):
+    value = getattr(model, name)
+    if not value:
+        return ''
+
+    return value
+
 column_formatters = dict(
     list(zip(["users", "contacts", "companies", "organizations", "projects",  "deals", "sprints",
                                    "links", "tasks", "messages"], cycle([format_instrumented_list]))),
-                         telephones=format_telephones, website=format_url, destination=format_destination_emails,
-                         messages=format_messages, comments=format_comments, url=format_url, emails=format_emails,
-                         images=format_images, image=format_image,
-                         )
+    telephones=format_telephones, website=format_url, destination=format_destination_emails,
+    messages=format_messages, comments=format_comments, url=format_url, emails=format_emails,
+    images=format_images, image=format_image,
+    author_last=format_author,
+    author_original=format_author,
+)
 
 column_formatters = {**column_formatters, **
                      dict(list(zip(["created_at", "updated_at", "closed_at", "start_date", "deadline", "eta"], cycle([format_datetime]))))}
