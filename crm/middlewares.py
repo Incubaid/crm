@@ -24,6 +24,9 @@ def authenticate():
     Add user info to flask.g (global context)
     so that g.user always hold current logged in user
     """
+    if hasattr(g, "user"):
+        return
+
     jwt = request.cookies.get('caddyoauth')
     if jwt is None:
         authheader = request.headers.get("Authorization", None)
@@ -57,7 +60,7 @@ def authenticate():
         response = requests.get(
             url,
             headers={
-                'Authorization': 'Bearer {}'.format(jwt)
+                'Authorization': 'bearer {}'.format(jwt)
             }
         )
         info = response.json()
