@@ -5,9 +5,14 @@ class User(db.Model, BaseModel, RootModel):
 
     __tablename__ = "users"
 
+    username = db.Column(
+        db.String(255),
+        unique=True,
+        nullable=True
+    )
+
     firstname = db.Column(
         db.String(255),
-        nullable=False
     )
 
     lastname = db.Column(
@@ -34,7 +39,8 @@ class User(db.Model, BaseModel, RootModel):
         db.Text()
     )
 
-    # Tasks Linked to this user (may be someone is doing it for him) like create account
+    # Tasks Linked to this user (may be someone is doing it for him) like
+    # create account
     tasks = db.relationship(
         "Task",
         backref="user",
@@ -128,7 +134,8 @@ class User(db.Model, BaseModel, RootModel):
     # )
 
     def __str__(self):
-        return "{} {}".format(self.firstname, self.lastname)
+        return self.username
+    __repr__ = __str__
 
 
 class UsersOrganizations(db.Model):
@@ -178,6 +185,7 @@ class UsersSprints(db.Model):
     )
 
     IS_MANY_TO_MANY = True
+
 
 class UsersProjects(db.Model):
     """

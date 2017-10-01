@@ -22,7 +22,6 @@ class BaseModel(AdminLinksMixin):
     """
     Base Class for all models
     """
-
     id = db.Column(
         db.String(5),
         primary_key=True
@@ -51,21 +50,9 @@ class BaseModel(AdminLinksMixin):
         return db.Column(
             db.String(5),
             db.ForeignKey('users.id'),
-            nullable=True
+            nullable=True,
         )
 
-    @declared_attr
-    def author_last(cls):
-        """
-        Last Author is. User who made the latest modifications
-        :return: Relationship column
-        :rtype: db.relationship
-        """
-        return db.relationship(
-            "User",
-            uselist=False,
-            primaryjoin="User.id==%s.author_last_id"%cls.__name__
-        )
 
     @declared_attr
     def author_original_id(cls):
@@ -77,20 +64,18 @@ class BaseModel(AdminLinksMixin):
         return db.Column(
             db.String(5),
             db.ForeignKey('users.id'),
-            nullable=True
+            nullable=True,
         )
 
-    @declared_attr
-    def author_original(cls):
-        """
-        Original Author is. User who made first created record
-        :rtype: db.Column
-        """
-        return db.relationship(
-            "User",
-            uselist=False,
-            primaryjoin="User.id==%s.author_original_id" % cls.__name__,
-        )
+    @property
+    def author_last(self):
+        from crm.user.models import User
+        return User.query.filter_by(id=self.author_last_id).first()
+
+    @property
+    def author_original(self):
+        from crm.user.models import User
+        return User.query.filter_by(id=self.author_original_id).first()
 
     @property
     def uid(self):

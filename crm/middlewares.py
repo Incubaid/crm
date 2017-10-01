@@ -1,7 +1,7 @@
 import requests
 from jose.jwt import get_unverified_claims
 
-from flask import g, request
+from flask import session, request
 
 from werkzeug.exceptions import abort
 from flask.templating import render_template
@@ -24,48 +24,75 @@ def authenticate():
     Add user info to flask.g (global context)
     so that g.user always hold current logged in user
     """
+
+    # Already authenticated
+    if 'user' in session:
+        return
+
     jwt = request.cookies.get('caddyoauth')
 
     if jwt is None:
-        abort(401)
+        authheader = request.headers.get("Authorization", None)
+        if authheader is None or 'Bearer' not in authheader:
+            abort(401)
+        jwt = authheader.split(" ", 1)[1]  # Bearer JWT
 
     claims = get_unverified_claims(jwt)
-    username = claims.get('username')
 
-    if not username:
-        abort(401)
+    globalid = claims.get("globalid", None)
 
-    url = "https://itsyou.online/api/users/{}/info".format(
-        username
-    )
+    if globalid is not None:
+        orgid = claims
 
-    response = requests.get(
-        url,
-        headers={
-            'Authorization': 'bearer {}'.format(jwt)
-        }
-    )
+        users = User.query.filter(
+            User.username == globalid
+        )
 
-    info = response.json()
-    email = info['emailaddresses'][0]['emailaddress']
-    phone = info['phonenumbers'][0]['phonenumber']
-
-    users = User.query.filter(
-        User.emails.contains(email),
-        User.telephones.contains(phone)
-    )
-
-    if users.count():
-        user = users[0]
+        if users.count():
+            user = users[0]
+        else:
+            user = User(username=globalid)
+            db.session.add(user)
     else:
+        username = claims.get("username", None)
 
-        user = User(
-            firstname=info['firstname'] or username,
-            lastname=info['lastname'] or username,
-            emails=email,
-            telephones=phone)
+        if username is None:
+            abort(401)
 
-        db.session.add(user)
-        db.session.commit()
+        url = "https://itsyou.online/api/users/{}/info".format(
+            username
+        )
 
-    g.user = user
+        response = requests.get(
+            url,
+            headers={
+                'Authorization': 'bearer {}'.format(jwt)
+            }
+        )
+
+        info = response.json()
+        email = info['emailaddresses'][0]['emailaddress']
+        phone = info['phonenumbers'][0]['phonenumber']
+
+        users = User.query.filter(
+            User.emails.contains(email),
+            User.telephones.contains(phone)
+        )
+
+        if users.count():
+            user = users[0]
+        else:
+            user = User(
+                username=username,
+                firstname=info['firstname'],
+                lastname=info['lastname'],
+                emails=email,
+                telephones=phone
+            )
+
+            db.session.add(user)
+            db.session.commit()
+    session['user'] = {'username': user.username,
+                       'firstname': user.firstname,
+                       'lastname': user.lastname,
+                       'emails': user.emails, 'id': user.id}
