@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 4c035d2aa0ce
+Revision ID: 7dd43ae7d246
 Revises: 
-Create Date: 2017-09-30 13:11:17.526231
+Create Date: 2017-10-01 16:39:40.309016
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '4c035d2aa0ce'
+revision = '7dd43ae7d246'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -22,17 +22,19 @@ def upgrade():
     sa.Column('id', sa.String(length=5), nullable=False),
     sa.Column('created_at', sa.TIMESTAMP(), nullable=False),
     sa.Column('updated_at', sa.TIMESTAMP(), nullable=False),
-    sa.Column('firstname', sa.String(length=255), nullable=False),
+    sa.Column('username', sa.String(length=255), nullable=True),
+    sa.Column('firstname', sa.String(length=255), nullable=True),
     sa.Column('lastname', sa.String(length=255), nullable=True),
     sa.Column('description', sa.Text(), nullable=True),
     sa.Column('message_channels', sa.String(length=255), nullable=True),
     sa.Column('emails', sa.Text(), nullable=True),
     sa.Column('telephones', sa.Text(), nullable=True),
-    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.Column('author_last_id', sa.String(length=5), nullable=True),
+    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.ForeignKeyConstraint(['author_last_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['author_original_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('username')
     )
     op.create_table('companies',
     sa.Column('id', sa.String(length=5), nullable=False),
@@ -46,8 +48,8 @@ def upgrade():
     sa.Column('telephones', sa.Text(), nullable=True),
     sa.Column('owner_id', sa.String(length=5), nullable=True),
     sa.Column('ownerbackup_id', sa.String(length=5), nullable=True),
-    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.Column('author_last_id', sa.String(length=5), nullable=True),
+    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.ForeignKeyConstraint(['author_last_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['author_original_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['owner_id'], ['users.id'], ),
@@ -67,14 +69,14 @@ def upgrade():
     sa.Column('street_name', sa.String(length=255), nullable=True),
     sa.Column('street_number', sa.Integer(), nullable=True),
     sa.Column('zip_code', sa.String(length=255), nullable=True),
-    sa.Column('country', sa.Enum('KN', 'KY', 'SJ', 'BJ', 'BE', 'CX', 'OM', 'TF', 'GW', 'ET', 'CG', 'BA', 'AM', 'US', 'IT', 'DE', 'MT', 'IE', 'CM', 'BO', 'SH', 'KH', 'BV', 'NG', 'VN', 'EG', 'ZA', 'CY', 'CF', 'DM', 'CN', 'AQ', 'UY', 'CD', 'GH', 'IS', 'GD', 'BT', 'EH', 'SV', 'PG', 'HK', 'TC', 'DZ', 'FM', 'CL', 'FO', 'MA', 'RW', 'TZ', 'PA', 'EC', 'IQ', 'PK', 'RE', 'PM', 'GA', 'NE', 'JM', 'IN', 'KZ', 'PF', 'BN', 'TT', 'CR', 'AN', 'KW', 'SN', 'VE', 'MX', 'LA', 'JO', 'PS', 'FR', 'NZ', 'TN', 'NA', 'KG', 'ML', 'SG', 'GI', 'HN', 'HU', 'PE', 'ZM', 'BY', 'SZ', 'TK', 'GM', 'KM', 'SO', 'CS', 'FK', 'PH', 'GY', 'YT', 'MN', 'SA', 'MV', 'VI', 'CO', 'BR', 'SD', 'AE', 'TW', 'HT', 'HM', 'TR', 'GB', 'EE', 'NO', 'VG', 'DK', 'BH', 'MH', 'VU', 'MO', 'JP', 'LT', 'AR', 'SB', 'AS', 'AW', 'BF', 'ER', 'KI', 'CV', 'NF', 'AT', 'NC', 'CC', 'LY', 'ST', 'MK', 'WS', 'TH', 'FI', 'GL', 'MU', 'KR', 'SE', 'GS', 'LS', 'FJ', 'DJ', 'TM', 'BD', 'PR', 'BM', 'VC', 'PT', 'SR', 'IL', 'AU', 'WF', 'GQ', 'GE', 'MD', 'BG', 'DO', 'CK', 'CZ', 'CU', 'BS', 'BW', 'ID', 'AL', 'MQ', 'KP', 'AZ', 'MW', 'RO', 'KE', 'UZ', 'TO', 'LI', 'PY', 'AI', 'MS', 'SM', 'GR', 'MR', 'GT', 'SC', 'NP', 'LK', 'CA', 'UA', 'BI', 'GF', 'MG', 'TG', 'LU', 'MZ', 'IR', 'UG', 'GU', 'BZ', 'AF', 'GN', 'YE', 'BB', 'VA', 'LB', 'SL', 'NI', 'NR', 'AO', 'MY', 'HR', 'UM', 'TJ', 'AG', 'RU', 'PL', 'LC', 'SK', 'LV', 'NL', 'TL', 'PW', 'CI', 'AD', 'MP', 'TV', 'ZW', 'LR', 'SI', 'PN', 'NU', 'ES', 'IO', 'MC', 'MM', 'CH', 'SY', 'QA', 'GP', 'TD', name='countries'), nullable=True),
+    sa.Column('country', sa.Enum('LC', 'CY', 'UZ', 'BE', 'TN', 'IQ', 'IO', 'BF', 'CN', 'ER', 'VU', 'TO', 'DO', 'ZA', 'VN', 'AQ', 'AI', 'AR', 'FK', 'TF', 'GL', 'GI', 'BH', 'NZ', 'ID', 'HT', 'WF', 'GA', 'RE', 'PH', 'CG', 'TC', 'KY', 'BN', 'CV', 'IR', 'MV', 'SI', 'FI', 'SA', 'TV', 'AZ', 'NE', 'DM', 'SY', 'HN', 'AD', 'VG', 'VE', 'RO', 'CH', 'SH', 'TW', 'FM', 'CC', 'GF', 'DE', 'FR', 'SR', 'RU', 'KE', 'ET', 'AO', 'AW', 'PF', 'AN', 'GH', 'UG', 'GP', 'PY', 'SZ', 'MM', 'NO', 'UY', 'TZ', 'MD', 'TJ', 'KM', 'GM', 'BJ', 'GT', 'MO', 'PS', 'PW', 'MY', 'LY', 'SD', 'BM', 'CD', 'CL', 'ZM', 'LB', 'NA', 'SJ', 'GS', 'DZ', 'RW', 'LA', 'IE', 'PK', 'TM', 'GU', 'WS', 'YT', 'GE', 'SK', 'SB', 'FO', 'MQ', 'PE', 'SM', 'GY', 'VC', 'MH', 'HU', 'MP', 'CO', 'NL', 'MS', 'BD', 'NU', 'MU', 'KN', 'SG', 'YE', 'GQ', 'EG', 'KP', 'UM', 'PL', 'MG', 'AU', 'ZW', 'SN', 'ST', 'MA', 'MR', 'FJ', 'VI', 'OM', 'AE', 'MK', 'PN', 'MC', 'KR', 'NC', 'GW', 'KW', 'IN', 'HM', 'JM', 'TL', 'CX', 'PM', 'BT', 'DK', 'KI', 'NI', 'LK', 'BY', 'JP', 'VA', 'TD', 'TG', 'HR', 'CF', 'GN', 'SE', 'NF', 'TK', 'LV', 'TR', 'LS', 'JO', 'BI', 'BA', 'BV', 'KH', 'AS', 'CM', 'TT', 'CS', 'BO', 'NR', 'MX', 'BZ', 'BB', 'CR', 'US', 'SV', 'BS', 'LU', 'IL', 'ML', 'AG', 'CI', 'TH', 'MN', 'HK', 'AM', 'UA', 'PT', 'PR', 'LT', 'GB', 'SL', 'SO', 'MW', 'AT', 'KZ', 'PA', 'PG', 'CZ', 'GD', 'GR', 'MT', 'EC', 'QA', 'NG', 'SC', 'CU', 'DJ', 'IT', 'EH', 'EE', 'AF', 'CK', 'ES', 'LI', 'CA', 'BG', 'KG', 'LR', 'AL', 'NP', 'BW', 'IS', 'BR', 'MZ', name='countries'), nullable=True),
     sa.Column('owner_id', sa.String(length=5), nullable=True),
     sa.Column('ownerbackup_id', sa.String(length=5), nullable=True),
     sa.Column('parent_id', sa.String(length=5), nullable=True),
     sa.Column('emails', sa.Text(), nullable=True),
     sa.Column('telephones', sa.Text(), nullable=True),
-    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.Column('author_last_id', sa.String(length=5), nullable=True),
+    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.ForeignKeyConstraint(['author_last_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['author_original_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['owner_id'], ['users.id'], ),
@@ -91,8 +93,8 @@ def upgrade():
     sa.Column('emails', sa.Text(), nullable=True),
     sa.Column('owner_id', sa.String(length=5), nullable=True),
     sa.Column('parent_id', sa.String(length=5), nullable=True),
-    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.Column('author_last_id', sa.String(length=5), nullable=True),
+    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.ForeignKeyConstraint(['author_last_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['author_original_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['owner_id'], ['users.id'], ),
@@ -109,8 +111,8 @@ def upgrade():
     sa.Column('deadline', sa.TIMESTAMP(), nullable=True),
     sa.Column('promoter_id', sa.String(length=5), nullable=True),
     sa.Column('guardian_id', sa.String(length=5), nullable=True),
-    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.Column('author_last_id', sa.String(length=5), nullable=True),
+    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.ForeignKeyConstraint(['author_last_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['author_original_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['guardian_id'], ['users.id'], ),
@@ -123,8 +125,8 @@ def upgrade():
     sa.Column('updated_at', sa.TIMESTAMP(), nullable=False),
     sa.Column('remarks', sa.Text(), nullable=True),
     sa.Column('time_done', sa.Integer(), nullable=True),
-    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.Column('author_last_id', sa.String(length=5), nullable=True),
+    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.ForeignKeyConstraint(['author_last_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['author_original_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -159,8 +161,8 @@ def upgrade():
     sa.Column('company_id', sa.String(length=5), nullable=True),
     sa.Column('contact_id', sa.String(length=5), nullable=True),
     sa.Column('is_paid', sa.Boolean(), nullable=True),
-    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.Column('author_last_id', sa.String(length=5), nullable=True),
+    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.ForeignKeyConstraint(['author_last_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['author_original_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['company_id'], ['companies.id'], ),
@@ -174,8 +176,8 @@ def upgrade():
     sa.Column('name', sa.String(length=255), nullable=True),
     sa.Column('path', sa.String(length=255), nullable=True),
     sa.Column('contact_id', sa.String(length=5), nullable=True),
-    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.Column('author_last_id', sa.String(length=5), nullable=True),
+    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.ForeignKeyConstraint(['author_last_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['author_original_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['contact_id'], ['contacts.id'], ),
@@ -191,8 +193,8 @@ def upgrade():
     sa.Column('deadline', sa.TIMESTAMP(), nullable=True),
     sa.Column('owner_id', sa.String(length=5), nullable=True),
     sa.Column('project_id', sa.String(length=5), nullable=True),
-    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.Column('author_last_id', sa.String(length=5), nullable=True),
+    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.ForeignKeyConstraint(['author_last_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['author_original_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['owner_id'], ['users.id'], ),
@@ -244,8 +246,8 @@ def upgrade():
     sa.Column('organization_id', sa.String(), nullable=True),
     sa.Column('project_id', sa.String(), nullable=True),
     sa.Column('sprint_id', sa.String(), nullable=True),
-    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.Column('author_last_id', sa.String(length=5), nullable=True),
+    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.ForeignKeyConstraint(['assignee_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['author_last_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['author_original_id'], ['users.id'], ),
@@ -279,8 +281,8 @@ def upgrade():
     sa.Column('organization_id', sa.String(), nullable=True),
     sa.Column('project_id', sa.String(), nullable=True),
     sa.Column('sprint_id', sa.String(), nullable=True),
-    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.Column('author_last_id', sa.String(length=5), nullable=True),
+    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.ForeignKeyConstraint(['author_last_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['author_original_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['contact_id'], ['contacts.id'], ),
@@ -310,8 +312,8 @@ def upgrade():
     sa.Column('organization_id', sa.String(), nullable=True),
     sa.Column('project_id', sa.String(), nullable=True),
     sa.Column('sprint_id', sa.String(), nullable=True),
-    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.Column('author_last_id', sa.String(length=5), nullable=True),
+    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.ForeignKeyConstraint(['author_last_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['author_original_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['company_id'], ['companies.id'], ),
@@ -339,8 +341,8 @@ def upgrade():
     sa.Column('project_id', sa.String(length=5), nullable=True),
     sa.Column('sprint_id', sa.String(length=5), nullable=True),
     sa.Column('link_id', sa.String(length=5), nullable=True),
-    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.Column('author_last_id', sa.String(length=5), nullable=True),
+    sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.ForeignKeyConstraint(['author_last_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['author_original_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['company_id'], ['companies.id'], ),
