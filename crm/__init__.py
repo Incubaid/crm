@@ -21,6 +21,7 @@ class CRM(object):
     A wrapper arounf Flask app that initializes the app in a manner suitable to
     production.
     """
+
     def __init__(self):
         from .db import db
         self.initialize_logger()
@@ -100,11 +101,12 @@ class CRM(object):
         """
         Initialize admin app
         """
-        admin = Admin(self._app, name="CRM",
-                      template_mode="bootstrap3", url="/")
-
         admin_views = __import__(
             'crm.admin.views', globals(), locals(), ['object'])
+        adminindexview = getattr(admin_views, 'MyAdminIndexView')()
+        del admin_views.MyAdminIndexView
+        admin = Admin(self._app, name="CRM", index_view=adminindexview, endpoint='/',
+                      template_mode="bootstrap3", url="/")
 
         all_models = {}
         for model in BaseModel.__subclasses__():

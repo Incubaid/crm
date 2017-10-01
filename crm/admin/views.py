@@ -3,6 +3,7 @@ import uuid
 from flask import request
 from flask_admin.model.fields import InlineFieldList, InlineModelFormField
 from flask_admin.contrib.sqla import ModelView
+from flask_admin import AdminIndexView
 from flask_admin.base import expose
 from flask_admin.form.rules import FieldSet
 from flask_admin.contrib.sqla.tools import is_relationship
@@ -23,11 +24,46 @@ from crm.comment.models import Comment as CommentModel
 from crm.contact.models import Contact as ContactModel
 from crm.company.models import Company as CompanyModel
 from crm.image.models import Image as ImageModel
+from flask import session
 from .formatters import column_formatters
 from .converters import CustomAdminConverter
 
 from crm.db import db
 from crm.settings import IMAGES_DIR
+
+
+# Create customized index view class that handles login & registration
+class MyAdminIndexView(AdminIndexView):
+    mainfilter = "Users / Id"
+
+    @expose('/')
+    def index(self):
+        if self.mainfilter:
+            filtered_objects = {}
+
+            filtered_objects['tasksview'] = [
+                TaskModelView(TaskModel, db.session), self.mainfilter]
+            filtered_objects['contactsview'] = [ContactModelView(
+                ContactModel, db.session), self.mainfilter]
+
+            filtered_objects['companiesview'] = [
+                CompanyModelView(CompanyModel, db.session), self.mainfilter]
+            filtered_objects['messagesview'] = [MessageModelView(
+                MessageModel, db.session), self.mainfilter]
+            filtered_objects['projectsview'] = [ProjectModelView(
+                ProjectModel, db.session), self.mainfilter]
+            filtered_objects['sprintsview'] = [SprintModelView(
+                SprintModel, db.session), self.mainfilter]
+            filtered_objects['dealsview'] = [DealModelView(
+                DealModel, db.session), self.mainfilter]
+            filtered_objects['commentsview'] = [CommentModelView(
+                CommentModel, db.session), self.mainfilter]
+            filtered_objects['linksview'] = [LinkModelView(
+                LinkModel, db.session), self.mainfilter]
+            self._template_args['filtered_objects'] = filtered_objects
+            self._template_args['current_user_id'] = session['user']['id']
+
+        return super().index()
 
 
 class EnhancedModelView(ModelView):
