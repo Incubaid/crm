@@ -14,10 +14,10 @@ from crm.user.models import User
 
 @app.errorhandler(401)
 def custom_401(error):
-    return render_template('home/401.html')
+    return render_template('home/401.html'), 401
 
 
-@app.before_request
+#@app.before_request
 def authenticate():
     """
     authenticate user by validating passed JWT token

@@ -115,5 +115,5 @@ data
 migrations
 
 # static
-static
+static/uploads
 

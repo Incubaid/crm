@@ -1,0 +1,15 @@
+===================================================================
+Plugins Used
+===================================================================
+Nice scroll - http://manos.malihu.gr/jquery-custom-content-scroller/
+Circular plugin indicator - http://www.jqueryscript.net/loading/Animated-Circular-Progress-Indicator-Plugin-With-jQuery-Canvas.html
+Chart.js - https://github.com/chartjs/Chart.js
+jQuery Validation - https://jqueryvalidation.org/
+
+
+===================================================================
+Custom icon font
+===================================================================
+SVGs Origin - http://www.flaticon.com
+Then converted to icon font in http://app.fontastic.me
+See the icons in icons-reference directory.
