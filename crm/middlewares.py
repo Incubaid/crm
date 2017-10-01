@@ -66,7 +66,7 @@ def authenticate():
         response = requests.get(
             url,
             headers={
-                'Authorization': 'Bearer {}'.format(jwt)
+                'Authorization': 'bearer {}'.format(jwt)
             }
         )
 
