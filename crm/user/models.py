@@ -5,6 +5,12 @@ class User(db.Model, BaseModel, RootModel):
 
     __tablename__ = "users"
 
+    username = db.Column(
+        db.String(255),
+        unique=True,
+        nullable=True
+    )
+
     firstname = db.Column(
         db.String(255),
         nullable=False

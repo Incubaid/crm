@@ -1,7 +1,7 @@
 import requests
 from jose.jwt import get_unverified_claims
 
-from flask import g, request
+from flask import session, request
 
 from werkzeug.exceptions import abort
 from flask.templating import render_template
@@ -24,32 +24,41 @@ def authenticate():
     Add user info to flask.g (global context)
     so that g.user always hold current logged in user
     """
+
+    # Already authenticated
+    if 'user' in session:
+        return
+
     jwt = request.cookies.get('caddyoauth')
+
     if jwt is None:
         authheader = request.headers.get("Authorization", None)
         if authheader is None or 'Bearer' not in authheader:
             abort(401)
         jwt = authheader.split(" ", 1)[1]  # Bearer JWT
+
     claims = get_unverified_claims(jwt)
 
-    user = None
     globalid = claims.get("globalid", None)
 
     if globalid is not None:
         orgid = claims
+
         users = User.query.filter(
-            User.firstname == globalid
+            User.username == globalid
         )
+
         if users.count():
             user = users[0]
         else:
-            user = User(
-                firstname=globalid)
+            user = User(username=globalid)
             db.session.add(user)
     else:
         username = claims.get("username", None)
+
         if username is None:
             abort(401)
+
         url = "https://itsyou.online/api/users/{}/info".format(
             username
         )
@@ -60,6 +69,7 @@ def authenticate():
                 'Authorization': 'Bearer {}'.format(jwt)
             }
         )
+
         info = response.json()
         email = info['emailaddresses'][0]['emailaddress']
         phone = info['phonenumbers'][0]['phonenumber']
@@ -68,16 +78,17 @@ def authenticate():
             User.emails.contains(email),
             User.telephones.contains(phone)
         )
+
         if users.count():
             user = users[0]
         else:
             user = User(
-                firstname=info['firstname'] or username,
-                lastname=info['lastname'] or username,
+               username=username,
                 emails=email,
-                telephones=phone)
+                telephones=phone
+            )
 
             db.session.add(user)
+            db.session.commit()
 
-    db.session.commit()
-    g.user = user
+    session['user'] = user
