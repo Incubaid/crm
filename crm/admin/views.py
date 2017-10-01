@@ -56,7 +56,15 @@ class EnhancedModelView(ModelView):
         'short_description': 'Description',
         'short_content': 'Content',
         'vatnumber': 'VAT Number',
-        'ownsContact': 'Owns contacts',
+        'ownsTasks': 'Tasks assigned',
+        'ownsContacts': 'Owns contacts',
+        'ownsCompanies': 'Owns companies',
+        'ownsAsBackupContacts': 'Owns contacts as backup',
+        'ownsAsBackupCompanies': 'Owns companies as backup',
+        'ownsOrganizations': 'Owns organizations',
+        'ownsSprints': 'Owns sprints',
+        'promoterProjects': 'Promotes projects',
+        'guardianProjects': 'Guards projects',
     }
 
     def get_filter_arg_helper(self, filter_name, filter_op='equals'):
@@ -346,7 +354,7 @@ class ContactModelView(EnhancedModelView):
     inline_models = [
         InlineImageModelForm(),
         (TaskModel, {'form_columns': [
-            'id', 'title', 'description', 'type', 'priority']}),
+            'id', 'title', 'description', 'type', 'priority', 'assignee']}),
         (MessageModel, {'form_columns': [
             'id', 'title', 'content', 'channel']}),
         (DealModel, {'form_columns': [
@@ -383,7 +391,7 @@ class CompanyModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-            'id', 'title', 'description', 'type', 'priority', ]}),
+            'id', 'title', 'description', 'type', 'priority', 'assignee']}),
         (MessageModel, {'form_columns': [
             'id', 'title', 'content', 'channel']}),
         (DealModel, {'form_columns': [
@@ -417,7 +425,7 @@ class OrganizationModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-            'id', 'title', 'type', 'priority', ]}),
+            'id', 'title', 'type', 'priority', 'assignee']}),
         (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']},
          (CommentModel, {'form_columns': ['id', 'content']}))
     ]
@@ -446,7 +454,7 @@ class DealModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-            'id', 'title', 'type', 'priority', ]}),
+            'id', 'title', 'type', 'priority', 'assignee']}),
         (MessageModel, {'form_columns': ['id', 'title', 'content']}),
         (CommentModel, {'form_columns': ['id', 'content']})
     ]
@@ -473,7 +481,7 @@ class ProjectModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-            'id', 'title', 'type', 'priority', ]}),
+            'id', 'title', 'type', 'priority', 'assignee']}),
         (MessageModel, {'form_columns': ['id', 'title', 'content']}),
         (CommentModel, {'form_columns': ['id', 'content']})
     ]
@@ -500,7 +508,7 @@ class SprintModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-            'id', 'title', 'type', 'priority', ]}),
+            'id', 'title', 'type', 'priority', 'assignee']}),
         (MessageModel, {'form_columns': [
             'id', 'title', 'content', 'channel']}),
         (CommentModel, {'form_columns': ['id', 'content']})
