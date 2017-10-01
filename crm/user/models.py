@@ -134,7 +134,7 @@ class User(db.Model, BaseModel, RootModel):
     # )
 
     def __str__(self):
-        return self.username
+        return self.username or ''
     __repr__ = __str__
 
 
