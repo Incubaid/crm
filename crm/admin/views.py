@@ -313,7 +313,8 @@ class UserModelView(EnhancedModelView):
         'ownsContacts', 'ownsTasks', 'tasks', 'ownsAsBackupContacts', 'ownsCompanies', 'ownsAsBackupCompanies',
         'ownsOrganizations', 'ownsSprints', 'promoterProjects', 'guardianProjects', 'comments', 'messages', 'links', 'author_last', 'author_original', 'updated_at')
 
-    column_filters = ('firstname', 'lastname', 'username')
+    column_filters = ('firstname', 'lastname',
+                      'username', 'ownsTasks',)
     form_edit_rules = ('firstname', 'lastname', 'username', 'description',
                        'emails', 'telephones', 'message_channels', 'ownsTasks', 'tasks', 'messages', 'comments', 'links')
     column_sortable_list = ('firstname', 'lastname', 'username')
