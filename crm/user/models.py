@@ -21,7 +21,8 @@ class User(db.Model, BaseModel, RootModel):
 
     # should be markdown.
     description = db.Column(
-        db.Text()
+        db.Text(),
+        default=""
     )
 
     message_channels = db.Column(
@@ -135,7 +136,7 @@ class User(db.Model, BaseModel, RootModel):
 
     def __str__(self):
         return self.username or '%s %s' % (self.firstname, self.lastname)
-    
+
     __repr__ = __str__
 
 

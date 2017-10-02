@@ -16,7 +16,8 @@ class Contact(db.Model, BaseModel, RootModel):
     )
 
     lastname = db.Column(
-        db.String(255)
+        db.String(255),
+        default=""
     )
     description = db.Column(
         db.Text()
@@ -25,11 +26,13 @@ class Contact(db.Model, BaseModel, RootModel):
     images = db.relationship("Image", backref="contact")
 
     bio = db.Column(
-        db.Text()
+        db.Text(),
+        default=""
     )
 
     belief_statement = db.Column(
-        db.Text()
+        db.Text(),
+        default=""
     )
 
     message_channels = db.Column(

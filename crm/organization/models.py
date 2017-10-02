@@ -12,7 +12,8 @@ class Organization(db.Model, BaseModel, RootModel):
 
     # should be markdown
     description = db.Column(
-        db.Text()
+        db.Text(),
+        default=""
     )
 
     # Comma  separated emails
