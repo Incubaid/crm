@@ -1,8 +1,11 @@
 import os
 import uuid
+import csv
+from io import StringIO
 from flask import request
 from flask_admin.model.fields import InlineFieldList, InlineModelFormField
 from flask_admin.contrib.sqla import ModelView
+from flask_admin import AdminIndexView
 from flask_admin.base import expose
 from flask_admin.form.rules import FieldSet
 from flask_admin.contrib.sqla.tools import is_relationship
@@ -10,6 +13,8 @@ from flask_admin.contrib.sqla import tools
 from flask_admin._compat import string_types
 from flask_admin.model.form import InlineFormAdmin
 from flask_admin import form
+from flask_admin.actions import action
+from flask import make_response
 from wtforms.fields import StringField
 from wtforms.widgets import HTMLString
 from wtforms import fields
@@ -23,11 +28,46 @@ from crm.comment.models import Comment as CommentModel
 from crm.contact.models import Contact as ContactModel
 from crm.company.models import Company as CompanyModel
 from crm.image.models import Image as ImageModel
+from flask import session
 from .formatters import column_formatters
 from .converters import CustomAdminConverter
 
 from crm.db import db
 from crm.settings import IMAGES_DIR
+
+
+# Create customized index view class that handles login & registration
+class MyAdminIndexView(AdminIndexView):
+    mainfilter = "Users / Id"
+
+    @expose('/')
+    def index(self):
+        if self.mainfilter:
+            filtered_objects = {}
+
+            filtered_objects['tasksview'] = [
+                TaskModelView(TaskModel, db.session), self.mainfilter]
+            filtered_objects['contactsview'] = [ContactModelView(
+                ContactModel, db.session), self.mainfilter]
+
+            filtered_objects['companiesview'] = [
+                CompanyModelView(CompanyModel, db.session), self.mainfilter]
+            filtered_objects['messagesview'] = [MessageModelView(
+                MessageModel, db.session), self.mainfilter]
+            filtered_objects['projectsview'] = [ProjectModelView(
+                ProjectModel, db.session), self.mainfilter]
+            filtered_objects['sprintsview'] = [SprintModelView(
+                SprintModel, db.session), self.mainfilter]
+            filtered_objects['dealsview'] = [DealModelView(
+                DealModel, db.session), self.mainfilter]
+            filtered_objects['commentsview'] = [CommentModelView(
+                CommentModel, db.session), self.mainfilter]
+            filtered_objects['linksview'] = [LinkModelView(
+                LinkModel, db.session), self.mainfilter]
+            self._template_args['filtered_objects'] = filtered_objects
+            self._template_args['current_user_id'] = session['user']['id'] if 'user' in session else ''
+
+        return super().index()
 
 
 class EnhancedModelView(ModelView):
@@ -56,7 +96,15 @@ class EnhancedModelView(ModelView):
         'short_description': 'Description',
         'short_content': 'Content',
         'vatnumber': 'VAT Number',
-        'ownsContact': 'Owns contacts',
+        'ownsTasks': 'Tasks assigned',
+        'ownsContacts': 'Owns contacts',
+        'ownsCompanies': 'Owns companies',
+        'ownsAsBackupContacts': 'Owns contacts as backup',
+        'ownsAsBackupCompanies': 'Owns companies as backup',
+        'ownsOrganizations': 'Owns organizations',
+        'ownsSprints': 'Owns sprints',
+        'promoterProjects': 'Promotes projects',
+        'guardianProjects': 'Guards projects',
     }
 
     def get_filter_arg_helper(self, filter_name, filter_op='equals'):
@@ -232,6 +280,23 @@ class EnhancedModelView(ModelView):
 
             return flt
 
+    @action('export', 'Export')
+    def action_export(self, ids):
+        query = self.model.query.filter(self.model.id.in_(ids))
+        rows = []
+        # col[0] is field name. col[1] is field label
+        head_row = [col[1] for col in self.get_column_names(self.column_list, None)]
+        rows.append(head_row)
+        for record in query.all():
+            row = [getattr(record, attr) for attr in self.column_list]
+            rows.append(row)
+        contents = StringIO()
+        cw = csv.writer(contents)
+        cw.writerows(rows)
+        output = make_response(contents.getvalue())
+        output.headers["Content-Disposition"] = "attachment; filename=exported_{}.csv".format(self.name)
+        output.headers["Content-type"] = "text/csv"
+        return output
 
 class UserModelView(EnhancedModelView):
     column_list = ('firstname', 'lastname', 'username', 'emails',
@@ -346,7 +411,7 @@ class ContactModelView(EnhancedModelView):
     inline_models = [
         InlineImageModelForm(),
         (TaskModel, {'form_columns': [
-            'id', 'title', 'description', 'type', 'priority']}),
+            'id', 'title', 'description', 'type', 'priority', 'assignee']}),
         (MessageModel, {'form_columns': [
             'id', 'title', 'content', 'channel']}),
         (DealModel, {'form_columns': [
@@ -383,7 +448,7 @@ class CompanyModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-            'id', 'title', 'description', 'type', 'priority', ]}),
+            'id', 'title', 'description', 'type', 'priority', 'assignee']}),
         (MessageModel, {'form_columns': [
             'id', 'title', 'content', 'channel']}),
         (DealModel, {'form_columns': [
@@ -417,7 +482,7 @@ class OrganizationModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-            'id', 'title', 'type', 'priority', ]}),
+            'id', 'title', 'type', 'priority', 'assignee']}),
         (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']},
          (CommentModel, {'form_columns': ['id', 'content']}))
     ]
@@ -446,7 +511,7 @@ class DealModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-            'id', 'title', 'type', 'priority', ]}),
+            'id', 'title', 'type', 'priority', 'assignee']}),
         (MessageModel, {'form_columns': ['id', 'title', 'content']}),
         (CommentModel, {'form_columns': ['id', 'content']})
     ]
@@ -473,7 +538,7 @@ class ProjectModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-            'id', 'title', 'type', 'priority', ]}),
+            'id', 'title', 'type', 'priority', 'assignee']}),
         (MessageModel, {'form_columns': ['id', 'title', 'content']}),
         (CommentModel, {'form_columns': ['id', 'content']})
     ]
@@ -500,7 +565,7 @@ class SprintModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-            'id', 'title', 'type', 'priority', ]}),
+            'id', 'title', 'type', 'priority', 'assignee']}),
         (MessageModel, {'form_columns': [
             'id', 'title', 'content', 'channel']}),
         (CommentModel, {'form_columns': ['id', 'content']})
@@ -551,10 +616,10 @@ class TaskModelView(EnhancedModelView):
                       'company', 'organization', 'project', 'sprint', 'deal',
                       'comments', 'messages')
     form_rules = ('title', 'description',
-                  'type', 'priority', 'eta', 'time_done',
+                  'type', 'priority', 'eta', 'time_done', 'assignee',
                   'user', 'contact', 'company', 'organization', 'project', 'sprint', 'deal')
 
-    form_edit_rules = ('title', 'description', 'user', 'contact', 'state',
+    form_edit_rules = ('title', 'description', 'assignee', 'user', 'contact', 'state',
                        'type', 'priority', 'time_done', 'comments', 'messages')
     column_list = ('title', 'type', 'priority', 'state', 'user', 'contact',
                    'organization', 'company', 'project', 'sprint', 'deal')
