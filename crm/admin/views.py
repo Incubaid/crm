@@ -309,7 +309,7 @@ class UserModelView(EnhancedModelView):
     column_details_list = (
         'firstname', 'lastname', 'username', 'emails', 'telephones', 'description', 'message_channels',
         'ownsContacts', 'ownsTasks', 'tasks', 'ownsAsBackupContacts', 'ownsCompanies', 'ownsAsBackupCompanies',
-        'ownsOrganizations', 'ownsSprints', 'promoterProjects', 'guardianProjects', 'comments', 'messages', 'links', 'author_last', 'author_original')
+        'ownsOrganizations', 'ownsSprints', 'promoterProjects', 'guardianProjects', 'comments', 'messages', 'links', 'author_last', 'author_original', 'updated_at')
 
     column_filters = ('firstname', 'lastname', 'username')
     form_edit_rules = ('firstname', 'lastname', 'username', 'description',
@@ -389,7 +389,7 @@ class ContactModelView(EnhancedModelView):
         'firstname', 'lastname', 'description', 'images', 'bio', 'belief_statement',
         'address',
         'emails', 'telephones', 'companies', 'message_channels',
-        'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup', 'author_last', 'author_original')
+        'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup', 'author_last', 'author_original', 'updated_at')
 
     form_edit_rules = (
         'firstname', 'lastname', 'images', 'description', 'bio', 'belief_statement',
@@ -435,7 +435,7 @@ class CompanyModelView(EnhancedModelView):
 
     column_details_list = (
         'name', 'description', 'emails', 'telephones', 'vatnumber', 'website',
-        'deals', 'contacts', 'messages', 'tasks', 'comments', 'owner', 'ownerbackup', 'author_last', 'author_original')
+        'deals', 'contacts', 'messages', 'tasks', 'comments', 'owner', 'ownerbackup', 'author_last', 'author_original', 'updated_at')
 
     form_edit_rules = (
         'name', 'description', 'emails', 'telephones', 'vatnumber', 'website', 'contacts', 'messages', 'tasks', 'deals',
@@ -491,7 +491,7 @@ class OrganizationModelView(EnhancedModelView):
 
 class DealModelView(EnhancedModelView):
     column_details_list = ('id', 'name', 'description', 'amount', 'currency', 'deal_type', 'deal_state', 'is_paid',
-                           'contact', 'company', 'closed_at', 'tasks', 'messages', 'comments', 'author_last', 'author_original')
+                           'contact', 'company', 'closed_at', 'tasks', 'messages', 'comments', 'author_last', 'author_original', 'updated_at')
     column_filters = ('id', 'name', 'amount', 'currency', 'deal_type', 'deal_state',
                       'contact', 'company', 'closed_at', 'tasks', 'messages', 'comments', 'is_paid')
 
@@ -520,7 +520,7 @@ class DealModelView(EnhancedModelView):
 
 class ProjectModelView(EnhancedModelView):
     column_details_list = ('name', 'description', 'start_date', 'deadline',
-                           'promoter', 'sprints', 'tasks', 'messages', 'guardian', 'author_last', 'author_original')
+                           'promoter', 'sprints', 'tasks', 'messages', 'guardian', 'author_last', 'author_original', 'updated_at')
     column_filters = ('name', 'description', 'start_date', 'deadline',
                       'promoter', 'sprints', 'tasks', 'messages', 'guardian',)
     form_rules = ('name', 'description', 'start_date', 'deadline',
@@ -548,7 +548,7 @@ class ProjectModelView(EnhancedModelView):
 class SprintModelView(EnhancedModelView):
     column_details_list = ('id', 'name', 'description', 'start_date', 'deadline',
                            'project', 'contacts',
-                           'comments', 'links', 'messages', 'author_last', 'author_original')
+                           'comments', 'links', 'messages', 'author_last', 'author_original', 'updated_at')
     column_filters = ('id', 'name', 'description', 'start_date', 'deadline',
                       'project', 'contacts',
                       'comments', 'links', 'messages',)
@@ -577,7 +577,7 @@ class SprintModelView(EnhancedModelView):
 class CommentModelView(EnhancedModelView):
     column_details_list = ('id', 'content',
                            'company', 'contact', 'user', 'organization', 'project', 'sprint', 'task',
-                           'link', 'deal', 'sprint', 'author_last', 'author_original')
+                           'link', 'deal', 'sprint', 'author_last', 'author_original', 'updated_at')
     column_filters = ('id', 'content',
                       'company', 'contact', 'user', 'organization', 'project', 'sprint', 'task',
                       'link', 'deal', 'sprint',)
@@ -592,7 +592,7 @@ class CommentModelView(EnhancedModelView):
 
 class LinkModelView(EnhancedModelView):
     column_details_list = ('url', 'contact', 'user', 'organization', 'task', 'project',
-                           'deal', 'sprint', 'labels', 'comments', 'author_last', 'author_original')
+                           'deal', 'sprint', 'labels', 'comments', 'author_last', 'author_original', 'updated_at')
 
     column_filters = ('url', 'contact', 'user', 'organization', 'task', 'project',
                       'deal', 'sprint', 'labels', 'comments',)
@@ -640,7 +640,7 @@ class MessageModelView(EnhancedModelView):
                                    'company', 'contact', 'author', 'organization', 'project', 'sprint', 'deal', 'task')
     column_details_list = ('id', 'title', 'destination', 'author', 'content', 'company',
                            'contact', 'organization', 'project', 'sprint', 'deal', 'task', 'updated_at', 'time_tosend', 'time_sent',
-                           'author_last', 'author_original')
+                           'author_last', 'author_original', 'updated_at')
 
     form_edit_rules = ('title', 'author', 'content', 'channel',
                        'time_tosend', 'time_sent',)
