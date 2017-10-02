@@ -320,6 +320,8 @@ class UserModelView(EnhancedModelView):
     column_searchable_list = ('firstname', 'lastname', 'username')
 
     inline_models = [
+        (TaskModel, {'form_columns': [
+            'id', 'title', 'description', 'type', 'priority', 'assignee']}),
         (MessageModel, {'form_columns': [
             'id', 'title', 'content', 'channel']}),
         (CommentModel, {'form_columns': ['id', 'content']}),
