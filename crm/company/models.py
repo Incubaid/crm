@@ -70,5 +70,10 @@ class Company(db.Model, BaseModel, RootModel):
         db.ForeignKey('users.id')
     )
 
+    links = db.relationship(
+        "Link",
+        backref="company"
+    )
+
     def __str__(self):
         return self.name

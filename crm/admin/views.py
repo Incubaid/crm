@@ -430,18 +430,18 @@ class ContactModelView(EnhancedModelView):
 class CompanyModelView(EnhancedModelView):
     form_rules = (
         'name', 'description', 'emails', 'telephones', 'vatnumber', 'website',
-        'deals', 'contacts', 'messages', 'tasks', 'comments', 'owner', 'ownerbackup')
+        'deals', 'contacts', 'messages', 'tasks', 'comments', 'links', 'owner', 'ownerbackup')
     column_filters = (
         'name', 'description', 'emails', 'telephones', 'vatnumber', 'website',
-        'deals', 'contacts', 'messages', 'tasks', 'comments', 'owner', 'ownerbackup',)
+        'deals', 'contacts', 'messages', 'tasks', 'links', 'comments', 'owner', 'ownerbackup',)
 
     column_details_list = (
         'name', 'description', 'emails', 'telephones', 'vatnumber', 'website',
-        'deals', 'contacts', 'messages', 'tasks', 'comments', 'owner', 'ownerbackup', 'author_last', 'author_original', 'updated_at')
+        'deals', 'contacts', 'messages', 'tasks', 'comments', 'links', 'owner', 'ownerbackup', 'author_last', 'author_original', 'updated_at')
 
     form_edit_rules = (
         'name', 'description', 'emails', 'telephones', 'vatnumber', 'website', 'contacts', 'messages', 'tasks', 'deals',
-        'comments', 'owner', 'ownerbackup')
+        'comments', 'links', 'owner', 'ownerbackup')
 
     column_searchable_list = (
         'id', 'name', 'description', 'vatnumber', 'website',)
@@ -455,7 +455,9 @@ class CompanyModelView(EnhancedModelView):
             'id', 'title', 'content', 'channel']}),
         (DealModel, {'form_columns': [
             'id', 'name', 'amount', 'currency', 'deal_type', 'description', ]}),
-        (CommentModel, {'form_columns': ['id', 'content']})]
+        (CommentModel, {'form_columns': ['id', 'content']}),
+        (LinkModel, {'form_columns': ['id', 'url']})
+    ]
 
     form_args = {
         'vatnumber': {'label': 'VAT Number'},
@@ -596,7 +598,7 @@ class LinkModelView(EnhancedModelView):
     column_details_list = ('url', 'contact', 'user', 'company', 'organization', 'task', 'project',
                            'deal', 'sprint', 'labels', 'comments', 'author_last', 'author_original', 'updated_at')
 
-    column_filters = ('url', 'contact', 'user', 'organization', 'task', 'project',
+    column_filters = ('url', 'contact', 'user', 'company', 'organization', 'task', 'project',
                       'deal', 'sprint', 'labels', 'comments',)
 
     form_rules = ('url', 'user', 'contact', 'company', 'organization', 'task', 'project',
@@ -605,6 +607,8 @@ class LinkModelView(EnhancedModelView):
     column_list = ('url', 'labels')
     column_searchable_list = ('id', 'url', 'labels')
     column_sortable_list = ('url',)
+
+    mainfilter = 'Links / Id'
 
 
 class TaskModelView(EnhancedModelView):
