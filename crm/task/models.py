@@ -26,7 +26,8 @@ class Task(db.Model, BaseModel):
     )
 
     description = db.Column(
-        db.Text()
+        db.Text(),
+        default=""
     )
 
     type = db.Column(
@@ -80,7 +81,6 @@ class Task(db.Model, BaseModel):
         db.String,
         db.ForeignKey("contacts.id")
     )
-
 
     user_id = db.Column(
         db.String,

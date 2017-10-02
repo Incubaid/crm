@@ -26,7 +26,8 @@ class Deal(db.Model, BaseModel, RootModel):
 
     # should be markdown.
     description = db.Column(
-        db.Text()
+        db.Text(),
+        default=""
     )
 
     amount = db.Column(
@@ -89,4 +90,3 @@ class Deal(db.Model, BaseModel, RootModel):
 
     def __str__(self):
         return self.name
-

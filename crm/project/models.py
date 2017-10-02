@@ -12,7 +12,8 @@ class Project(db.Model, BaseModel, RootModel):
 
     # should be markdown.
     description = db.Column(
-        db.Text()
+        db.Text(),
+        default=""
     )
 
     start_date = db.Column(
@@ -42,7 +43,6 @@ class Project(db.Model, BaseModel, RootModel):
         "Message",
         backref="project"
     )
-
 
     sprints = db.relationship(
         "Sprint",

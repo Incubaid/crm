@@ -105,7 +105,7 @@ class CRM(object):
             'crm.admin.views', globals(), locals(), ['object'])
         adminindexview = getattr(admin_views, 'MyAdminIndexView')()
         del admin_views.MyAdminIndexView
-        admin = Admin(self._app, name="CRM", index_view=adminindexview, endpoint='/',
+        admin = Admin(self._app, name="CRM", index_view=adminindexview,
                       template_mode="bootstrap3", url="/")
 
         all_models = {}
