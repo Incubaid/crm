@@ -598,7 +598,7 @@ class LinkModelView(EnhancedModelView):
     column_details_list = ('url', 'contact', 'user', 'company', 'organization', 'task', 'project',
                            'deal', 'sprint', 'labels', 'comments', 'author_last', 'author_original', 'updated_at')
 
-    column_filters = ('url', 'contact', 'user', 'organization', 'task', 'project',
+    column_filters = ('url', 'contact', 'user', 'company', 'organization', 'task', 'project',
                       'deal', 'sprint', 'labels', 'comments',)
 
     form_rules = ('url', 'user', 'contact', 'company', 'organization', 'task', 'project',
@@ -608,7 +608,7 @@ class LinkModelView(EnhancedModelView):
     column_searchable_list = ('id', 'url', 'labels')
     column_sortable_list = ('url',)
 
-    mainfilter = 'links / Id'
+    mainfilter = 'Links / Id'
 
 
 class TaskModelView(EnhancedModelView):
