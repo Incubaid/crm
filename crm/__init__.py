@@ -102,11 +102,23 @@ class CRM(object):
         Initialize admin app
         """
         admin_views = __import__(
-            'crm.admin.views', globals(), locals(), ['object'])
-        adminindexview = getattr(admin_views, 'MyAdminIndexView')()
-        del admin_views.MyAdminIndexView
-        admin = Admin(self._app, name="CRM", index_view=adminindexview, endpoint='/',
-                      template_mode="bootstrap3", url="/")
+            'crm.admin.views',
+            globals(),
+            locals(),
+            ['object']
+        )
+
+        adminindexview = getattr(
+            admin_views,
+            'MyAdminIndexView')
+
+        admin = Admin(
+            self._app,
+            name="CRM",
+            index_view=adminindexview(url='/'),
+            endpoint='/',
+            template_mode="bootstrap3", url="/"
+        )
 
         all_models = {}
         for model in BaseModel.__subclasses__():

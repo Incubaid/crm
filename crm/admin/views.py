@@ -61,7 +61,7 @@ class MyAdminIndexView(AdminIndexView):
             filtered_objects['linksview'] = [LinkModelView(
                 LinkModel, db.session), self.mainfilter]
             self._template_args['filtered_objects'] = filtered_objects
-            self._template_args['current_user_id'] = session['user']['id']
+            self._template_args['current_user_id'] = session['user']['id'] if 'user' in session else ''
 
         return super().index()
 
