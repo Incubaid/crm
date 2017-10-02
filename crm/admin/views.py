@@ -579,10 +579,10 @@ class SprintModelView(EnhancedModelView):
 class CommentModelView(EnhancedModelView):
     column_details_list = ('id', 'content',
                            'company', 'contact', 'user', 'organization', 'project', 'sprint', 'task',
-                           'link', 'deal', 'sprint', 'author_last', 'author_original', 'updated_at')
+                           'link', 'deal', 'author_last', 'author_original', 'updated_at')
     column_filters = ('id', 'content',
                       'company', 'contact', 'user', 'organization', 'project', 'sprint', 'task',
-                      'link', 'deal', 'sprint',)
+                      'link', 'deal', )
     form_rules = ('content', 'user',
                   'company', 'contact', 'organization', 'project', 'sprint', 'task',
                   'link', 'deal',)
