@@ -26,7 +26,8 @@ def format_instrumented_list(view, context, model, name):
 
 def format_url(view, context, model, name):
     value = getattr(model, name)
-    return Markup("<a href='{url}'>{url}</a>".format(url=value))
+    if value:
+        return Markup("<a href='{url}'>{url}</a>".format(url=value))
 
 
 def format_datetime(view, context, model, name):

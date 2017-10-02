@@ -65,7 +65,8 @@ class MyAdminIndexView(AdminIndexView):
             filtered_objects['linksview'] = [LinkModelView(
                 LinkModel, db.session), self.mainfilter]
             self._template_args['filtered_objects'] = filtered_objects
-            self._template_args['current_user_id'] = session['user']['id'] if 'user' in session else ''
+            self._template_args['current_user_id'] = session[
+                'user']['id'] if 'user' in session else ''
 
         return super().index()
 
@@ -285,7 +286,8 @@ class EnhancedModelView(ModelView):
         query = self.model.query.filter(self.model.id.in_(ids))
         rows = []
         # col[0] is field name. col[1] is field label
-        head_row = [col[1] for col in self.get_column_names(self.column_list, None)]
+        head_row = [col[1]
+                    for col in self.get_column_names(self.column_list, None)]
         rows.append(head_row)
         for record in query.all():
             row = [getattr(record, attr) for attr in self.column_list]
@@ -294,17 +296,17 @@ class EnhancedModelView(ModelView):
         cw = csv.writer(contents)
         cw.writerows(rows)
         output = make_response(contents.getvalue())
-        output.headers["Content-Disposition"] = "attachment; filename=exported_{}.csv".format(self.name)
+        output.headers[
+            "Content-Disposition"] = "attachment; filename=exported_{}.csv".format(self.name)
         output.headers["Content-type"] = "text/csv"
         return output
+
 
 class UserModelView(EnhancedModelView):
     column_list = ('firstname', 'lastname', 'username', 'emails',
                    'telephones',)
     form_rules = (
-        'firstname', 'lastname', 'username', 'emails', 'telephones', 'description', 'message_channels',
-        'ownsContacts', 'ownsTasks', 'tasks', 'ownsAsBackupContacts', 'ownsCompanies', 'ownsAsBackupCompanies',
-        'ownsOrganizations', 'ownsSprints', 'promoterProjects', 'guardianProjects', 'comments', 'messages', 'links',)
+        'firstname', 'lastname', 'username', 'emails', 'telephones', 'description', 'message_channels',)
 
     column_details_list = (
         'firstname', 'lastname', 'username', 'emails', 'telephones', 'description', 'message_channels',
@@ -583,7 +585,7 @@ class CommentModelView(EnhancedModelView):
                       'link', 'deal', 'sprint',)
     form_rules = ('content', 'user',
                   'company', 'contact', 'organization', 'project', 'sprint', 'task',
-                  'link', 'deal', 'sprint')
+                  'link', 'deal',)
     form_edit_rules = ('content',)
     column_list = ('id', 'short_content')
     column_searchable_list = ('id', 'content')
@@ -591,13 +593,13 @@ class CommentModelView(EnhancedModelView):
 
 
 class LinkModelView(EnhancedModelView):
-    column_details_list = ('url', 'contact', 'user', 'organization', 'task', 'project',
+    column_details_list = ('url', 'contact', 'user', 'company', 'organization', 'task', 'project',
                            'deal', 'sprint', 'labels', 'comments', 'author_last', 'author_original', 'updated_at')
 
     column_filters = ('url', 'contact', 'user', 'organization', 'task', 'project',
                       'deal', 'sprint', 'labels', 'comments',)
 
-    form_rules = ('url', 'user', 'contact', 'organization', 'task', 'project',
+    form_rules = ('url', 'user', 'contact', 'company', 'organization', 'task', 'project',
                   'deal', 'sprint', 'labels',)
     form_edit_rules = ('url', 'labels')
     column_list = ('url', 'labels')
