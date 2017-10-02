@@ -32,7 +32,7 @@ def format_url(view, context, model, name):
 def format_datetime(view, context, model, name):
     value = getattr(model, name)
     if isinstance(value, datetime):
-        return value.strftime("%Y-%m-%d")
+        return value.strftime("%Y-%m-%d %H:%M")
 
 
 def format_messages(view, context, model, name):
