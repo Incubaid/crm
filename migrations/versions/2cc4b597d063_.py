@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 7dd43ae7d246
+Revision ID: 2cc4b597d063
 Revises: 
-Create Date: 2017-10-01 16:39:40.309016
+Create Date: 2017-10-02 15:04:59.338654
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '7dd43ae7d246'
+revision = '2cc4b597d063'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -69,7 +69,7 @@ def upgrade():
     sa.Column('street_name', sa.String(length=255), nullable=True),
     sa.Column('street_number', sa.Integer(), nullable=True),
     sa.Column('zip_code', sa.String(length=255), nullable=True),
-    sa.Column('country', sa.Enum('LC', 'CY', 'UZ', 'BE', 'TN', 'IQ', 'IO', 'BF', 'CN', 'ER', 'VU', 'TO', 'DO', 'ZA', 'VN', 'AQ', 'AI', 'AR', 'FK', 'TF', 'GL', 'GI', 'BH', 'NZ', 'ID', 'HT', 'WF', 'GA', 'RE', 'PH', 'CG', 'TC', 'KY', 'BN', 'CV', 'IR', 'MV', 'SI', 'FI', 'SA', 'TV', 'AZ', 'NE', 'DM', 'SY', 'HN', 'AD', 'VG', 'VE', 'RO', 'CH', 'SH', 'TW', 'FM', 'CC', 'GF', 'DE', 'FR', 'SR', 'RU', 'KE', 'ET', 'AO', 'AW', 'PF', 'AN', 'GH', 'UG', 'GP', 'PY', 'SZ', 'MM', 'NO', 'UY', 'TZ', 'MD', 'TJ', 'KM', 'GM', 'BJ', 'GT', 'MO', 'PS', 'PW', 'MY', 'LY', 'SD', 'BM', 'CD', 'CL', 'ZM', 'LB', 'NA', 'SJ', 'GS', 'DZ', 'RW', 'LA', 'IE', 'PK', 'TM', 'GU', 'WS', 'YT', 'GE', 'SK', 'SB', 'FO', 'MQ', 'PE', 'SM', 'GY', 'VC', 'MH', 'HU', 'MP', 'CO', 'NL', 'MS', 'BD', 'NU', 'MU', 'KN', 'SG', 'YE', 'GQ', 'EG', 'KP', 'UM', 'PL', 'MG', 'AU', 'ZW', 'SN', 'ST', 'MA', 'MR', 'FJ', 'VI', 'OM', 'AE', 'MK', 'PN', 'MC', 'KR', 'NC', 'GW', 'KW', 'IN', 'HM', 'JM', 'TL', 'CX', 'PM', 'BT', 'DK', 'KI', 'NI', 'LK', 'BY', 'JP', 'VA', 'TD', 'TG', 'HR', 'CF', 'GN', 'SE', 'NF', 'TK', 'LV', 'TR', 'LS', 'JO', 'BI', 'BA', 'BV', 'KH', 'AS', 'CM', 'TT', 'CS', 'BO', 'NR', 'MX', 'BZ', 'BB', 'CR', 'US', 'SV', 'BS', 'LU', 'IL', 'ML', 'AG', 'CI', 'TH', 'MN', 'HK', 'AM', 'UA', 'PT', 'PR', 'LT', 'GB', 'SL', 'SO', 'MW', 'AT', 'KZ', 'PA', 'PG', 'CZ', 'GD', 'GR', 'MT', 'EC', 'QA', 'NG', 'SC', 'CU', 'DJ', 'IT', 'EH', 'EE', 'AF', 'CK', 'ES', 'LI', 'CA', 'BG', 'KG', 'LR', 'AL', 'NP', 'BW', 'IS', 'BR', 'MZ', name='countries'), nullable=True),
+    sa.Column('country', sa.Enum('BD', 'RE', 'PM', 'PK', 'HT', 'SY', 'WF', 'AN', 'AZ', 'KZ', 'SJ', 'LR', 'BN', 'BR', 'CX', 'PR', 'AQ', 'GF', 'NA', 'KY', 'SO', 'CH', 'CK', 'CO', 'MC', 'PN', 'DM', 'JM', 'TK', 'CY', 'TC', 'CU', 'FO', 'GU', 'NC', 'FI', 'IO', 'AD', 'MG', 'EG', 'TR', 'BZ', 'PW', 'VI', 'NR', 'VG', 'HM', 'NF', 'ID', 'FK', 'SL', 'AE', 'VE', 'PY', 'GR', 'GH', 'EH', 'GE', 'CG', 'GI', 'MD', 'MX', 'LI', 'GY', 'NP', 'LA', 'RW', 'SR', 'JO', 'GS', 'BV', 'TL', 'TG', 'VA', 'TV', 'MP', 'BY', 'NE', 'IT', 'WS', 'TT', 'BM', 'KR', 'BJ', 'SM', 'NZ', 'GD', 'ST', 'AL', 'GN', 'AS', 'SI', 'ER', 'BB', 'IL', 'CL', 'MO', 'CC', 'GL', 'MZ', 'FJ', 'GM', 'SB', 'LT', 'EE', 'US', 'GW', 'CM', 'QA', 'BH', 'PH', 'DE', 'SD', 'KM', 'TO', 'MU', 'BW', 'HR', 'VC', 'YT', 'SC', 'AG', 'AI', 'EC', 'UG', 'CR', 'RO', 'BG', 'GB', 'PL', 'FM', 'NO', 'YE', 'FR', 'MY', 'PS', 'LY', 'HN', 'HU', 'PG', 'DJ', 'CN', 'SZ', 'MT', 'AR', 'SV', 'MA', 'GP', 'TN', 'UY', 'SG', 'IE', 'LB', 'IQ', 'CV', 'GT', 'DZ', 'PT', 'KP', 'TZ', 'MN', 'BA', 'LC', 'KW', 'GQ', 'ZA', 'SN', 'MK', 'PE', 'AU', 'CS', 'HK', 'KE', 'ML', 'TW', 'ZW', 'MS', 'JP', 'TF', 'OM', 'UM', 'VU', 'AW', 'KH', 'CA', 'LS', 'TD', 'DK', 'BS', 'CZ', 'SK', 'AT', 'UA', 'PF', 'TM', 'AM', 'TH', 'MW', 'KG', 'LU', 'NU', 'AO', 'MH', 'BO', 'LK', 'ZM', 'ES', 'SA', 'IR', 'LV', 'RU', 'NG', 'AF', 'ET', 'CD', 'CI', 'IN', 'VN', 'MQ', 'DO', 'CF', 'UZ', 'SE', 'TJ', 'BE', 'MR', 'KN', 'PA', 'MV', 'GA', 'NL', 'IS', 'BI', 'SH', 'MM', 'BT', 'BF', 'KI', 'NI', name='countries'), nullable=True),
     sa.Column('owner_id', sa.String(length=5), nullable=True),
     sa.Column('ownerbackup_id', sa.String(length=5), nullable=True),
     sa.Column('parent_id', sa.String(length=5), nullable=True),
@@ -281,10 +281,12 @@ def upgrade():
     sa.Column('organization_id', sa.String(), nullable=True),
     sa.Column('project_id', sa.String(), nullable=True),
     sa.Column('sprint_id', sa.String(), nullable=True),
+    sa.Column('company_id', sa.String(), nullable=True),
     sa.Column('author_last_id', sa.String(length=5), nullable=True),
     sa.Column('author_original_id', sa.String(length=5), nullable=True),
     sa.ForeignKeyConstraint(['author_last_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['author_original_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['company_id'], ['companies.id'], ),
     sa.ForeignKeyConstraint(['contact_id'], ['contacts.id'], ),
     sa.ForeignKeyConstraint(['deal_id'], ['deals.id'], ),
     sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], ),
