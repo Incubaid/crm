@@ -608,7 +608,7 @@ class LinkModelView(EnhancedModelView):
 
 
 class TaskModelView(EnhancedModelView):
-    column_details_list = ('id', 'title', 'description', 'user', 'contact',
+    column_details_list = ('id', 'title', 'description', 'assignee', 'user', 'contact',
                            'type', 'priority', 'eta', 'state', 'time_done',
                            'company', 'organization', 'project', 'sprint', 'deal',
                            'comments', 'messages', 'author_last', 'author_original')
