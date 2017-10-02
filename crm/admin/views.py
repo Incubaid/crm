@@ -1,5 +1,7 @@
 import os
 import uuid
+import csv
+from io import StringIO
 from flask import request
 from flask_admin.model.fields import InlineFieldList, InlineModelFormField
 from flask_admin.contrib.sqla import ModelView
@@ -11,6 +13,8 @@ from flask_admin.contrib.sqla import tools
 from flask_admin._compat import string_types
 from flask_admin.model.form import InlineFormAdmin
 from flask_admin import form
+from flask_admin.actions import action
+from flask import make_response
 from wtforms.fields import StringField
 from wtforms.widgets import HTMLString
 from wtforms import fields
@@ -276,6 +280,23 @@ class EnhancedModelView(ModelView):
 
             return flt
 
+    @action('export', 'Export')
+    def action_export(self, ids):
+        query = self.model.query.filter(self.model.id.in_(ids))
+        rows = []
+        # col[0] is field name. col[1] is field label
+        head_row = [col[1] for col in self.get_column_names(self.column_list, None)]
+        rows.append(head_row)
+        for record in query.all():
+            row = [getattr(record, attr) for attr in self.column_list]
+            rows.append(row)
+        contents = StringIO()
+        cw = csv.writer(contents)
+        cw.writerows(rows)
+        output = make_response(contents.getvalue())
+        output.headers["Content-Disposition"] = "attachment; filename=exported_{}.csv".format(self.name)
+        output.headers["Content-type"] = "text/csv"
+        return output
 
 class UserModelView(EnhancedModelView):
     column_list = ('firstname', 'lastname', 'username', 'emails',
