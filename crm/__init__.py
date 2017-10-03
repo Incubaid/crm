@@ -1,5 +1,6 @@
 import os
 import warnings
+from importlib import import_module
 
 from logging.config import dictConfig
 
@@ -95,7 +96,7 @@ class CRM(object):
                 if file != 'models.py':
                     continue
                 package = root.replace('/', '.')
-                exec('from %s.models import *' % package)
+                import_module('%s.models' % package)
 
     def inti_admin_app(self):
         """
@@ -156,7 +157,7 @@ class CRM(object):
                 if file != 'views.py':
                     continue
                 package = root.replace('/', '.')
-                exec('from %s.views import *' % package)
+                import_module('%s.views' % package)
 
     @property
     def app(self):
