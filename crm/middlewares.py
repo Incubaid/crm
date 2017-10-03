@@ -83,12 +83,28 @@ def authenticate():
         phone = info['phonenumbers'][0]['phonenumber']
 
         users = User.query.filter(
-            User.emails.contains(email),
-            User.telephones.contains(phone)
+            (User.username == username) | (User.telephones.contains(
+                phone)) | (User.emails.contains(email))
         )
 
         if users.count():
             user = users[0]
+            user.username = username
+            if user.emails is None:
+                user.emails = email
+            else:
+                emailslist = [x.strip() for x in user.emails.split(",")]
+                if email not in emailslist:
+                    emailslist.append(email)
+                    user.emails = ",".join(emailslist)
+            if user.telephones is None:
+                user.telephones = phone
+            else:
+                phoneslist = [x.strip() for x in user.telephones.split(",")]
+                if phone not in phoneslist:
+                    phoneslist.append(phone)
+                    user.telephones = ",".join(phoneslist)
+
         else:
             user = User(
                 username=username,
@@ -97,10 +113,12 @@ def authenticate():
                 emails=email,
                 telephones=phone
             )
+        db.session.add(user)
 
-            db.session.add(user)
-            db.session.commit()
+    db.session.commit()
+
     session['user'] = {'username': user.username,
                        'firstname': user.firstname,
                        'lastname': user.lastname,
+                       'telephones': user.telephones,
                        'emails': user.emails, 'id': user.id}
