@@ -1,4 +1,5 @@
 import os
+from importlib import import_module
 from os.path import dirname
 LOGGING_CONF = {
     'version': 1,
@@ -28,7 +29,10 @@ IMAGES_DIR = os.path.join(STATIC_DIR, "uploads", "images")
 # Leave as the last line
 ########################
 
-exec("from crm.settings_%s import *" % os.getenv("ENV", 'dev'))
+# Load env settings into globals
+settings_module = 'crm.settings_%s' % os.getenv("ENV", 'dev')
+env_settings = import_module(settings_module).__dict__
+globals().update(env_settings)
 
 if not globals()['SQLALCHEMY_DATABASE_URI']:
     print('Missing SQLALCHEMY_DATABASE_URI')
