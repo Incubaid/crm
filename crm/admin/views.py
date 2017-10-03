@@ -2,7 +2,8 @@ import os
 import uuid
 import csv
 from io import StringIO
-from flask import request
+from flask import request, flash
+from flask_admin.babel import gettext, ngettext, lazy_gettext
 from flask_admin.model.fields import InlineFieldList, InlineModelFormField
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import AdminIndexView
@@ -290,6 +291,26 @@ class EnhancedModelView(ModelView):
                     for col in self.get_column_names(self.column_list, None)]
         rows.append(head_row)
         for record in query.all():
+            row = [getattr(record, attr) for attr in self.column_list]
+            rows.append(row)
+        contents = StringIO()
+        cw = csv.writer(contents)
+        cw.writerows(rows)
+        output = make_response(contents.getvalue())
+        output.headers[
+            "Content-Disposition"] = "attachment; filename=exported_{}.csv".format(self.name)
+        output.headers["Content-type"] = "text/csv"
+        return output
+
+    @action('export_all', 'Export all')
+    def action_export_all(self, ids=[]):
+        all_objects = self.model.query.all()
+        rows = []
+        # col[0] is field name. col[1] is field label
+        head_row = [col[1]
+                    for col in self.get_column_names(self.column_list, None)]
+        rows.append(head_row)
+        for record in all_objects:
             row = [getattr(record, attr) for attr in self.column_list]
             rows.append(row)
         contents = StringIO()
