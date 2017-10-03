@@ -7,6 +7,7 @@
 </br>
 
 <ul>
+    <li><a href="/user/details/?id={{g._admin_view._template_args['current_user_id']}}">My profile</a></li>
     {% set tasksview = "tasksview" %}
     {% if tasksview in g._admin_view._template_args['filtered_objects'] %}
     {% set tofilterview, filtername = g._admin_view._template_args['filtered_objects'][tasksview] %}
