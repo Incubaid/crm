@@ -1,4 +1,5 @@
 import os
+from subprocess import Popen, PIPE
 import ujson as json
 
 from sqlalchemy_utils import create_database, database_exists, drop_database
@@ -7,6 +8,7 @@ from crm.db import BaseModel, db, RootModel
 from crm import app
 
 from crm.fixtures import generate_fixtures
+
 
 @app.cli.command()
 def createdb():
@@ -77,8 +79,17 @@ def loaddata():
     # Delete all data in db
     if database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
         drop_database(app.config['SQLALCHEMY_DATABASE_URI'])
+
+    # create DB
     create_database(app.config['SQLALCHEMY_DATABASE_URI'])
-    db.create_all(app=app)
+
+    # Create tables and run migrations
+    p = Popen(['flask', 'db', 'upgrade'], stdout = PIPE, stderr=PIPE)
+    p.communicate()[0]
+
+    if p.returncode != 0:
+        print('Error in executing command : flask db upgrade .. Make sure migrations dir exists and up2date')
+        exit(1)
 
     # START loading
     for model in models.values():
