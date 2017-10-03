@@ -2,7 +2,6 @@ from sqlalchemy.event import listen
 from flask import session
 
 from crm.db import BaseModel
-from crm.user.models import User
 
 
 def generate_record_id(mapper, connect, target):
@@ -27,6 +26,8 @@ def update_last_author(mapper, connect, target):
     :param connect: 
     :param target: Target model
     """
+    # If session is None means we're running in non-HTTP context
+    # i.e through flask commands (flask loadfixtures)
     if not session:
         return
 
@@ -46,6 +47,8 @@ def update_original_author(mapper, connect, target):
     :param connect: 
     :param target: Target model
     """
+    # If session is None means we're running in non-HTTP context
+    # i.e through flask commands (flask loadfixtures)
     if not session:
         return
 
