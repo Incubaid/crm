@@ -565,7 +565,7 @@ class ProjectModelView(EnhancedModelView):
 
 class SprintModelView(EnhancedModelView):
     column_details_list = ('id', 'name', 'description', 'start_date', 'deadline',
-                           'project', 'contacts',
+                           'project', 'contacts','tasks',
                            'comments', 'links', 'messages', 'author_last', 'author_original', 'updated_at')
     column_filters = ('id', 'name', 'description', 'start_date', 'deadline',
                       'project', 'contacts',

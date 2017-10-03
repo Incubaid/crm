@@ -80,7 +80,7 @@ class CRM(object):
         Load project settings
         """
         self._app.config.from_pyfile("./settings.py")
-        self._app.secret_key = self._app.config['SECRET_KEY']
+        self._app.secret_key = os.urandom(32)
 
     @staticmethod
     def init_db():
