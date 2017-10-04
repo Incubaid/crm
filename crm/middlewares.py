@@ -25,7 +25,7 @@ def clear_session():
     session.clear()
 
 
-@app.before_request
+#@app.before_request
 def authenticate():
     """
     authenticate user by validating passed JWT token

@@ -2,7 +2,8 @@ import enum
 from crm.db import db, BaseModel, RootModel
 from crm.countries import countries
 
-CountriesEnum = enum.Enum('Countries', countries)
+CountriesEnum = enum.Enum('Countries', {v: v for k, v in countries.items()})
+
 CountriesEnum.__str__ = lambda self: self.value
 
 
@@ -53,7 +54,7 @@ class Contact(db.Model, BaseModel, RootModel):
     )
 
     country = db.Column(db.Enum(CountriesEnum),
-                        default=CountriesEnum.BE)
+                        default=CountriesEnum.Belgium)
 
     deals = db.relationship(
         "Deal",
@@ -107,7 +108,7 @@ class Contact(db.Model, BaseModel, RootModel):
 
     @property
     def address(self):
-        return "{} {}, {}".format(self.street_number, self.street_name, self.country)
+        return "{} {} {}".format(self.street_number or '', '%s,' % self.street_name if self.street_name else '',  self.country).strip()
 
     def __str__(self):
         return "{} {}".format(self.firstname, self.lastname)
