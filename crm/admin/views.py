@@ -586,7 +586,7 @@ class ProjectModelView(EnhancedModelView):
 
 class SprintModelView(EnhancedModelView):
     column_details_list = ('id', 'name', 'description', 'start_date', 'deadline',
-                           'project', 'contacts','tasks',
+                           'project', 'contacts', 'tasks',
                            'comments', 'links', 'messages', 'author_last', 'author_original', 'updated_at')
     column_filters = ('id', 'name', 'description', 'start_date', 'deadline',
                       'project', 'contacts',
@@ -684,7 +684,7 @@ class MessageModelView(EnhancedModelView):
     form_rules = column_filters = ('title', 'content', 'channel', 'time_tosend', 'time_sent',
                                    'company', 'contact', 'author', 'organization', 'project', 'sprint', 'deal', 'task')
     column_details_list = ('id', 'title', 'destination', 'author', 'content', 'company',
-                           'contact', 'organization', 'project', 'sprint', 'deal', 'task', 'updated_at', 'time_tosend', 'time_sent',
+                           'contact', 'organization', 'project', 'sprint', 'deal', 'task', 'time_tosend', 'time_sent',
                            'author_last', 'author_original', 'updated_at')
 
     form_edit_rules = ('title', 'author', 'content', 'channel',
