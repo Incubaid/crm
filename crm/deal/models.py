@@ -12,7 +12,7 @@ class DealType(Enum):
 
 
 class DealCurrency(Enum):
-    USD, EUR, AED, GBP = range(4)
+    USD, EUR, AED, GBP, BTC = range(5)
 
 
 class Deal(db.Model, BaseModel, RootModel):
