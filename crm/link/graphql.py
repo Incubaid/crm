@@ -2,6 +2,7 @@ import graphene
 
 from graphene_sqlalchemy import SQLAlchemyObjectType
 
+from crm.graphql import BaseQuery
 from .models import Link
 
 
@@ -11,7 +12,7 @@ class LinkType(SQLAlchemyObjectType):
         model = Link
 
 
-class LinkQuery(graphene.AbstractType):
+class LinkQuery(BaseQuery):
     links = graphene.List(LinkType)
 
     def resolve_links(self, args, context, info):

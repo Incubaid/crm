@@ -58,7 +58,7 @@ class Contact(db.Model, BaseModel, RootModel):
     )
 
     street_number = db.Column(
-        db.Integer
+        db.Integer()
     )
 
     zip_code = db.Column(

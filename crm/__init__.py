@@ -15,6 +15,7 @@ from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_admin import Admin
 
+from crm.graphql import BaseMutation, BaseQuery
 from .settings import LOGGING_CONF, STATIC_DIR, IMAGES_DIR, STATIC_URL_PATH
 from .db import BaseModel, db
 from crm.admin.config import NAV_BAR_ORDER
@@ -200,12 +201,20 @@ class CRM(object):
             interfaces = (Node,)
 
         schema = graphene.Schema(
+
             query=type(
                 'Query',
-                tuple(graphene.AbstractType.__subclasses__() + [graphene.ObjectType]),
-                {'Meta': Meta}
+                tuple(BaseQuery.__subclasses__()),
+                {}
             ),
-            types=list(SQLAlchemyObjectType.__subclasses__())
+
+            types=list(SQLAlchemyObjectType.__subclasses__()),
+
+            mutation=type(
+                'Mutations',
+                tuple(BaseMutation.__subclasses__()),
+                {}
+            )
         )
 
         return schema
