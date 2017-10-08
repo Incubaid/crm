@@ -1,6 +1,9 @@
 from flask import request, jsonify
+from werkzeug.exceptions import abort
+
+from flask_graphql import GraphQLView
+
 from crm import app
-from crm.schema import schema
 
 
 @app.route('/api', methods=["POST"])
@@ -9,7 +12,7 @@ def api():
     query = data.get('query', None)
     if query:
         try:
-            execresult = schema.execute(query)
+            execresult = app.graphql_schema.execute(query)
             if execresult.errors:
                 # TODO: in case of errors do we return
                 return jsonify(error=execresult.errors)
@@ -17,3 +20,6 @@ def api():
         except Exception as ex:
             return jsonify(error=str(ex))
     abort(401)
+
+
+app.add_url_rule('/graphql', view_func=GraphQLView.as_view('graphql', schema=app.graphql_schema, graphiql=True))

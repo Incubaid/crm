@@ -17,6 +17,8 @@
 - [Add new hook](docs/DBHooks.md)
 - [Project structure](docs/Structure.md)
 
+**Graphql**
+- [Define Types, Queries and Mutations](docs/GraphqlOverview.md)
 **Specs**
 - [Requirements](specs/Requirements.md)
 - [Alert Management](specs/AlertManagement.md)
