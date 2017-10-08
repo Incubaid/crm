@@ -105,6 +105,12 @@ class Contact(db.Model, BaseModel, RootModel):
     telephones = db.Column(
         db.Text()
     )
+    tf_app = db.Column(
+        db.Boolean()
+    )
+    tf_web = db.Column(
+        db.Boolean()
+    )
 
     @property
     def address(self):
