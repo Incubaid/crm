@@ -413,6 +413,13 @@ class SubgroupModelView(EnhancedModelView):
     column_list = ('groupname',)
 
 
+class CompanyTagModelView(EnhancedModelView):
+    form_rules = ('tag', )
+    form_edit_rules = ('tag',)
+    column_details_list = ('tag', )
+    column_list = ('tag',)
+
+
 class ContactModelView(EnhancedModelView):
     form_rules = (
         'firstname', 'lastname', 'images', 'description', 'bio', 'belief_statement',
@@ -465,7 +472,7 @@ class ContactModelView(EnhancedModelView):
 
 class CompanyModelView(EnhancedModelView):
     form_rules = (
-        'name', 'description', 'emails', 'telephones', 'vatnumber', 'website',
+        'name', 'description', 'emails', 'telephones', 'vatnumber', 'website', 'tags',
         'deals', 'contacts', 'messages', 'tasks', 'links', 'comments', 'owner', 'ownerbackup')
 
     column_filters = (
@@ -473,11 +480,11 @@ class CompanyModelView(EnhancedModelView):
         'deals', 'contacts', 'messages', 'tasks', 'links', 'comments', 'owner', 'ownerbackup',)
 
     column_details_list = (
-        'name', 'description', 'emails', 'telephones', 'vatnumber', 'website',
-        'deals', 'contacts', 'messages', 'tasks', 'comments', 'links', 'owner', 'ownerbackup', 'author_last', 'author_original', 'updated_at')
+        'name', 'description', 'emails', 'telephones', 'vatnumber', 'website', 'tags',
+        'deals', 'contacts', 'messages',  'tasks', 'comments', 'links', 'owner', 'ownerbackup', 'author_last', 'author_original', 'updated_at')
 
     form_edit_rules = (
-        'name', 'description', 'emails', 'telephones', 'vatnumber', 'website', 'contacts', 'messages', 'tasks', 'deals',
+        'name', 'description', 'emails', 'telephones', 'vatnumber', 'website', 'tags', 'contacts', 'messages', 'tasks', 'deals',
         'comments', 'links', 'owner', 'ownerbackup')
 
     column_searchable_list = (

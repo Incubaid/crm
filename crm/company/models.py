@@ -1,6 +1,15 @@
 from crm.db import db, BaseModel, RootModel
 
 
+class CompanyTag(db.Model, BaseModel, RootModel):
+    __tablename__ = "companytags"
+    tag = db.Column(db.String(20), nullable=False)
+    company_id = db.Column(db.String(5), db.ForeignKey("companies.id"))
+
+    def __str__(self):
+        return self.tag
+
+
 class Company(db.Model, BaseModel, RootModel):
 
     __tablename__ = "companies"
@@ -74,6 +83,7 @@ class Company(db.Model, BaseModel, RootModel):
         "Link",
         backref="company"
     )
+    tags = db.relationship("CompanyTag", backref="company")
 
     def __str__(self):
         return self.name
