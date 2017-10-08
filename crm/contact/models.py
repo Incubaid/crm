@@ -111,6 +111,9 @@ class Contact(db.Model, BaseModel, RootModel):
     tf_web = db.Column(
         db.Boolean()
     )
+    referral_code = db.Column(
+        db.String(255),
+    )
 
     @property
     def address(self):
