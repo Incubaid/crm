@@ -406,18 +406,25 @@ class InlineImageModelForm(InlineFormAdmin):
                 file_data.save(os.path.join(IMAGES_DIR, newname))
 
 
+class SubgroupModelView(EnhancedModelView):
+    form_rules = ('groupname', )
+    form_edit_rules = ('groupname',)
+    column_details_list = ('groupname', )
+    column_list = ('groupname',)
+
+
 class ContactModelView(EnhancedModelView):
     form_rules = (
         'firstname', 'lastname', 'images', 'description', 'bio', 'belief_statement',
         FieldSet(['street_number', 'street_name',
                   'zip_code', 'country']),
-        'emails', 'telephones', 'companies', 'message_channels', 'tf_app', 'tf_web', 'referral_code',
+        'emails', 'telephones', 'companies', 'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code',
         'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
 
     column_details_list = (
         'firstname', 'lastname', 'description', 'images', 'bio', 'belief_statement',
         'address',
-        'emails', 'telephones', 'companies', 'message_channels', 'tf_app', 'tf_web', 'referral_code',
+        'emails', 'telephones', 'companies', 'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code',
         'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup', 'author_last', 'author_original', 'updated_at')
 
     form_edit_rules = (
@@ -426,7 +433,7 @@ class ContactModelView(EnhancedModelView):
                   'zip_code', 'country']),
         'emails', 'telephones', 'companies', 'tasks', 'deals', 'messages',
         'comments', 'links',
-        'message_channels', 'tf_app', 'tf_web', 'referral_code', 'owner', 'ownerbackup')
+        'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code', 'owner', 'ownerbackup')
 
     column_filters = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'message_channels', 'referral_code',
                       'deals', 'comments', 'tasks', 'projects', 'companies', 'messages', 'sprints', 'links', 'owner',
