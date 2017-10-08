@@ -411,13 +411,13 @@ class ContactModelView(EnhancedModelView):
         'firstname', 'lastname', 'images', 'description', 'bio', 'belief_statement',
         FieldSet(['street_number', 'street_name',
                   'zip_code', 'country']),
-        'emails', 'telephones', 'companies', 'message_channels', 'tf_app', 'tf_web',
+        'emails', 'telephones', 'companies', 'message_channels', 'tf_app', 'tf_web', 'referral_code',
         'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
 
     column_details_list = (
         'firstname', 'lastname', 'description', 'images', 'bio', 'belief_statement',
         'address',
-        'emails', 'telephones', 'companies', 'message_channels', 'tf_app', 'tf_web',
+        'emails', 'telephones', 'companies', 'message_channels', 'tf_app', 'tf_web', 'referral_code',
         'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup', 'author_last', 'author_original', 'updated_at')
 
     form_edit_rules = (
@@ -426,9 +426,9 @@ class ContactModelView(EnhancedModelView):
                   'zip_code', 'country']),
         'emails', 'telephones', 'companies', 'tasks', 'deals', 'messages',
         'comments', 'links',
-        'message_channels', 'tf_app', 'tf_web', 'owner', 'ownerbackup')
+        'message_channels', 'tf_app', 'tf_web', 'referral_code', 'owner', 'ownerbackup')
 
-    column_filters = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'message_channels',
+    column_filters = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'message_channels', 'referral_code',
                       'deals', 'comments', 'tasks', 'projects', 'companies', 'messages', 'sprints', 'links', 'owner',
                       'ownerbackup')
     column_searchable_list = ('firstname', 'lastname',)
@@ -526,15 +526,15 @@ class OrganizationModelView(EnhancedModelView):
 
 class DealModelView(EnhancedModelView):
     column_details_list = ('id', 'name', 'description', 'amount', 'currency', 'deal_type', 'deal_state', 'is_paid',
-                           'contact', 'company', 'closed_at', 'tasks', 'messages', 'links', 'comments', 'author_last', 'author_original', 'updated_at')
+                           'contact', 'company', 'closed_at', 'referral_code', 'tasks', 'messages', 'links', 'comments', 'author_last', 'author_original', 'updated_at')
     column_filters = ('id', 'name', 'amount', 'currency', 'deal_type', 'deal_state',
-                      'contact', 'company', 'closed_at', 'tasks', 'messages', 'comments', 'is_paid')
+                      'contact', 'company', 'closed_at', 'tasks', 'messages', 'comments', 'is_paid', 'referral_code')
 
     form_rules = ('name', 'amount', 'currency', 'deal_type', 'deal_state',
-                  'contact', 'company', 'comments')
+                  'contact', 'company', 'referral_code', 'comments')
 
     form_edit_rules = ('name', 'description', 'amount', 'currency', 'deal_type', 'deal_state',
-                       'contact', 'company', 'tasks', 'messages', 'links', 'comments', 'is_paid', 'closed_at')
+                       'contact', 'company', 'tasks', 'messages', 'links', 'comments', 'is_paid', 'closed_at', 'referral_code')
 
     column_list = ('name', 'amount', 'currency',
                    'deal_type', 'deal_state')
