@@ -3,8 +3,8 @@
 
 - You can test graphql queries through the UI interface at the end point url ```/graphql```
 ![graphql interface](assets/graphql_query.png)
-
-- using any HTTp client you als send requests to the end point url ```/api```
+- using any HTTP client you als send requests to the end point url ```/api```
+- All graphql URLs/end points are exposed through the sub application ```crm.api```, in ```crm.api.views```
 
 ### Advanced
 You can define your own Graphql Types, Queries or Mutations in ```graphql.py``` file
