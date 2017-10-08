@@ -11,7 +11,7 @@ CountriesEnum.__str__ = lambda self: self.value
 #     Ambassadors, Investors, Hosters, Members, Public = range(5)
 
 class Subgroup(db.Model, BaseModel, RootModel):
-    __tablename__ = "telephones"
+    __tablename__ = "subgroups"
     groupname = db.Column(db.String(20), nullable=False)
     contact_id = db.Column(db.String(5), db.ForeignKey("contacts.id"))
 
