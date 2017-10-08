@@ -87,6 +87,9 @@ class Deal(db.Model, BaseModel, RootModel):
     is_paid = db.Column(
         db.Boolean()
     )
+    referral_code = db.Column(
+        db.String(255),
+    )
 
     def __str__(self):
         return self.name
