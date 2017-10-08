@@ -534,7 +534,7 @@ class DealModelView(EnhancedModelView):
                   'contact', 'company', 'comments')
 
     form_edit_rules = ('name', 'description', 'amount', 'currency', 'deal_type', 'deal_state',
-                       'contact', 'company', 'tasks', 'messages', 'links', 'comments', 'is_paid')
+                       'contact', 'company', 'tasks', 'messages', 'links', 'comments', 'is_paid', 'closed_at')
 
     column_list = ('name', 'amount', 'currency',
                    'deal_type', 'deal_state')
