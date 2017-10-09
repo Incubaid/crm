@@ -14,15 +14,7 @@ from crm.user.models import User
 
 @app.errorhandler(401)
 def custom_401(error):
-    return render_template('home/401.html')
-
-
-@app.before_first_request
-def clear_session():
-    """
-    clear user sessions on every fresh start of system
-    """
-    session.clear()
+    return render_template('home/401.html'), 401
 
 
 @app.before_request

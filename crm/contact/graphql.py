@@ -3,16 +3,18 @@ import graphene
 from graphene import relay
 
 from graphene_sqlalchemy import SQLAlchemyObjectType
-from graphene_sqlalchemy.fields import SQLAlchemyConnectionField
-from graphene.relay import Node
 
-from crm.graphql import BaseMutation, BaseQuery
+from crm.graphql import BaseMutation, BaseQuery, CRMConnectionField, GraphqlError, ErrorType
 from .models import Contact
 from .forms import ContactForm
 from crm import db
 
 
 class ContactType(SQLAlchemyObjectType):
+    # object.id in graphene contains internal
+    # representation of id.
+    # we add another uid field that we fill
+    # with original object.id
     uid = graphene.String()
 
     class Meta:
@@ -22,60 +24,73 @@ class ContactType(SQLAlchemyObjectType):
 
 
 class ContactQuery(BaseQuery):
-    contacts = SQLAlchemyConnectionField(ContactType)
-    contact = graphene.Field(ContactType, uid=graphene.String())
+    """
+    we have 2 queries here contact and contacts
+    """
 
-    def resolve_contacts(self, context):
-        # Manipulate uid field with actual record id in Database
-        # Reason is Graphene uses ID field which is base64.b64encode(ModelClass:RecordID)
-        res = ContactType.get_query(context).all()
-        for e in res:
-            e.uuid = e.uid
-        return res
+    # no need for resplve_contacts function here
+    contacts = CRMConnectionField(ContactType)
+    # contact query to return one contact and takes (uid) argument
+    # uid is the original object.id in db
+    contact = graphene.Field(ContactType, uid=graphene.String())
 
     def resolve_contact(self, context, uid):
         return ContactType.get_query(context).filter_by(id=uid).first()
 
     class Meta:
-        interfaces = (Node,)
+        interfaces = (relay.Node,)
 
 
 class CreateContact(graphene.Mutation):
     class Arguments:
+        """
+            Mutation Arguments        
+        """
         firstname = graphene.String(required=True)
-        # lastname = graphene.String(required=True)
-        # description = graphene.String()
-        # telegram = graphene.String()
-        # emails = graphene.String(required=True)
-        # phones = graphene.String(required=True)
+        lastname = graphene.String()
+        description = graphene.String()
+        telegram = graphene.String()
+        bio = graphene.String()
+        emails = graphene.String(required=True)
+        telephones = graphene.String(required=True)
+        belief_statement = graphene.String()
+        owner_id = graphene.String()
+        owner_id = graphene.String()
+        ownerbackup_id = graphene.String()
+        parent_id = graphene.String()
+        tf_app = graphene.Boolean()
+        tf_web = graphene.Boolean()
+        street_number = graphene.Int()
 
+    # MUTATION RESULTS FIELDS
     contact = graphene.Field(ContactType)
     ok = graphene.Boolean()
-    errors = graphene.types.json.JSONString()
+    errors = graphene.String()
 
     @classmethod
     def mutate(cls, root, context, **kwargs):
-
-        errors = {
-            'fields': {},
-            'code': 400
-        }
-
-        OK = True
-
-        form = ContactForm(werkzeug.MultiDict(kwargs), Contact)
-        if not form.validate():
-            errors['fields'].update(form.errors)
-            return CreateContact(contact=None, ok=False, errors=errors)
-
-        contact = Contact(**form.data)
+        """ 
+        Mutation logic is handled here
+        """
+        contact = Contact(**kwargs)
         db.session.add(contact)
-        db.session.commit()
-
-        return CreateContact(contact=contact, ok=True, errors=None)
+        try:
+            db.session.commit()
+            return CreateContact(
+                contact=contact,
+                ok=True,
+                errors=None
+            )
+        except Exception as e:
+            return CreateContact(
+                contact=contact,
+                ok=False,
+                errors=e.args
+            )
 
 
 class ContactMutation(BaseMutation):
+    """
+    Put all contact mutations here
+    """
     create_contact = CreateContact.Field()
-    # update_contact = UpdateContact.Field()
-    # delete_contact = DeleteContact.Field()

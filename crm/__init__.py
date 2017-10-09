@@ -6,7 +6,7 @@ from logging.config import dictConfig
 
 import jinja2
 import graphene
-from graphene.relay import Node
+
 from graphene_sqlalchemy import SQLAlchemyObjectType
 
 from flask import Flask
@@ -183,13 +183,13 @@ class CRM(object):
         """
         Go through all sub apps defined Queries, Types and mutations
         defined in (graphql.py) and register them in one global schema
-        (self._graphql_schema)
         """
 
         # Import all (graphql.py) defined in all sub apps in system
-        # After importing we'll havr
-        # All Queries under :: graphene.AbstractType.__subclasses__()
+        # After importing we'll have
+        # All Queries under ::  BaseQuery.__subclasses__()
         # All Types under :: SQLAlchemyObjectType.__subclasses__()
+        # All Mutations under :: BaseMutation.__subclasses__()
         for root, dirs, files in os.walk('crm'):
             for file in files:
                 if file != 'graphql.py':
@@ -197,11 +197,9 @@ class CRM(object):
                 package = root.replace('/', '.')
                 import_module('%s.graphql' % package)
 
-        class Meta:
-            interfaces = (Node,)
-
         schema = graphene.Schema(
 
+            # Make dynamic Query class that inherits all defined queries
             query=type(
                 'Query',
                 tuple(BaseQuery.__subclasses__()),
@@ -210,6 +208,7 @@ class CRM(object):
 
             types=list(SQLAlchemyObjectType.__subclasses__()),
 
+            # Make dynamic Mutations class that inherits all defined mutations
             mutation=type(
                 'Mutations',
                 tuple(BaseMutation.__subclasses__()),

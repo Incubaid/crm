@@ -18,7 +18,12 @@
 - [Project structure](docs/Structure.md)
 
 **Graphql**
-- [Define Types, Queries and Mutations](docs/GraphqlOverview.md)
+- [Intro](docs/GraphqlOverview.md)
+- [CRM API General overview](docs/GraphqlQueriesAndMutations.md)
+- [CRM complete list of API](docs/graphqlAPI.md)
+- [Define new Types, Queries, and Mutations](docs/GraphqlAdvanced.md)
+
+
 **Specs**
 - [Requirements](specs/Requirements.md)
 - [Alert Management](specs/AlertManagement.md)
