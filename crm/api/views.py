@@ -1,5 +1,4 @@
 from flask import request, jsonify
-from werkzeug.exceptions import abort
 
 from flask_graphql import GraphQLView
 
@@ -8,6 +7,9 @@ from crm import app
 
 @app.route('/api', methods=["POST"])
 def api():
+    if request.headers['Content-Type'].lower() != 'application/json':
+        return jsonify(errors=['Only accepts Content-Type: application/json']), 400
+
     data = request.json
     query = data.get('query', None)
     if not query:
@@ -22,10 +24,20 @@ def api():
 
             if result and 'edges' in result:
                 edges = result.get('edges')
-                result = []
+                page_info = result.get('pageInfo')
+
+                result = {'items': []}
+
+                if page_info:
+                    result['page_info'] = page_info
+
                 for item in edges:
-                    result.append(item.get('node'))
+                    node = item.get('node')
+                    if item.get('cursor'):
+                        node['cursor'] = item.get('cursor')
+                    result['items'].append(node)
             return jsonify(result), 200 if result is not None else 404
+
         except Exception as ex:
             return jsonify(errors=[str(ex)]), 400
 

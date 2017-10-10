@@ -147,9 +147,81 @@
         data.ok # True
         data.json()
 
-        [{'firstname': 'fathy', 'lastname': '', 'uid': 'qkted'},
-         {'firstname': 'fathy3', 'lastname': '', 'uid': '0urxf'},
-         {'firstname': 'fathy4', 'lastname': '', 'uid': '3yfbt'}]
+        {
+        'items': [
+                    {'firstname': 'fathy', 'lastname': '', 'uid': 'qkted'},
+                    {'firstname': 'fathy3', 'lastname': '', 'uid': '0urxf'},
+                    {'firstname': 'fathy4', 'lastname': '', 'uid': '3yfbt'}
+
+                 ]
+         }
+     ```
+
+
+     ```python
+        import requests
+
+        query = """
+            {
+                contacts{
+                    edges{
+                      node{
+                        firstname
+                        lastname
+                        uid
+                      }
+                     cursor
+                    }
+                     pageInfo{
+                         hasNextPage
+                         hasPreviousPage
+                         startCursor
+                         endCursor
+                     }
+                  }
+                }
+        """
+
+        payload = {'query':query}
+        headers = {'Content-Type':'application/json', 'Authorization': 'bearer your-jwt-token'} # replace 'your-jwt-token' with actual token
+        data = requests.post('http://127.0.0.1:5000/api', json=payload, headers=headers)
+
+        data.ok # True
+        data.json()
+
+        {
+            'items': [
+                    {
+                        'cursor': 'YXJyYXljb25uZWN0aW9uOjA=',
+                        'firstname': 'fathy',
+                        'lastname': '',
+                        'uid': 'qkted'
+                    },
+
+                    {
+                        'cursor': 'YXJyYXljb25uZWN0aW9uOjE=',
+                        'firstname': 'fathy3',
+                        'lastname': '',
+                        'uid': '0urxf'
+                    },
+                    {
+                        'cursor': 'YXJyYXljb25uZWN0aW9uOjI=',
+                        'firstname': 'fathy4',
+                        'lastname': '',
+                        'uid': '3yfbt'
+                    },
+                    ....
+                    ....
+            ]
+
+            'page_info': {
+                'endCursor': 'YXJyYXljb25uZWN0aW9uOjE3',
+                'hasNextPage': False,
+                'hasPreviousPage': False,
+                'startCursor': 'YXJyYXljb25uZWN0aW9uOjA='
+             }
+         }
+
      ```
 
 
@@ -197,4 +269,3 @@
         data.ok # False
         data.status_code # 404
      ```
-
