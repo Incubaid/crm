@@ -5,8 +5,9 @@
 - All development related settings goes for ```settings.dev.py```
 
 ### Dev Environment
-CRM is built around the usage of IYO for authentication. Typical setup will include a Caddy (configured with IYO plugin) as a reverse proxy to CRM application  
+CRM is built around the usage of IYO for authentication. Typical setup will include a Caddy [configured with IYO plugin](https://github.com/itsyouonline/caddy-integration) as a reverse proxy to CRM application  
 
+> Recommended way to install caddy and its plugins is using [Caddyman](https://github.com/Incubaid/caddyman)
 #### Example 
 ```
 
