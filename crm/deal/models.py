@@ -90,6 +90,7 @@ class Deal(db.Model, BaseModel, RootModel):
     referral_code = db.Column(
         db.String(255),
     )
+    shipping_address = db.relationship("Address", backref="deal")
 
     def __str__(self):
         return self.name

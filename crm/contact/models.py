@@ -127,6 +127,7 @@ class Contact(db.Model, BaseModel, RootModel):
         db.String(255),
     )
     subgroups = db.relationship("Subgroup", backref="contact")
+    addresses = db.relationship("Address", backref="contact")
 
     @property
     def address(self):
