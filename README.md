@@ -21,7 +21,7 @@
 **Graphql**
 - [Intro](docs/GraphqlOverview.md)
 - [CRM API General overview](docs/GraphqlQueriesAndMutations.md)
-- [CRM complete list of API](docs/graphqlAPI.md)
+- [CRM complete list of API](docs/GraphqlAPI.md)
 - [Define new Types, Queries, and Mutations](docs/GraphqlAdvanced.md)
 
 
