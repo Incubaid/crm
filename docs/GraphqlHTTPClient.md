@@ -1,13 +1,78 @@
 # Accessing Graphql API using HTTP client
 
-Our end point where Graphql API is exposed is ```/api```
+- Our end point where Graphql API is exposed is ```/api```
+- We have the following constraints on users who can access CRM graphql API on production
+    - API users Must be users of ```threefold.crm_users``` organization on [IYO](https://itsyou.online) or users of sub organizations of  ```threefold.crm_users```
 
-## Python
+- ```/api``` expects the following headers:
+    - ```Content-Type:Application/json```
+    - ```Authorization: bearer {your-jwt-token}``` replace ```your-jwt-token``` with your actual token
+
+- If you want to use the API directly **without bothering about authentication** nor [IYO](https://itsyou.online) during Development mode or testing
+        - *Disable the ```authenticate``` middleware or comment it out totally in the module ```middlewares.py```*
+        - *Don't send Authentication headers in your requests*
+
+- **How to get a JWT token from [IYO](https://itsyou.online)**
+
+    - Assuming you created a sub organization from [IYO](https://itsyou.online) ```threefold.crm_users``` organization
+    - Get A ```client ID```  & ```Client Secret``` for your organization
+        - Go to your organization settings and choose ```API access keys``` then click on (ADD)
+
+            ![Organization settings](assets/iyo-settings1.png)
+
+        - Then make sure your added key allows non UI clients
+
+            ![Organization settings](assets/iyo-settings2.png)
+        - Now here's the code snippet to get JWT-Token
+
+            ```python
+            import requests
+            import urllib
+
+            host = "https://itsyou.online"
+            params = {
+                'grant_type': 'client_credentials',
+                'client_id': 'YOUR-CLIENT-ID', # replace with actual value
+                'client_secret': 'YOUR-CLIENT-SECRET' # replace with actual value
+            }
+
+            url = '%s/v1/oauth/access_token?%s' % (host, urllib.parse.urlencode(params))
+
+            response = requests.post(url,  verify=False)
+
+            assert(response.status_code == 200)
+
+            result = response.json()
+
+            access_token = result['access_token']
+
+            # Now Getting JWT
+            url = '%s/v1/oauth/jwt' % host
+
+            headers = {'Authorization': 'token %s' % access_token}
+
+            data = {'scope': 'user:memberOf:%s' % "simple_crm.crm_users"}
+
+            response = requests.post(
+                url,
+                json=data,
+                headers=headers,
+                verify=False)
+
+            assert(response.status_code == 200)
+
+            jwt = response.content.decode()
+            ```
+
+# Using the HTTP client
 
 
-- Example on a mutation (Adding a contact)
+### Python
+
+- **Example on a mutation (Adding a contact)**
     - Example on errors
         ```python
+        import requests
 
         create_contact_mutation = """
             mutation{
@@ -20,7 +85,7 @@ Our end point where Graphql API is exposed is ```/api```
 
 
         payload = {'query':create_contact_mutation}
-        headers = {'Content-Type':'application/json'}
+        headers = {'Content-Type':'application/json', 'Authorization': 'bearer your-jwt-token'} # replace 'your-jwt-token' with actual token
         data = requests.post('http://127.0.0.1:5000/api', json=payload, headers=headers)
 
         data.ok # False
@@ -34,6 +99,7 @@ Our end point where Graphql API is exposed is ```/api```
     - Example on success
         ```python
 
+        import requests
         create_contact_mutation = """
             mutation{
                 createContact( firstname: "hamdy", emails: "d@d.com", telephones: "123"){
@@ -45,7 +111,7 @@ Our end point where Graphql API is exposed is ```/api```
 
 
         payload = {'query':create_contact_mutation}
-        headers = {'Content-Type':'application/json'}
+        headers = {'Content-Type':'application/json', 'Authorization': 'bearer your-jwt-token'} # replace 'your-jwt-token' with actual token
         data = requests.post('http://127.0.0.1:5000/api', json=payload, headers=headers)
 
         data.ok # True
@@ -55,9 +121,10 @@ Our end point where Graphql API is exposed is ```/api```
 
         ```
 
-- Examples on a queries
+- **Examples on a queries**
 
      ```python
+        import requests
 
         query = """
             {
@@ -74,7 +141,7 @@ Our end point where Graphql API is exposed is ```/api```
 
 
         payload = {'query':query}
-        headers = {'Content-Type':'application/json'}
+        headers = {'Content-Type':'application/json', 'Authorization': 'bearer your-jwt-token'} # replace 'your-jwt-token' with actual token
         data = requests.post('http://127.0.0.1:5000/api', json=payload, headers=headers)
 
         data.ok # True
@@ -87,6 +154,7 @@ Our end point where Graphql API is exposed is ```/api```
 
 
      ```python
+        import requests
 
         query = """
             {
@@ -99,7 +167,7 @@ Our end point where Graphql API is exposed is ```/api```
 
 
         payload = {'query':query}
-        headers = {'Content-Type':'application/json'}
+        headers = {'Content-Type':'application/json', 'Authorization': 'bearer your-jwt-token'} # replace 'your-jwt-token' with actual token
         data = requests.post('http://127.0.0.1:5000/api', json=payload, headers=headers)
 
         data.ok # True
@@ -110,6 +178,7 @@ Our end point where Graphql API is exposed is ```/api```
 
 
      ```python
+        import requests
 
         query = """
             {
@@ -122,58 +191,10 @@ Our end point where Graphql API is exposed is ```/api```
 
 
         payload = {'query':query}
-        headers = {'Content-Type':'application/json'}
+        headers = {'Content-Type':'application/json', 'Authorization': 'bearer your-jwt-token'} # replace 'your-jwt-token' with actual token
         data = requests.post('http://127.0.0.1:5000/api', json=payload, headers=headers)
 
         data.ok # False
         data.status_code # 404
-        ```
+     ```
 
-
-## Developing applications for the CRM
-You need to create organization and added it to crm_users organization
-
-```
-import requests
-host = "https://itsyou.online"
-client_id = APPID
-client_secret = APPSECRET
-
-
-print('Getting access token')
-r = requests.post('{}/v1/oauth/access_token?grant_type=client_credentials&client_id={}&client_secret={}'.format(
-    host, client_id, client_secret), verify=False)
-if r.status_code != 200:
-    raise Exception('Response code {} - {}'.format(r.status_code, r.text))
-print(r.text)
-access_token = r.json()['access_token']
-username = r.json()['info']['username']
-
-print('Getting the user object using the token in the query parameters')
-r = requests.get('{}/api/users/{}?access_token={}'.format(host,
-                                                          username, access_token), verify=False)
-print('{} - {}'.format(r.status_code, r.text))
-
-print('Getting the user object using the token in the Authorization header')
-r = requests.get('{}/api/users/{}'.format(host, username),
-                 headers={'Authorization': 'token {}'.format(access_token)}, verify=False)
-print('{} - {}'.format(r.status_code, r.text))
-
-base_url = "https://itsyou.online/v1/oauth/jwt"
-headers = {'Authorization': 'token %s' % access_token}
-data = {'scope': 'user:memberOf:%s' % "simple_crm.crm_users"}
-response = requests.post(
-    base_url, json=data, headers=headers, verify=False)
-jwt = response.content.decode()
-print(jwt, "\n")
-from jose.jwt import get_unverified_claims
-
-print(get_unverified_claims(jwt))
-
-query = "query allusers { users { id, username} }"
-headers = {"Authorization": "bearer {jwt}".format(jwt=jwt)}
-
-res = requests.post("http://localhost:10000/api",
-                    headers=headers, json={'query': query})
-print(res.json())
-```
