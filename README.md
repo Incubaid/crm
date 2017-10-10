@@ -16,6 +16,7 @@
 - [Add middleware](docs/Middlewares.md)
 - [Add new hook](docs/DBHooks.md)
 - [Project structure](docs/Structure.md)
+- [Admin Interface](docs/AdminInterface.md)
 
 **Graphql**
 - [Intro](docs/GraphqlOverview.md)
