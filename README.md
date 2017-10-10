@@ -17,6 +17,7 @@
 - [Add new hook](docs/DBHooks.md)
 - [Project structure](docs/Structure.md)
 - [Admin Interface](docs/AdminInterface.md)
+- [Install CRM from Prefab/Jumpscale](docs/PrefabInstallation.md)
 
 **Graphql**
 - [Intro](docs/GraphqlOverview.md)
