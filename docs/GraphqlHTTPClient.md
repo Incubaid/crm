@@ -9,8 +9,8 @@
     - ```Authorization: bearer {your-jwt-token}``` replace ```your-jwt-token``` with your actual token
 
 - If you want to use the API directly **without bothering about authentication** nor [IYO](https://itsyou.online) during Development mode or testing
-        - *Disable the ```authenticate``` middleware or comment it out totally in the module ```middlewares.py```*
-        - *Don't send Authentication headers in your requests*
+    - *Disable the ```authenticate``` middleware or comment it out totally in the module ```middlewares.py```*
+    - *Don't send Authentication headers in your requests*
 
 - **How to get a JWT token from [IYO](https://itsyou.online)**
 
