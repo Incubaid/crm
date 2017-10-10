@@ -1,6 +1,9 @@
 ## Accessing Graphql API using HTTP client
 
+Our end point where Graphql API is exposed is ```/api```
+
 #### Python
+
 
 - Example on a mutation (Adding a contact)
     - Example on errors
