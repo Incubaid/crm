@@ -1,6 +1,4 @@
 import graphene
-from graphene.types.objecttype import ObjectType
-from graphene.types.scalars import Scalar
 
 from graphene_sqlalchemy.fields import SQLAlchemyConnectionField
 
@@ -24,7 +22,7 @@ class CRMConnectionField(SQLAlchemyConnectionField):
     Any query using CRMConnectionField will have its results 
     objects updated with a (uid) field containing the value of the 
     original db model id value.
-    Reason is : graphene hodes id field with another internal representation
+    Reason is : graphene hides id field with another internal representation
     and in some cases we may need our original id to appear so we put it as uid    
     """
     def __init__(self, *args, **kwargs):
@@ -37,13 +35,5 @@ class CRMConnectionField(SQLAlchemyConnectionField):
             e.uuid = e.uid
         return result
 
-
-class ErrorType(ObjectType):
-    message = graphene.String()
-    def __init__(self, message):
-        self.message = message
-
-class GraphqlError(graphene.ObjectType):
-    message = graphene.Field(ErrorType)
 
 

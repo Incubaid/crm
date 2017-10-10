@@ -1,12 +1,11 @@
-import werkzeug
 import graphene
 from graphene import relay
 
 from graphene_sqlalchemy import SQLAlchemyObjectType
+from graphql.error.base import GraphQLError
 
-from crm.graphql import BaseMutation, BaseQuery, CRMConnectionField, GraphqlError, ErrorType
+from crm.graphql import BaseMutation, BaseQuery, CRMConnectionField
 from .models import Contact
-from .forms import ContactForm
 from crm import db
 
 
@@ -65,7 +64,7 @@ class CreateContact(graphene.Mutation):
     # MUTATION RESULTS FIELDS
     contact = graphene.Field(ContactType)
     ok = graphene.Boolean()
-    errors = graphene.String()
+    errors = graphene.List(graphene.String)
 
     @classmethod
     def mutate(cls, root, context, **kwargs):
@@ -79,14 +78,10 @@ class CreateContact(graphene.Mutation):
             return CreateContact(
                 contact=contact,
                 ok=True,
-                errors=None
+                errors = []
             )
         except Exception as e:
-            return CreateContact(
-                contact=contact,
-                ok=False,
-                errors=e.args
-            )
+            raise GraphQLError(e.args)
 
 
 class ContactMutation(BaseMutation):
