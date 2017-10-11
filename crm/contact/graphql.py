@@ -58,7 +58,7 @@ class CreateContact(graphene.Mutation):
         parent_id = graphene.String()
         tf_app = graphene.Boolean()
         tf_web = graphene.Boolean()
-        country = graphene.String
+        country = graphene.String()
         message_channels = graphene.String()
 
     # MUTATION RESULTS FIELDS
