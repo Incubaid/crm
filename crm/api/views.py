@@ -7,7 +7,7 @@ from crm import app
 
 @app.route('/api', methods=["POST"])
 def api():
-    if request.headers['Content-Type'].lower() != 'application/json':
+    if request.headers.get('Content-Type', '').lower() != 'application/json':
         return jsonify(errors=['Only accepts Content-Type: application/json']), 400
 
     data = request.json

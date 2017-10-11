@@ -54,12 +54,12 @@ class CreateContact(graphene.Mutation):
         telephones = graphene.String(required=True)
         belief_statement = graphene.String()
         owner_id = graphene.String()
-        owner_id = graphene.String()
         ownerbackup_id = graphene.String()
         parent_id = graphene.String()
         tf_app = graphene.Boolean()
         tf_web = graphene.Boolean()
-        street_number = graphene.Int()
+        country = graphene.String
+        message_channels = graphene.String()
 
     # MUTATION RESULTS FIELDS
     contact = graphene.Field(ContactType)

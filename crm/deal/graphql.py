@@ -48,13 +48,12 @@ class CreateDeal(graphene.Mutation):
         name = graphene.String(required=True)
         description = graphene.String()
         amount = graphene.Float()
-        currency = graphene.String()
-        deal_type = graphene.String()
+        currency = graphene.String(required=True)
+        deal_type = graphene.String(required=True)
         deal_state = graphene.String(required=True)
         closed_at = graphene.String()
         company_id = graphene.String()
         contact_id = graphene.String()
-        is_paid = graphene.Boolean()
         referral_code = graphene.String()
 
     # MUTATION RESULTS FIELDS
