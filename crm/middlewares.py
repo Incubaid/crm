@@ -17,7 +17,7 @@ from crm.user.models import User
 @app.errorhandler(401)
 def custom_401(error):
     # API CALL
-    if request.headers['Content-Type'].lower() == 'application/json':
+    if 'Content-Type' in request.headers and request.headers['Content-Type'].lower() == 'application/json':
         return jsonify(errors=['Not authorized']), 401
     return render_template('home/401.html'), 401
 
