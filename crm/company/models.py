@@ -84,6 +84,7 @@ class Company(db.Model, BaseModel, RootModel):
         backref="company"
     )
     tags = db.relationship("CompanyTag", backref="company")
+    addresses = db.relationship("Address", backref="company")
 
     def __str__(self):
         return self.name
