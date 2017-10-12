@@ -163,22 +163,70 @@
 
 - Mutations
 
-    - **create contact**
+    - **create contact(s)**
 
-        - in body of the mutation below you get back the created object
+        - in body of the mutation below you get back the ids of created objects
         - ok is boolean means success of failure
-        - errors : containing errors if any (validation errors)
 
+        - Example
+        ```
+        mutation{
+            createContacts(records: [{firstname: "john", emails:"a@s.com", telephones: "01228934568"}, {firstname: "peter", emails:"b2e@.com", telephones: "01228934562"}]){
+                ok
+                ids
+            }
+        }
+        ```
+        - Result looks like
+            ```
+            {
+              "data": {
+                "createContacts": {
+                  "ok": true,
+                  "ids": [
+                    "d7y2t",
+                    "g30ty"
+                  ]
+                }
+              }
+            }
+            ```
+    - **delete contact(s)**
+        - We do delete objects if uids are found, otherwise we ignore, we don't check if uids exist or not
         - Example
         ```
 
         mutation{
-          createContact(firstname: "ali"){
+          deleteContacts(uids: ["id1", "id2", "id3"]) {
             contact {
               id
             }
             ok
-            errors
           }
         }
         ```
+
+    - **Update contact(s)**
+        - Example
+        ```
+        mutation{
+          updateContacts(records: [{uid: "d7y2t", firstname: "BigJohn"}, {uid: "g30ty", firstname: "BigPeter"}]){
+            ok
+
+          }
+        }
+        ```
+        - Result looks like
+          ```
+            {
+              "data": {
+                "updateContacts": {
+                  "ok": true,
+                  "ids": [
+                    "d7y2t",
+                    "g30ty"
+                  ]
+                }
+              }
+            }
+          ```

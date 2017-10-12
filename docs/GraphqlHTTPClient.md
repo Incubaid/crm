@@ -69,21 +69,19 @@
 
 ### Python
 
-- **Example on a mutation (Adding a contact)**
+- **Example on a mutation (Adding contacts)**
     - Example on errors
         ```python
         import requests
 
         create_contact_mutation = """
             mutation{
-                createContact( first_name: "hamdy", emails: "d@d.com", telephones: "123"){
-                    contact {
-                        uid
-                    }
-                }
-            }"""
-
-
+                     createContacts(records: [{first_name: "john", emails:"a@s.com", telephones: "01228934568"}, {firstname: "peter", emails:"b2e@.com", telephones: "01228934562"}]){
+                         ok
+                         ids
+                     }
+         }
+         """
         payload = {'query':create_contact_mutation}
         headers = {'Content-Type':'application/json', 'Authorization': 'bearer your-jwt-token'} # replace 'your-jwt-token' with actual token
         data = requests.post('http://127.0.0.1:5000/api', json=payload, headers=headers)
@@ -93,22 +91,21 @@
         data.json()
 
         # Result looks like
-        {'errors': ['Unknown argument "first_name" on field "createContact" of type "Mutations". Did you mean "firstname" or "lastname"?',
-          'Field "createContact" argument "firstname" of type "String!" is required but not provided.']}
+        {'errors': ['Argument "records" has invalid value [{first_name: "john", emails: "a@s.com", telephones: "01228934568"}, {firstname: "peter", emails: "b2e@.com", telephones: "01228934562"}].\nIn element #0: In field "first_name": Unknown field.\nIn element #0: In field "firstname": Expected "String!", found null.']}
         ```
     - Example on success
         ```python
 
         import requests
+
         create_contact_mutation = """
             mutation{
-                createContact( firstname: "hamdy", emails: "d@d.com", telephones: "123"){
-                    contact {
-                        uid
-                    }
-                }
-            }"""
-
+                     createContacts(records: [{firstname: "john", emails:"a@s.com", telephones: "01228934568"}, {firstname: "peter", emails:"b2e@.com", telephones: "01228934562"}]){
+                         ok
+                         ids
+                     }
+            }
+            """
 
         payload = {'query':create_contact_mutation}
         headers = {'Content-Type':'application/json', 'Authorization': 'bearer your-jwt-token'} # replace 'your-jwt-token' with actual token
@@ -117,9 +114,59 @@
         data.ok # True
         data.json()
 
-        {'contact': {'uid': 'lc90r'}}
+        {'ids': ['isudb', 'g3nkl'], 'ok': True}
 
         ```
+
+- **Example on a mutation (Updating contacts)**
+
+        ```python
+
+        import requests
+
+        create_contact_mutation = """
+            mutation{
+                     updateContacts(records: [{uid: "isudb", firstname: "BigJohn"}, {uid: "g3nkl", firstname: "BigPeter"}]){
+                         ok
+                         ids
+                     }
+            }
+            """
+
+        payload = {'query':create_contact_mutation}
+        headers = {'Content-Type':'application/json', 'Authorization': 'bearer your-jwt-token'} # replace 'your-jwt-token' with actual token
+        data = requests.post('http://127.0.0.1:5000/api', json=payload, headers=headers)
+
+        data.ok # True
+        data.json()
+
+        {'ids': ['isudb', 'g3nkl'], 'ok': True}
+        ```
+
+- **Example on a mutation (Deleting contacts)**
+
+        ```python
+
+        import requests
+
+        create_contact_mutation = """
+            mutation{
+                     deleteContacts(uids: ["isudb", "g3nkl"]){
+                         ok
+                     }
+            }
+            """
+
+        payload = {'query':create_contact_mutation}
+        headers = {'Content-Type':'application/json', 'Authorization': 'bearer your-jwt-token'} # replace 'your-jwt-token' with actual token
+        data = requests.post('http://127.0.0.1:5000/api', json=payload, headers=headers)
+
+        data.ok # True
+        data.json()
+
+        {'ok': True}
+        ```
+
 
 - **Examples on a queries**
 
