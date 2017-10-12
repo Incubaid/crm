@@ -19,6 +19,7 @@ class Address(db.Model, BaseModel, RootModel):
         db.String(255),
         default=""
     )
+
     description = db.Column(
         db.Text(),
         default=""
@@ -38,8 +39,10 @@ class Address(db.Model, BaseModel, RootModel):
         db.String(255)
     )
 
-    country = db.Column(db.Enum(CountriesEnum),
-                        default=CountriesEnum.Belgium)
+    country = db.Column(
+        db.Enum(CountriesEnum),
+        default=CountriesEnum.Belgium
+    )
 
     contact_id = db.Column(
         db.String(5),
