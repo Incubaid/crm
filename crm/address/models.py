@@ -59,7 +59,20 @@ class Address(db.Model, BaseModel, RootModel):
 
     @property
     def formatted_address(self):
-        return "{} {} {}".format(self.street_number or '', self.street_name or '', self.country or '').strip()
+        address = ''
+        if self.street_name:
+            if self.street_number:
+                address += '%s %s, ' % (self.street_number, self.street_name)
+            else:
+                address += '%s, ' % self.street_name
+
+        if self.state:
+            address += '%s, ' % self.state
+        if self.city:
+            address += '%s, ' % self.city
+        if self.country:
+            address += str(self.country)
+        return address
 
     def __str__(self):
         return self.formatted_address

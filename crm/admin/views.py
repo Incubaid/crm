@@ -452,7 +452,7 @@ class ContactModelView(EnhancedModelView):
     inline_models = [
         InlineImageModelForm(),
         (AddressModel, {'form_columns': [
-            'id', 'street_name', 'street_number', 'zip_code', 'country', ]}),
+            'id', 'street_name', 'street_number', 'zip_code', 'country', 'city', 'state']}),
         (TaskModel, {'form_columns': [
             'id', 'title', 'description', 'type', 'priority', 'assignee']}),
         (MessageModel, {'form_columns': [
@@ -494,7 +494,7 @@ class CompanyModelView(EnhancedModelView):
 
     inline_models = [
         (AddressModel, {'form_columns': [
-            'id', 'street_name', 'street_number', 'zip_code', 'country', ]}),
+            'id', 'street_name', 'street_number', 'zip_code', 'country', 'city', 'state']}),
         (TaskModel, {'form_columns': [
             'id', 'title', 'description', 'type', 'priority', 'assignee']}),
         (MessageModel, {'form_columns': [
@@ -564,7 +564,7 @@ class DealModelView(EnhancedModelView):
         (TaskModel, {'form_columns': [
             'id', 'title', 'type', 'priority', 'assignee']}),
         (AddressModel, {'form_columns': [
-            'id', 'street_name', 'street_number', 'zip_code', 'country', ]}),
+            'id', 'street_name', 'street_number', 'zip_code', 'country', 'city', 'state']}),
         (MessageModel, {'form_columns': ['id', 'title', 'content']}),
         (CommentModel, {'form_columns': ['id', 'content']}),
         (LinkModel, {'form_columns': [
