@@ -24,6 +24,16 @@ class Address(db.Model, BaseModel, RootModel):
         default=""
     )
 
+    city = db.Column(
+        db.Text(),
+        default=""
+    )
+
+    state = db.Column(
+        db.Text(),
+        default=""
+    )
+
     zip_code = db.Column(
         db.String(255)
     )
