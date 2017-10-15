@@ -1,9 +1,7 @@
 """empty message
-
 Revision ID: 079e82e64d60
 Revises: 7510ff711e3d
 Create Date: 2017-10-15 16:22:14.944094
-
 """
 import random
 import string
@@ -18,7 +16,7 @@ down_revision = '7510ff711e3d'
 branch_labels = None
 depends_on = None
 
-COUNTRIES = sa.Enum('Czech Republic', 'Nepal', 'Switzerland', 'Papua New Guinea', 'Australia', 'Kyrgyzstan', 'Antigua and Barbuda', 'Qatar', 'Pakistan', 'Ecuador', 'Palau', 'Mongolia', 'Comoros', 'Nauru', 'Belgium', 'Portugal', 'Sweden', 'Liberia', 'Kuwait', 'Brazil', 'Canada', 'Angola', 'Trinidad and Tobago', 'Cape Verde', 'Mauritius', 'Samoa', 'Ethiopia', 'Saint Vincent and the Grenadines', 'Anguilla', 'Senegal', 'Reunion', 'Morocco', 'Costa Rica', 'French Southern Territories', "Korea, Democratic People's Republic of", 'Tuvalu', 'Saint Kitts and Nevis', 'Guyana', 'Bangladesh', 'Tokelau', 'Afghanistan', 'Egypt', 'Peru', 'Moldova, Republic of', 'Rwanda', 'British Indian Ocean Territory', 'Albania', 'Philippines', 'Serbia and Montenegro', 'Lithuania', 'Mayotte', 'Saint Helena', 'Mexico', 'Timor-Leste', 'Central African Republic', 'Equatorial Guinea', 'Saudi Arabia', 'Bahamas', 'Tunisia', 'Kenya', 'United States', 'South Georgia and the South Sandwich Islands', 'Panama', 'Poland', 'Puerto Rico', 'Macedonia, the Former Yugoslav Republic of', 'Jamaica', 'Bolivia', 'Croatia', 'Virgin Islands, British', 'Chad', 'Marshall Islands', 'Italy', 'Monaco', 'Norfolk Island', 'Taiwan, Province of China', 'Grenada', 'Haiti', 'Slovenia', 'Zimbabwe', 'Namibia', 'Holy See (Vatican City State)', 'Malawi', 'Macao', 'Zambia', 'Faroe Islands', 'Vanuatu', 'Iceland', 'Iraq', 'Uruguay', 'New Caledonia', 'New Zealand', 'Kazakhstan', 'Togo', 'United Arab Emirates', 'French Polynesia', 'Netherlands Antilles', 'Armenia', 'Maldives', 'Denmark', 'Honduras', 'Lebanon', 'Cambodia', 'Chile', 'Cyprus', 'Tajikistan', 'Latvia', 'Jordan', 'Niue', 'Fiji', 'Northern Mariana Islands', 'Ireland', 'Guadeloupe', 'Cocos (Keeling) Islands', 'Yemen', 'Svalbard and Jan Mayen', 'French Guiana', 'Turkey', 'Sierra Leone', 'Germany', 'Syrian Arab Republic', 'Libyan Arab Jamahiriya', 'Gabon', 'Antarctica', 'Dominica', 'Ukraine', 'Korea, Republic of', 'Niger', 'Martinique', 'Nigeria', 'Virgin Islands, U.s.', 'Dominican Republic', 'Pitcairn', 'Malta', 'Turks and Caicos Islands', 'Viet Nam', 'Burundi', 'Swaziland', 'Argentina', "Lao People's Democratic Republic", 'Malaysia', 'Solomon Islands', 'Venezuela', 'Andorra', 'Christmas Island', 'Botswana', 'Mauritania', 'Myanmar', 'United States Minor Outlying Islands', 'Bulgaria', 'Bahrain', 'Lesotho', "Cote D'Ivoire", 'Congo', 'Belize', 'Bosnia and Herzegovina', 'Sudan', 'Spain', 'Iran, Islamic Republic of', 'Barbados', 'Somalia', 'Netherlands', 'Gibraltar', 'United Kingdom', 'Bermuda', 'Kiribati', 'Brunei Darussalam', 'Saint Lucia', 'Heard Island and Mcdonald Islands', 'South Africa', 'Palestinian Territory, Occupied', 'Austria', 'Greece', 'Mali', 'Singapore', 'France', 'Falkland Islands (Malvinas)', 'Romania', 'Finland', 'Cuba', 'Georgia', 'Guinea-Bissau', 'Bouvet Island', 'Uzbekistan', 'Hong Kong', 'Wallis and Futuna', 'Gambia', 'American Samoa', 'Aruba', 'Cook Islands', 'Israel', 'Cayman Islands', 'Estonia', 'Uganda', 'Madagascar', 'Greenland', 'Djibouti', 'Belarus', 'Liechtenstein', 'Tonga', 'San Marino', 'Sao Tome and Principe', 'Azerbaijan', 'Suriname', 'Ghana', 'Benin', 'Western Sahara', 'Bhutan', 'Guam', 'Seychelles', 'Nicaragua', 'Japan', 'Guinea', 'Cameroon', 'Saint Pierre and Miquelon', 'Slovakia', 'Micronesia, Federated States of', 'Montserrat', 'Algeria', 'Oman', 'Eritrea', 'Burkina Faso', 'Indonesia', 'Colombia', 'Norway', 'Congo, the Democratic Republic of the', 'China', 'Thailand', 'Russian Federation', 'Hungary', 'Guatemala', 'India', 'Turkmenistan', 'Paraguay', 'El Salvador', 'Tanzania, United Republic of', 'Sri Lanka', 'Mozambique', 'Luxembourg', name='countries')
+COUNTRIES = postgresql.ENUM('Czech Republic', 'Nepal', 'Switzerland', 'Papua New Guinea', 'Australia', 'Kyrgyzstan', 'Antigua and Barbuda', 'Qatar', 'Pakistan', 'Ecuador', 'Palau', 'Mongolia', 'Comoros', 'Nauru', 'Belgium', 'Portugal', 'Sweden', 'Liberia', 'Kuwait', 'Brazil', 'Canada', 'Angola', 'Trinidad and Tobago', 'Cape Verde', 'Mauritius', 'Samoa', 'Ethiopia', 'Saint Vincent and the Grenadines', 'Anguilla', 'Senegal', 'Reunion', 'Morocco', 'Costa Rica', 'French Southern Territories', "Korea, Democratic People's Republic of", 'Tuvalu', 'Saint Kitts and Nevis', 'Guyana', 'Bangladesh', 'Tokelau', 'Afghanistan', 'Egypt', 'Peru', 'Moldova, Republic of', 'Rwanda', 'British Indian Ocean Territory', 'Albania', 'Philippines', 'Serbia and Montenegro', 'Lithuania', 'Mayotte', 'Saint Helena', 'Mexico', 'Timor-Leste', 'Central African Republic', 'Equatorial Guinea', 'Saudi Arabia', 'Bahamas', 'Tunisia', 'Kenya', 'United States', 'South Georgia and the South Sandwich Islands', 'Panama', 'Poland', 'Puerto Rico', 'Macedonia, the Former Yugoslav Republic of', 'Jamaica', 'Bolivia', 'Croatia', 'Virgin Islands, British', 'Chad', 'Marshall Islands', 'Italy', 'Monaco', 'Norfolk Island', 'Taiwan, Province of China', 'Grenada', 'Haiti', 'Slovenia', 'Zimbabwe', 'Namibia', 'Holy See (Vatican City State)', 'Malawi', 'Macao', 'Zambia', 'Faroe Islands', 'Vanuatu', 'Iceland', 'Iraq', 'Uruguay', 'New Caledonia', 'New Zealand', 'Kazakhstan', 'Togo', 'United Arab Emirates', 'French Polynesia', 'Netherlands Antilles', 'Armenia', 'Maldives', 'Denmark', 'Honduras', 'Lebanon', 'Cambodia', 'Chile', 'Cyprus', 'Tajikistan', 'Latvia', 'Jordan', 'Niue', 'Fiji', 'Northern Mariana Islands', 'Ireland', 'Guadeloupe', 'Cocos (Keeling) Islands', 'Yemen', 'Svalbard and Jan Mayen', 'French Guiana', 'Turkey', 'Sierra Leone', 'Germany', 'Syrian Arab Republic', 'Libyan Arab Jamahiriya', 'Gabon', 'Antarctica', 'Dominica', 'Ukraine', 'Korea, Republic of', 'Niger', 'Martinique', 'Nigeria', 'Virgin Islands, U.s.', 'Dominican Republic', 'Pitcairn', 'Malta', 'Turks and Caicos Islands', 'Viet Nam', 'Burundi', 'Swaziland', 'Argentina', "Lao People's Democratic Republic", 'Malaysia', 'Solomon Islands', 'Venezuela', 'Andorra', 'Christmas Island', 'Botswana', 'Mauritania', 'Myanmar', 'United States Minor Outlying Islands', 'Bulgaria', 'Bahrain', 'Lesotho', "Cote D'Ivoire", 'Congo', 'Belize', 'Bosnia and Herzegovina', 'Sudan', 'Spain', 'Iran, Islamic Republic of', 'Barbados', 'Somalia', 'Netherlands', 'Gibraltar', 'United Kingdom', 'Bermuda', 'Kiribati', 'Brunei Darussalam', 'Saint Lucia', 'Heard Island and Mcdonald Islands', 'South Africa', 'Palestinian Territory, Occupied', 'Austria', 'Greece', 'Mali', 'Singapore', 'France', 'Falkland Islands (Malvinas)', 'Romania', 'Finland', 'Cuba', 'Georgia', 'Guinea-Bissau', 'Bouvet Island', 'Uzbekistan', 'Hong Kong', 'Wallis and Futuna', 'Gambia', 'American Samoa', 'Aruba', 'Cook Islands', 'Israel', 'Cayman Islands', 'Estonia', 'Uganda', 'Madagascar', 'Greenland', 'Djibouti', 'Belarus', 'Liechtenstein', 'Tonga', 'San Marino', 'Sao Tome and Principe', 'Azerbaijan', 'Suriname', 'Ghana', 'Benin', 'Western Sahara', 'Bhutan', 'Guam', 'Seychelles', 'Nicaragua', 'Japan', 'Guinea', 'Cameroon', 'Saint Pierre and Miquelon', 'Slovakia', 'Micronesia, Federated States of', 'Montserrat', 'Algeria', 'Oman', 'Eritrea', 'Burkina Faso', 'Indonesia', 'Colombia', 'Norway', 'Congo, the Democratic Republic of the', 'China', 'Thailand', 'Russian Federation', 'Hungary', 'Guatemala', 'India', 'Turkmenistan', 'Paraguay', 'El Salvador', 'Tanzania, United Republic of', 'Sri Lanka', 'Mozambique', 'Luxembourg', name='countries', create_type=False)
 
 
 def get_contact_old_addresses():
@@ -66,6 +64,12 @@ def get_contact_old_addresses():
 
 
 def add_contact_subgroups():
+    subgroups_table = sa.sql.table('subgroups',
+         sa.Column('id', sa.String(length=5), nullable=False),
+         sa.Column('groupname', sa.String),
+         sa.Column('created_at', sa.TIMESTAMP(), nullable=False),
+         sa.Column('updated_at', sa.TIMESTAMP(), nullable=False),
+    )
 
     uids = set()
 
@@ -86,6 +90,9 @@ def add_contact_subgroups():
             'created_at': datetime.datetime.now(),
             'updated_at': datetime.datetime.now()
         })
+
+    op.bulk_insert(subgroups_table, data)
+
 
     contact_subgroups = sa.sql.table('contacts_subgroups',
                                    sa.Column('subgroup_id', sa.String),
@@ -115,13 +122,7 @@ def upgrade():
 
     op.drop_column('contacts', 'country')
 
-
-    try:
-        COUNTRIES.drop(op.get_bind(), checkfirst=False)
-    except:
-        pass
-
-    COUNTRIES.create(op.get_bind(), checkfirst=False)
+    COUNTRIES.create(op.get_bind(), checkfirst=True)
 
     op.create_table('subgroups',
     sa.Column('id', sa.String(length=5), nullable=False),
@@ -209,4 +210,3 @@ def downgrade():
     op.drop_table('companytags')
     op.drop_table('subgroups')
     # ### end Alembic commands ###
-
