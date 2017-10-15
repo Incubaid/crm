@@ -5,6 +5,9 @@ from importlib import import_module
 from logging.config import dictConfig
 
 import jinja2
+import graphene
+
+from graphene_sqlalchemy import SQLAlchemyObjectType
 
 from flask import Flask
 from flask_admin.helpers import get_url
@@ -12,6 +15,7 @@ from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_admin import Admin
 
+from crm.graphql import BaseMutation, BaseQuery
 from .settings import LOGGING_CONF, STATIC_DIR, IMAGES_DIR, STATIC_URL_PATH
 from .db import BaseModel, db
 from crm.admin.config import NAV_BAR_ORDER
@@ -27,14 +31,20 @@ class CRM(object):
         from .db import db
         self.initialize_logger()
         self._db = db
-        self._app = Flask(__name__, static_folder=STATIC_DIR,
-                          static_url_path=STATIC_URL_PATH)
+
+        self._app = Flask(
+            __name__,
+            static_folder=STATIC_DIR,
+            static_url_path=STATIC_URL_PATH
+        )
+
         self.ensure_static_dir()
         self.register_template_dirs()
         self.update_jinja_env()
         self.load_settings()
         self.init_db()
         self.inti_admin_app()
+        self._graphql_schema = self.init_graphql_schema()
 
     def ensure_static_dir(self):
         """
@@ -80,6 +90,7 @@ class CRM(object):
         Load project settings
         """
         self._app.config.from_pyfile("./settings.py")
+        # New secret key each time app starts, to clear old sessions
         self._app.secret_key = os.urandom(32)
 
     @staticmethod
@@ -160,12 +171,63 @@ class CRM(object):
                 import_module('%s.views' % package)
 
     @property
+    def graphql_schema(self):
+        """
+        :return: Graphql Schema 
+        :rtype: graphene.Schema
+        """
+        return self._graphql_schema
+
+    @staticmethod
+    def init_graphql_schema():
+        """
+        Go through all sub apps defined Queries, Types and mutations
+        defined in (graphql.py) and register them in one global schema
+        """
+
+        # Import all (graphql.py) defined in all sub apps in system
+        # After importing we'll have
+        # All Queries under ::  BaseQuery.__subclasses__()
+        # All Types under :: SQLAlchemyObjectType.__subclasses__()
+        # All Mutations under :: BaseMutation.__subclasses__()
+        for root, dirs, files in os.walk('crm'):
+            for file in files:
+                if file != 'graphql.py':
+                    continue
+                package = root.replace('/', '.')
+                import_module('%s.graphql' % package)
+
+        schema = graphene.Schema(
+
+            # Make dynamic Query class that inherits all defined queries
+            query=type(
+                'Query',
+                tuple(BaseQuery.__subclasses__()),
+                {}
+            ),
+
+            types=list(SQLAlchemyObjectType.__subclasses__()),
+
+            # Make dynamic Mutations class that inherits all defined mutations
+            mutation=type(
+                'Mutations',
+                tuple(BaseMutation.__subclasses__()),
+                {}
+            )
+        )
+
+        return schema
+
+    @property
     def app(self):
         return self._app
 
 
 crm = CRM()
 app = crm.app
+
+# Initialize app.graphql_schema with apps defined graphql Schema
+app.graphql_schema = crm.graphql_schema
 
 db.app = app
 db.init_app(app)
@@ -177,4 +239,5 @@ manager = Manager(app)
 # python manage.py db init/migrate/upgrade
 manager.add_command('db', MigrateCommand)
 
+# Import all sub apps (views.py) to initialize all routes
 crm.initialize_all_routes()

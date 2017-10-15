@@ -1,10 +1,48 @@
-import enum
+from enum import Enum
 from crm.db import db, BaseModel, RootModel
-from crm.countries import countries
 
-CountriesEnum = enum.Enum('Countries', {v: v for k, v in countries.items()})
 
-CountriesEnum.__str__ = lambda self: self.value
+class SubgroupName(Enum):
+    AMBASSADOR, INVESTOR, HOSTER, MEMBER, PUBLIC = range(5)
+
+
+class Subgroup(db.Model, BaseModel, RootModel):
+    __tablename__ = "subgroups"
+
+    groupname = db.Column(
+        db.Enum(SubgroupName),
+        default=SubgroupName.MEMBER
+    )
+
+    contacts = db.relationship(
+        "Contact",
+        secondary="contacts_subgroups",
+        backref="subgroups"
+    )
+
+
+    def __str__(self):
+        return self.groupname.name
+
+class SubgroupContact(db.Model):
+    __tablename__ = "contacts_subgroups"
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    subgroup_id = db.Column(
+        db.String(5),
+        db.ForeignKey('subgroups.id')
+    )
+
+    contact_id = db.Column(
+        db.String(5),
+        db.ForeignKey("contacts.id")
+    )
+
+    IS_MANY_TO_MANY = True
 
 
 class Contact(db.Model, BaseModel, RootModel):
@@ -40,21 +78,6 @@ class Contact(db.Model, BaseModel, RootModel):
         db.String(255),
         default=''
     )
-
-    street_name = db.Column(
-        db.String(255)
-    )
-
-    street_number = db.Column(
-        db.Integer
-    )
-
-    zip_code = db.Column(
-        db.String(255)
-    )
-
-    country = db.Column(db.Enum(CountriesEnum),
-                        default=CountriesEnum.Belgium)
 
     deals = db.relationship(
         "Deal",
@@ -104,6 +127,23 @@ class Contact(db.Model, BaseModel, RootModel):
     # Comma separated phones
     telephones = db.Column(
         db.Text()
+    )
+
+    tf_app = db.Column(
+        db.Boolean()
+    )
+
+    tf_web = db.Column(
+        db.Boolean()
+    )
+
+    referral_code = db.Column(
+        db.String(255),
+    )
+
+    addresses = db.relationship(
+        "Address",
+        backref="contact"
     )
 
     @property

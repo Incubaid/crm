@@ -12,7 +12,7 @@ class DealType(Enum):
 
 
 class DealCurrency(Enum):
-    USD, EUR, AED, GBP = range(4)
+    USD, EUR, AED, GBP, BTC = range(5)
 
 
 class Deal(db.Model, BaseModel, RootModel):
@@ -86,6 +86,14 @@ class Deal(db.Model, BaseModel, RootModel):
 
     is_paid = db.Column(
         db.Boolean()
+    )
+    referral_code = db.Column(
+        db.String(255),
+    )
+
+    shipping_address = db.relationship(
+        "Address",
+        backref="deal"
     )
 
     def __str__(self):

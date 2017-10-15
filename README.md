@@ -16,6 +16,16 @@
 - [Add middleware](docs/Middlewares.md)
 - [Add new hook](docs/DBHooks.md)
 - [Project structure](docs/Structure.md)
+- [Admin Interface](docs/AdminInterface.md)
+- [Install CRM from Prefab/Jumpscale](docs/PrefabInstallation.md)
+
+**Graphql**
+- [Intro](docs/GraphqlOverview.md)
+- [CRM API General overview](docs/GraphqlQueriesAndMutations.md)
+- [CRM complete list of API](docs/GraphqlAPI.md)
+- [Using HTTP client to access CRM Graphql API](docs/GraphqlHTTPClient.md)
+- [Define new Types, Queries, and Mutations](docs/GraphqlAdvanced.md)
+
 
 **Specs**
 - [Requirements](specs/Requirements.md)

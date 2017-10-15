@@ -1,4 +1,6 @@
 import requests
+import jose
+from flask.json import jsonify
 from jose.jwt import get_unverified_claims
 
 from flask import session, request
@@ -14,15 +16,10 @@ from crm.user.models import User
 
 @app.errorhandler(401)
 def custom_401(error):
-    return render_template('home/401.html')
-
-
-@app.before_first_request
-def clear_session():
-    """
-    clear user sessions on every fresh start of system
-    """
-    session.clear()
+    # API CALL
+    if 'Content-Type' in request.headers and request.headers['Content-Type'].lower() == 'application/json':
+        return jsonify(errors=['Not authorized']), 401
+    return render_template('home/401.html'), 401
 
 
 @app.before_request
@@ -45,7 +42,10 @@ def authenticate():
             abort(401)
         jwt = authheader.split(" ", 1)[1]  # Bearer JWT
 
-    claims = get_unverified_claims(jwt)
+    try:
+        claims = get_unverified_claims(jwt)
+    except jose.exceptions.JWTError:
+        abort(401)
 
     globalid = claims.get("globalid", None)
 

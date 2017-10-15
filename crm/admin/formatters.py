@@ -24,6 +24,27 @@ def format_instrumented_list(view, context, model, name):
     return Markup(out)
 
 
+def format_tasks(view, context, model, name):
+    value = getattr(model, name)
+    out = ""
+    if isinstance(value, InstrumentedList):
+        out = "<ul>"
+        for task in value:
+            task_formatted = "<a href={}>{}</a>".format(
+                task.admin_view_link(), task)
+            if task.assignee is not None:
+                task_formatted += " assigned to <a href='{}'>{}</a> ".format(
+                    task.assignee.admin_view_link(), task.assignee.username)
+            else:
+                task_formatted += " not assigned "
+            task_formatted += "  (Updated at: {} )".format(
+                task.updated_at.strftime("%Y-%m-%d %H:%M"))
+            out += "<li>{}</li>".format(task_formatted)
+
+        out += "</ul>"
+    return Markup(out)
+
+
 def format_url(view, context, model, name):
     value = getattr(model, name)
     if value:
@@ -138,9 +159,10 @@ def format_author(view, context, model, name):
 
 column_formatters = dict(
     list(zip(["users", "contacts", "companies", "organizations", "projects",  "deals", "sprints",
-                                   "links", "tasks", "messages", "ownsTasks", "ownsContacts", "ownsCompanies",
+                                   "links", "messages", "ownsTasks", "ownsContacts", "ownsCompanies",
                                    "ownsOrganizations", "ownsSprints", "ownsAsBackupContacts", "ownsAsBackupCompanies"], cycle([format_instrumented_list]))),
     telephones=format_telephones, website=format_url, destination=format_destination_emails,
+    tasks=format_tasks,
     messages=format_messages, comments=format_comments, url=format_url, emails=format_emails,
     images=format_images, image=format_image,
     author_last=format_author,

@@ -1,5 +1,7 @@
 import random
 import string
+import base64
+
 from enum import Enum
 from datetime import datetime, date
 
@@ -221,3 +223,33 @@ class BaseModel(AdminLinksMixin):
             deserialized.append(model)
             serialized.extend(raw)
         return deserialized
+
+    @classmethod
+    def encode_graphene_id(cls, id):
+        """
+        Record ID to Graphene ID
+        :param id: Record ID
+        :type id: str
+        :return: Graphene ID base64 encoded string of ('ModelName:recordID')
+        :rtype: str
+        """
+        return base64.b64encode(
+            '{class_name}:{id}'.format(
+                class_name=cls.__name__,
+                id=id
+            )
+        )
+
+    @classmethod
+    def decode_graphene_id(cls, id):
+        """
+        Graphene ID to Record ID
+        :param id: Graphene ID -> base64 encoded string of ('ModelName:recordID')
+        :type id: str
+        :return: Record ID
+        :rtype: str
+        """
+        try:
+            base64.b64decode(id).split(':')[-1]
+        except:
+            pass

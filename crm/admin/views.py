@@ -2,13 +2,10 @@ import os
 import uuid
 import csv
 from io import StringIO
-from flask import request, flash
-from flask_admin.babel import gettext, ngettext, lazy_gettext
-from flask_admin.model.fields import InlineFieldList, InlineModelFormField
+from flask import request
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import AdminIndexView
 from flask_admin.base import expose
-from flask_admin.form.rules import FieldSet
 from flask_admin.contrib.sqla.tools import is_relationship
 from flask_admin.contrib.sqla import tools
 from flask_admin._compat import string_types
@@ -19,6 +16,7 @@ from flask import make_response
 from wtforms.fields import StringField
 from wtforms.widgets import HTMLString
 from wtforms import fields
+from crm.address.models import Address as AddressModel
 from crm.deal.models import Deal as DealModel
 from crm.link.models import Link as LinkModel
 from crm.project.models import Project as ProjectModel
@@ -406,29 +404,40 @@ class InlineImageModelForm(InlineFormAdmin):
                 file_data.save(os.path.join(IMAGES_DIR, newname))
 
 
+class SubgroupModelView(EnhancedModelView):
+    form_rules = ('groupname', )
+    form_edit_rules = ('groupname',)
+    column_details_list = ('groupname', )
+    column_list = ('groupname',)
+
+
+class CompanyTagModelView(EnhancedModelView):
+    form_rules = ('tag', )
+    form_edit_rules = ('tag',)
+    column_details_list = ('tag', )
+    column_list = ('tag',)
+
+
 class ContactModelView(EnhancedModelView):
     form_rules = (
         'firstname', 'lastname', 'images', 'description', 'bio', 'belief_statement',
-        FieldSet(['street_number', 'street_name',
-                  'zip_code', 'country']),
-        'emails', 'telephones', 'companies', 'message_channels',
+        'addresses', 'emails', 'telephones', 'companies', 'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code',
         'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
 
     column_details_list = (
         'firstname', 'lastname', 'description', 'images', 'bio', 'belief_statement',
-        'address',
-        'emails', 'telephones', 'companies', 'message_channels',
+        'addresses',
+        'emails', 'telephones', 'companies', 'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code',
         'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup', 'author_last', 'author_original', 'updated_at')
 
     form_edit_rules = (
         'firstname', 'lastname', 'images', 'description', 'bio', 'belief_statement',
-        FieldSet(['street_number', 'street_name',
-                  'zip_code', 'country']),
+        'addresses',
         'emails', 'telephones', 'companies', 'tasks', 'deals', 'messages',
         'comments', 'links',
-        'message_channels', 'owner', 'ownerbackup')
+        'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code', 'owner', 'ownerbackup')
 
-    column_filters = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'message_channels',
+    column_filters = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'message_channels', 'referral_code',
                       'deals', 'comments', 'tasks', 'projects', 'companies', 'messages', 'sprints', 'links', 'owner',
                       'ownerbackup')
     column_searchable_list = ('firstname', 'lastname',)
@@ -439,6 +448,8 @@ class ContactModelView(EnhancedModelView):
 
     inline_models = [
         InlineImageModelForm(),
+        (AddressModel, {'form_columns': [
+            'id', 'street_name', 'street_number', 'zip_code', 'country', 'city', 'state']}),
         (TaskModel, {'form_columns': [
             'id', 'title', 'description', 'type', 'priority', 'assignee']}),
         (MessageModel, {'form_columns': [
@@ -458,7 +469,7 @@ class ContactModelView(EnhancedModelView):
 
 class CompanyModelView(EnhancedModelView):
     form_rules = (
-        'name', 'description', 'emails', 'telephones', 'vatnumber', 'website',
+        'name', 'description', 'emails', 'telephones', 'addresses', 'vatnumber', 'website', 'tags',
         'deals', 'contacts', 'messages', 'tasks', 'links', 'comments', 'owner', 'ownerbackup')
 
     column_filters = (
@@ -466,11 +477,11 @@ class CompanyModelView(EnhancedModelView):
         'deals', 'contacts', 'messages', 'tasks', 'links', 'comments', 'owner', 'ownerbackup',)
 
     column_details_list = (
-        'name', 'description', 'emails', 'telephones', 'vatnumber', 'website',
-        'deals', 'contacts', 'messages', 'tasks', 'comments', 'links', 'owner', 'ownerbackup', 'author_last', 'author_original', 'updated_at')
+        'name', 'description', 'emails', 'telephones',  'addresses', 'vatnumber', 'website', 'tags',
+        'deals', 'contacts', 'messages',  'tasks', 'comments', 'links', 'owner', 'ownerbackup', 'author_last', 'author_original', 'updated_at')
 
     form_edit_rules = (
-        'name', 'description', 'emails', 'telephones', 'vatnumber', 'website', 'contacts', 'messages', 'tasks', 'deals',
+        'name', 'description', 'emails', 'telephones', 'addresses', 'vatnumber', 'website', 'tags', 'contacts', 'messages', 'tasks', 'deals',
         'comments', 'links', 'owner', 'ownerbackup')
 
     column_searchable_list = (
@@ -479,6 +490,8 @@ class CompanyModelView(EnhancedModelView):
     column_sortable_list = ('name',)
 
     inline_models = [
+        (AddressModel, {'form_columns': [
+            'id', 'street_name', 'street_number', 'zip_code', 'country', 'city', 'state']}),
         (TaskModel, {'form_columns': [
             'id', 'title', 'description', 'type', 'priority', 'assignee']}),
         (MessageModel, {'form_columns': [
@@ -525,16 +538,16 @@ class OrganizationModelView(EnhancedModelView):
 
 
 class DealModelView(EnhancedModelView):
-    column_details_list = ('id', 'name', 'description', 'amount', 'currency', 'deal_type', 'deal_state', 'is_paid',
-                           'contact', 'company', 'closed_at', 'tasks', 'messages', 'links', 'comments', 'author_last', 'author_original', 'updated_at')
+    column_details_list = ('id', 'name', 'description', 'amount', 'currency', 'deal_type', 'deal_state', 'shipping_address', 'is_paid',
+                           'contact', 'company', 'closed_at', 'referral_code', 'tasks', 'messages', 'links', 'comments', 'author_last', 'author_original', 'updated_at')
     column_filters = ('id', 'name', 'amount', 'currency', 'deal_type', 'deal_state',
-                      'contact', 'company', 'closed_at', 'tasks', 'messages', 'comments', 'is_paid')
+                      'contact', 'company', 'closed_at', 'tasks', 'messages', 'comments', 'is_paid', 'referral_code')
 
-    form_rules = ('name', 'amount', 'currency', 'deal_type', 'deal_state',
-                  'contact', 'company', 'comments')
+    form_rules = ('name', 'amount', 'currency', 'deal_type', 'deal_state', 'shipping_address',
+                  'contact', 'company', 'referral_code', 'comments')
 
-    form_edit_rules = ('name', 'description', 'amount', 'currency', 'deal_type', 'deal_state',
-                       'contact', 'company', 'tasks', 'messages', 'links', 'comments', 'is_paid')
+    form_edit_rules = ('name', 'description', 'amount', 'currency', 'deal_type', 'deal_state', 'shipping_address',
+                       'contact', 'company', 'tasks', 'messages', 'links', 'comments', 'is_paid', 'closed_at', 'referral_code')
 
     column_list = ('name', 'amount', 'currency',
                    'deal_type', 'deal_state')
@@ -547,6 +560,8 @@ class DealModelView(EnhancedModelView):
     inline_models = [
         (TaskModel, {'form_columns': [
             'id', 'title', 'type', 'priority', 'assignee']}),
+        (AddressModel, {'form_columns': [
+            'id', 'street_name', 'street_number', 'zip_code', 'country', 'city', 'state']}),
         (MessageModel, {'form_columns': ['id', 'title', 'content']}),
         (CommentModel, {'form_columns': ['id', 'content']}),
         (LinkModel, {'form_columns': [
