@@ -123,7 +123,7 @@ class UpdateDeals(graphene.Mutation):
             d = Deal.query.filter_by(id=data['id']).first()
 
             if not d:
-                return
+                raise GraphQLError('Invalid id (%s)' % data['id'])
 
             for k, v in data.items():
                 setattr(d, k, v)

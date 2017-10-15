@@ -132,7 +132,7 @@ class UpdateContacts(graphene.Mutation):
             c = Contact.query.filter_by(id=data['id']).first()
 
             if not c:
-                return
+                raise GraphQLError('Invalid id (%s)' % data['id'])
 
             for k, v in data.items():
                 setattr(c, k, v)
