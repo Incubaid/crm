@@ -11,13 +11,35 @@ class Subgroup(db.Model, BaseModel, RootModel):
         nullable=False
     )
 
+    contacts = db.relationship(
+        "Contact",
+        secondary="contacts_subgroups",
+        backref="subgroups"
+    )
+
+
+    def __str__(self):
+        return self.groupname
+
+class SubgroupContact(db.Model):
+    __tablename__ = "contacts_subgroups"
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    subgroup_id = db.Column(
+        db.String(5),
+        db.ForeignKey('subgroups.id')
+    )
+
     contact_id = db.Column(
         db.String(5),
         db.ForeignKey("contacts.id")
     )
 
-    def __str__(self):
-        return self.groupname
+    IS_MANY_TO_MANY = True
 
 
 class Contact(db.Model, BaseModel, RootModel):
@@ -114,11 +136,6 @@ class Contact(db.Model, BaseModel, RootModel):
 
     referral_code = db.Column(
         db.String(255),
-    )
-
-    subgroups = db.relationship(
-        "Subgroup",
-        backref="contact"
     )
 
     addresses = db.relationship(

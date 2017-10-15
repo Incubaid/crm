@@ -72,6 +72,10 @@ class Address(db.Model, BaseModel, RootModel):
             address += '%s, ' % self.city
         if self.country:
             address += str(self.country)
+
+        if self.zip_code:
+            address += ' (zip code: %s)' % self.zip_code
+
         return address
 
     def __str__(self):

@@ -1,3 +1,5 @@
+import uuid
+
 import graphene
 from graphene import relay
 from graphene.types.inputobjecttype import InputObjectType
@@ -5,8 +7,9 @@ from graphene.types.inputobjecttype import InputObjectType
 from graphene_sqlalchemy import SQLAlchemyObjectType
 from graphql.error.base import GraphQLError
 
+from crm.address.models import Address
 from crm.graphql import BaseMutation, BaseQuery, CRMConnectionField
-from .models import Contact
+from .models import Contact, Subgroup
 from crm import db
 
 
@@ -21,6 +24,15 @@ class ContactType(SQLAlchemyObjectType):
         model = Contact
         interfaces = (relay.Node,)
         name = model.__name__
+
+
+class AddressArguments(InputObjectType):
+    street_number = graphene.String()
+    street_name = graphene.String()
+    city = graphene.String()
+    state = graphene.String()
+    country = graphene.String()
+    zip_code = graphene.String()
 
 
 class ContactQuery(BaseQuery):
@@ -57,6 +69,9 @@ class CreateContactArguments(InputObjectType):
     tf_web = graphene.Boolean()
     country = graphene.String()
     message_channels = graphene.String()
+    sub_groups = graphene.List(graphene.String)
+    addresses = graphene.List(AddressArguments)
+
 
 
 class UpdateContactContactArguments(CreateContactArguments):
@@ -85,12 +100,31 @@ class CreateContacts(graphene.Mutation):
         # 'before_insert' hooks won't work with db.session.bulk_save_objects
         # we need to find a way to get hooks to work with bulk_save_objects @todo
         objs = []
+
         for data in kwargs.get('records', []):
+            addresses = data.pop('addresses') if 'addresses' in data else []
+            subgroups = data.pop('sub_groups') if 'sub_groups' in data else []
+
             c = Contact(**data)
+
+            for address in addresses:
+                a = Address(**address)
+                # Accessing uid once, then it's cached
+                # Before insert hook will use the same value
+                # So we have same id after insert
+                # Reason we access c.uid is that c.id is not available
+                # until session.commit()
+                a.contact_id = c.uid
+                db.session.add(a)
+
+            for subgroup in subgroups:
+                pass
+
             db.session.add(c)
-            objs.append(c)
+
         try:
             db.session.commit()
+
             return cls(ok=True, ids=[obj.id for obj in objs])
         except Exception as e:
             raise GraphQLError(e.args)
