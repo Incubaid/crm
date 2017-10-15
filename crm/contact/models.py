@@ -6,7 +6,7 @@ class SubgroupName(Enum):
     AMBASSADOR, INVESTOR, HOSTER, MEMBER, PUBLIC = range(5)
 
 
-class Subgroup(db.Model, BaseModel, RootModel):
+class Subgroup(db.Model, BaseModel):
     __tablename__ = "subgroups"
 
     groupname = db.Column(

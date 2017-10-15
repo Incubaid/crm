@@ -1,7 +1,7 @@
 from crm.db import db, BaseModel, RootModel
 
 
-class CompanyTag(db.Model, BaseModel, RootModel):
+class CompanyTag(db.Model, BaseModel):
     __tablename__ = "companytags"
 
     tag = db.Column(
