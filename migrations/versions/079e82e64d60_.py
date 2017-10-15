@@ -66,12 +66,6 @@ def get_contact_old_addresses():
 
 
 def add_contact_subgroups():
-    subgroups_table = sa.sql.table('subgroups',
-         sa.Column('id', sa.String(length=5), nullable=False),
-         sa.Column('groupname', sa.String),
-         sa.Column('created_at', sa.TIMESTAMP(), nullable=False),
-         sa.Column('updated_at', sa.TIMESTAMP(), nullable=False),
-    )
 
     uids = set()
 
@@ -92,9 +86,6 @@ def add_contact_subgroups():
             'created_at': datetime.datetime.now(),
             'updated_at': datetime.datetime.now()
         })
-
-    op.bulk_insert(subgroups_table, data)
-
 
     contact_subgroups = sa.sql.table('contacts_subgroups',
                                    sa.Column('subgroup_id', sa.String),
@@ -123,7 +114,14 @@ def upgrade():
     tbl, data = get_contact_old_addresses()
 
     op.drop_column('contacts', 'country')
-    COUNTRIES.drop(op.get_bind(), checkfirst=False)
+
+
+    try:
+        COUNTRIES.drop(op.get_bind(), checkfirst=False)
+    except:
+        pass
+
+    COUNTRIES.create(op.get_bind(), checkfirst=False)
 
     op.create_table('subgroups',
     sa.Column('id', sa.String(length=5), nullable=False),
@@ -167,7 +165,7 @@ def upgrade():
     sa.Column('city', sa.Text(), nullable=True),
     sa.Column('state', sa.Text(), nullable=True),
     sa.Column('zip_code', sa.String(length=255), nullable=True),
-    sa.Column('country', sa.Enum('Papua New Guinea', 'Dominica', 'Kuwait', 'Slovakia', 'Pakistan', 'Guam', 'Belarus', 'Belgium', 'Sudan', 'El Salvador', 'Somalia', 'Burkina Faso', 'Zimbabwe', 'Senegal', 'Guadeloupe', 'Haiti', 'Uruguay', 'China', 'Reunion', 'Panama', 'Congo', 'Lebanon', 'Cayman Islands', 'Nigeria', 'Swaziland', 'Colombia', "Lao People's Democratic Republic", 'Andorra', 'Heard Island and Mcdonald Islands', 'Serbia and Montenegro', 'Ethiopia', 'Tuvalu', 'Gabon', 'Marshall Islands', 'New Caledonia', 'Cook Islands', 'Syrian Arab Republic', 'Madagascar', 'Congo, the Democratic Republic of the', 'American Samoa', 'Austria', 'Wallis and Futuna', 'Pitcairn', 'Nauru', 'Morocco', 'Guinea-Bissau', 'Saint Helena', 'Svalbard and Jan Mayen', 'Slovenia', 'Monaco', 'Virgin Islands, British', 'Angola', 'Thailand', 'Iraq', 'Kazakhstan', "Korea, Democratic People's Republic of", 'Tonga', 'Bhutan', 'Cameroon', 'Philippines', 'Indonesia', 'Cambodia', 'Djibouti', 'France', 'Taiwan, Province of China', 'South Africa', 'Estonia', 'Bahamas', 'Kiribati', 'Venezuela', 'Ukraine', 'Saint Kitts and Nevis', 'Brunei Darussalam', 'United Arab Emirates', 'Afghanistan', 'Qatar', 'Italy', 'Sao Tome and Principe', 'Oman', 'Netherlands Antilles', 'Ghana', 'Mozambique', 'Mauritania', 'Saint Lucia', 'Sri Lanka', 'Uzbekistan', 'French Guiana', 'Kenya', 'India', 'United States', 'Burundi', 'Ecuador', 'Russian Federation', 'Iran, Islamic Republic of', 'Antigua and Barbuda', 'Egypt', 'Yemen', 'Niue', 'Finland', 'Argentina', 'Holy See (Vatican City State)', 'Netherlands', 'Myanmar', 'Guatemala', 'Botswana', 'Armenia', 'Singapore', 'Palestinian Territory, Occupied', 'Christmas Island', 'Togo', 'Sweden', 'Lithuania', 'Niger', 'Aruba', 'Norfolk Island', 'Romania', 'Tanzania, United Republic of', 'United States Minor Outlying Islands', 'Bangladesh', 'Norway', 'Martinique', 'Kyrgyzstan', "Cote D'Ivoire", 'British Indian Ocean Territory', 'Azerbaijan', 'Cocos (Keeling) Islands', 'Barbados', 'Micronesia, Federated States of', 'Palau', 'Portugal', 'Turkmenistan', 'Jamaica', 'Suriname', 'Latvia', 'Timor-Leste', 'Peru', 'Tokelau', 'Georgia', 'Tajikistan', 'Turks and Caicos Islands', 'Seychelles', 'Malta', 'Western Sahara', 'Gambia', 'Germany', 'Central African Republic', 'Moldova, Republic of', 'Puerto Rico', 'Croatia', 'Switzerland', 'Northern Mariana Islands', 'Guinea', 'Malawi', 'Liechtenstein', 'Maldives', 'Rwanda', 'Solomon Islands', 'Jordan', 'New Zealand', 'Luxembourg', 'Uganda', 'Liberia', 'Albania', 'Brazil', 'Japan', 'Cuba', 'Greece', 'Samoa', 'Zambia', 'Macao', 'Canada', 'Spain', 'Australia', 'Chad', 'Tunisia', 'Saint Vincent and the Grenadines', 'Czech Republic', 'French Southern Territories', 'Guyana', 'Faroe Islands', 'Grenada', 'Mexico', 'Mauritius', 'Fiji', 'Mayotte', 'Dominican Republic', 'Saint Pierre and Miquelon', 'Vanuatu', 'Greenland', 'Bahrain', 'Equatorial Guinea', 'South Georgia and the South Sandwich Islands', 'Denmark', 'Bouvet Island', 'Nicaragua', 'Antarctica', 'Hungary', 'Honduras', 'Trinidad and Tobago', 'Mongolia', 'Israel', 'Chile', 'United Kingdom', 'Turkey', 'Bulgaria', 'San Marino', 'Eritrea', 'Cyprus', 'Belize', 'Libyan Arab Jamahiriya', 'Comoros', 'Iceland', 'Costa Rica', 'Paraguay', 'Hong Kong', 'Bermuda', 'Viet Nam', 'Algeria', 'Namibia', 'Poland', 'Benin', 'Macedonia, the Former Yugoslav Republic of', 'Bosnia and Herzegovina', 'Ireland', 'Malaysia', 'French Polynesia', 'Gibraltar', 'Falkland Islands (Malvinas)', 'Montserrat', 'Saudi Arabia', 'Anguilla', 'Sierra Leone', 'Cape Verde', 'Mali', 'Korea, Republic of', 'Bolivia', 'Virgin Islands, U.s.', 'Lesotho', 'Nepal', name='countries'), nullable=True),
+    sa.Column('country', COUNTRIES, nullable=True),
     sa.Column('contact_id', sa.String(length=5), nullable=True),
     sa.Column('company_id', sa.String(length=5), nullable=True),
     sa.Column('deal_id', sa.String(length=5), nullable=True),
