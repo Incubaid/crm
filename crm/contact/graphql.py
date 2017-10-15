@@ -88,12 +88,11 @@ class CreateContacts(graphene.Mutation):
 
         # 'before_insert' hooks won't work with db.session.bulk_save_objects
         # we need to find a way to get hooks to work with bulk_save_objects @todo
+        records = kwargs.get('records', [])
         objs = []
-
-        for data in kwargs.get('records', []):
+        for data in records:
             addresses = data.pop('addresses') if 'addresses' in data else []
             subgroups = data.pop('sub_groups') if 'sub_groups' in data else []
-
             c = Contact(**data)
             c.addresses = [ Address(**address) for address in addresses]
             c.subgroups = [Subgroup(groupname=subgroup) for subgroup in subgroups]
@@ -128,9 +127,22 @@ class UpdateContacts(graphene.Mutation):
         records = kwargs.get('records', [])
         for data in records:
             data['id'] = data.pop('uid')
+            addresses = data.pop('addresses') if 'addresses' in data else []
+            subgroups = data.pop('sub_groups') if 'sub_groups' in data else []
+            c = Contact.query.filter_by(id=data['id']).first()
 
+            if not c:
+                return
+
+            for k, v in data.items():
+                setattr(c, k, v)
+
+            if addresses:
+                c.addresses = [Address(**address) for address in addresses]
+            if subgroups:
+                c.subgroups = [Subgroup(groupname=subgroup) for subgroup in subgroups]
+            db.session.add(c)
         try:
-            db.session.bulk_update_mappings(Contact, records)
             db.session.commit()
             return cls(ok=True, ids=[record['id'] for record in records])
         except Exception as e:

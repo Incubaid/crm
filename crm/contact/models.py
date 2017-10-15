@@ -22,7 +22,7 @@ class Subgroup(db.Model, BaseModel, RootModel):
 
 
     def __str__(self):
-        return self.groupname
+        return self.groupname.name
 
 class SubgroupContact(db.Model):
     __tablename__ = "contacts_subgroups"

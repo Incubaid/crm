@@ -5,6 +5,7 @@ from graphene.types.inputobjecttype import InputObjectType
 from graphene_sqlalchemy import SQLAlchemyObjectType
 from graphql.error.base import GraphQLError
 
+from crm.address.models import Address
 from crm.graphql import BaseMutation, BaseQuery, CRMConnectionField, AddressArguments
 from .models import Deal
 from crm import db
@@ -47,12 +48,11 @@ class CreateDealArguments(InputObjectType):
     amount = graphene.Float()
     currency = graphene.String(required=True)
     deal_type = graphene.String(required=True)
-    deal_state = graphene.String(required=True)
     closed_at = graphene.String()
     company_id = graphene.String()
     contact_id = graphene.String()
     referral_code = graphene.String()
-    shipping_address = AddressArguments()
+    shipping_addresses = graphene.List(AddressArguments)
 
 
 class UpdateDealArguments(CreateDealArguments):
@@ -83,7 +83,10 @@ class CreateDeals(graphene.Mutation):
         # we need to find a way to get hooks to work with bulk_save_objects @todo
         objs = []
         for data in kwargs.get('records', []):
+            data['deal_state'] = 'NEW'
+            addresses = data.pop('shipping_addresses') if 'shipping_addresses' in data else []
             c = Deal(**data)
+            c.shipping_address = [ Address(**address) for address in addresses]
             db.session.add(c)
             objs.append(c)
         try:
@@ -115,9 +118,21 @@ class UpdateDeals(graphene.Mutation):
         records = kwargs.get('records', [])
         for data in records:
             data['id'] = data.pop('uid')
+            addresses = data.pop('shipping_addresses') if 'shipping_addresses' in data else []
 
+            d = Deal.query.filter_by(id=data['id']).first()
+
+            if not d:
+                return
+
+            for k, v in data.items():
+                setattr(d, k, v)
+
+            if addresses:
+                d.shipping_address = [Address(**address) for address in addresses]
+
+            db.session.add(d)
         try:
-            db.session.bulk_update_mappings(Deal, records)
             db.session.commit()
             return cls(ok=True, ids=[record['id'] for record in records])
         except Exception as e:
@@ -132,7 +147,6 @@ class DeleteDeals(graphene.Mutation):
         uids = graphene.List(graphene.String, required=True)
 
     ok = graphene.Boolean()
-
 
     @classmethod
     def mutate(cls, root, context, **kwargs):
