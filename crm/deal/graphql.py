@@ -5,7 +5,7 @@ from graphene.types.inputobjecttype import InputObjectType
 from graphene_sqlalchemy import SQLAlchemyObjectType
 from graphql.error.base import GraphQLError
 
-from crm.graphql import BaseMutation, BaseQuery, CRMConnectionField
+from crm.graphql import BaseMutation, BaseQuery, CRMConnectionField, AddressArguments
 from .models import Deal
 from crm import db
 
@@ -52,6 +52,7 @@ class CreateDealArguments(InputObjectType):
     company_id = graphene.String()
     contact_id = graphene.String()
     referral_code = graphene.String()
+    shipping_address = AddressArguments()
 
 
 class UpdateDealArguments(CreateDealArguments):

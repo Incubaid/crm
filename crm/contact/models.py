@@ -1,14 +1,17 @@
-import enum
+from enum import Enum
 from crm.db import db, BaseModel, RootModel
-from crm.countries import countries
+
+
+class SubgroupName(Enum):
+    AMBASSADOR, INVESTOR, HOSTER, MEMBER, PUBLIC = range(5)
 
 
 class Subgroup(db.Model, BaseModel, RootModel):
     __tablename__ = "subgroups"
 
     groupname = db.Column(
-        db.String(20),
-        nullable=False
+        db.Enum(SubgroupName),
+        default=SubgroupName.MEMBER
     )
 
     contacts = db.relationship(

@@ -1,4 +1,5 @@
 import graphene
+from graphene.types.inputobjecttype import InputObjectType
 
 from graphene_sqlalchemy.fields import SQLAlchemyConnectionField
 
@@ -36,4 +37,10 @@ class CRMConnectionField(SQLAlchemyConnectionField):
         return result
 
 
-
+class AddressArguments(InputObjectType):
+    street_number = graphene.String()
+    street_name = graphene.String()
+    city = graphene.String()
+    state = graphene.String()
+    country = graphene.String()
+    zip_code = graphene.String()
