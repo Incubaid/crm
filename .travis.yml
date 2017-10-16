@@ -1,0 +1,22 @@
+sudo: false
+dist: trusty
+language: python
+python:
+  - "3.5"
+install: .travis/prepare.sh
+script: ./run_tests.sh
+
+
+addons:
+  apt:
+    packages:
+      - python3-dev
+      - libffi-dev
+      - build-essential
+
+notification:
+  email:
+    recipients:
+      - husseina@greenitglobe.com
+    on_success: never
+    on_failure: always
