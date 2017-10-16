@@ -5,7 +5,7 @@ from crm.db import db, BaseModel
 
 
 class TaskType(Enum):
-    FEATURE, QUESTION, TASK, STORY, CONTACT = range(5)
+    TASK, FEATURE, QUESTION, STORY, CONTACT = range(5)
 
 
 class TaskPriority(Enum):
