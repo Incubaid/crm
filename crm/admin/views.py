@@ -437,7 +437,7 @@ class ContactModelView(EnhancedModelView):
         'comments', 'links',
         'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code', 'owner', 'ownerbackup')
 
-    column_filters = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'message_channels', 'referral_code',
+    column_filters = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'addresses.country', 'message_channels', 'referral_code',
                       'deals', 'comments', 'tasks', 'projects', 'companies', 'messages', 'sprints', 'links', 'owner',
                       'ownerbackup')
     column_searchable_list = ('firstname', 'lastname',)
