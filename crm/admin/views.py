@@ -541,7 +541,7 @@ class DealModelView(EnhancedModelView):
     column_details_list = ('id', 'name', 'description', 'amount', 'currency', 'deal_type', 'deal_state', 'shipping_address', 'is_paid',
                            'contact', 'company', 'closed_at', 'referral_code', 'tasks', 'messages', 'links', 'comments', 'author_last', 'author_original', 'updated_at')
     column_filters = ('id', 'name', 'amount', 'currency', 'deal_type', 'deal_state',
-                      'contact', 'company', 'closed_at', 'tasks', 'messages', 'comments', 'is_paid', 'referral_code')
+                      'contact', 'company', 'closed_at', 'tasks', 'messages', 'comments', 'is_paid', 'referral_code', 'updated_at')
 
     form_rules = ('name', 'amount', 'currency', 'deal_type', 'deal_state', 'shipping_address',
                   'contact', 'company', 'referral_code', 'comments')
@@ -550,12 +550,12 @@ class DealModelView(EnhancedModelView):
                        'contact', 'company', 'tasks', 'messages', 'links', 'comments', 'is_paid', 'closed_at', 'referral_code')
 
     column_list = ('name', 'amount', 'currency',
-                   'deal_type', 'deal_state')
+                   'deal_type', 'deal_state', 'updated_at')
     column_searchable_list = (
         'id', 'name', 'amount', 'currency', 'deal_type', 'deal_state')
 
     column_sortable_list = ('name', 'amount', 'currency',
-                            'deal_type', 'deal_state')
+                            'deal_type', 'deal_state', 'updated_at')
 
     inline_models = [
         (TaskModel, {'form_columns': [
