@@ -509,19 +509,19 @@ class DealModelView(EnhancedModelView):
     column_list = ('name', 'amount', 'currency',
                    'deal_type', 'deal_state', *EnhancedModelView.columns_list_extra)
     column_searchable_list = (
-        'id', 'name', 'amount', 'currency', 'deal_type', 'deal_state')
+        'id', 'name', 'amount', 'currency', 'deal_type', 'deal_state',)
     column_sortable_list = ('name', 'amount', 'currency',
                             'deal_type', 'deal_state', 'updated_at')
     column_details_list = ('id', 'name', 'description', 'amount', 'currency', 'deal_type', 'deal_state', 'shipping_address', 'is_paid',
-                           'contact', 'company', 'closed_at', 'referral_code', 'tasks', 'messages', 'links', 'comments', 'author_last', 'author_original', 'updated_at')
+                           'contact','referrer1', 'referrer2', 'company', 'closed_at', 'referral_code', 'tasks', 'messages', 'links', 'comments', 'author_last', 'author_original', 'updated_at')
     column_filters = ('id', 'name', 'amount', 'currency', 'deal_type', 'deal_state', 'closed_at', 'is_paid', 'referral_code', 'updated_at',
                       'contact', 'company', 'tasks', 'messages', 'comments', )
 
     form_rules = ('name', 'amount', 'currency', 'deal_type', 'deal_state', 'shipping_address',
-                  'contact', 'company', 'referral_code', 'comments')
+                  'contact', 'referrer1', 'referrer2', 'company', 'referral_code', 'comments')
 
     form_edit_rules = ('name', 'description', 'amount', 'currency', 'deal_type', 'deal_state', 'shipping_address',
-                       'contact', 'company', 'tasks', 'messages', 'links', 'comments', 'is_paid', 'closed_at', 'referral_code')
+                       'contact', 'referrer1', 'referrer2', 'company', 'tasks', 'messages', 'links', 'comments', 'is_paid', 'closed_at', 'referral_code')
 
     inline_models = [
         (TaskModel, {'form_columns': [
