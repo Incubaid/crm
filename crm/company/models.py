@@ -1,4 +1,4 @@
-from crm.db import db, BaseModel, RootModel
+from crm.db import db, BaseModel, RootModel, ManyToManyBaseModel
 
 
 class Tag(db.Model, BaseModel):
@@ -19,13 +19,8 @@ class Tag(db.Model, BaseModel):
         return self.tag
 
 
-class CompanyTags(db.Model):
+class CompanyTags(db.Model, ManyToManyBaseModel):
     __tablename__ = "companies_tags"
-
-    id = db.Column(
-        db.Integer,
-        primary_key=True
-    )
 
     tag_id = db.Column(
         db.String(5),
@@ -36,8 +31,6 @@ class CompanyTags(db.Model):
         db.String(5),
         db.ForeignKey("companies.id")
     )
-
-    IS_MANY_TO_MANY = True
 
 
 class Company(db.Model, BaseModel, RootModel):

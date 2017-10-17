@@ -379,9 +379,10 @@ class SubgroupModelView(EnhancedModelView):
 
 class TagModelView(EnhancedModelView):
     column_list = ('tag',)
-    column_details_list = ('tag', )
+    column_details_list = ('tag', 'companies')
     form_rules = ('tag', )
     form_edit_rules = ('tag',)
+
 
 
 class ContactModelView(EnhancedModelView):

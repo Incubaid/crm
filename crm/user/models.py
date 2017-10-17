@@ -1,4 +1,4 @@
-from crm.db import db, BaseModel, RootModel
+from crm.db import db, BaseModel, RootModel, ManyToManyBaseModel
 
 
 class User(db.Model, BaseModel, RootModel):
@@ -140,16 +140,11 @@ class User(db.Model, BaseModel, RootModel):
     __repr__ = __str__
 
 
-class UsersOrganizations(db.Model):
+class UsersOrganizations(db.Model, ManyToManyBaseModel):
     """
     Many To Many Through table
     """
     __tablename__ = 'users_organizations'
-
-    id = db.Column(
-        db.Integer,
-        primary_key=True
-    )
 
     user_id = db.Column(
         db.String(5),
@@ -161,53 +156,5 @@ class UsersOrganizations(db.Model):
         db.ForeignKey('organizations.id')
     )
 
-    IS_MANY_TO_MANY = True
 
 
-class UsersSprints(db.Model):
-    """
-        Many To Many Through table
-    """
-
-    __tablename__ = 'users_sprints'
-
-    id = db.Column(
-        db.Integer,
-        primary_key=True
-    )
-
-    user_id = db.Column(
-        db.String(5),
-        db.ForeignKey('users.id')
-    )
-
-    sprint_id = db.Column(
-        db.String(5),
-        db.ForeignKey('sprints.id')
-    )
-
-    IS_MANY_TO_MANY = True
-
-
-class UsersProjects(db.Model):
-    """
-    Many To Many Through Table
-    """
-    __tablename__ = 'users_projects'
-
-    id = db.Column(
-        db.Integer,
-        primary_key=True
-    )
-
-    user_id = db.Column(
-        db.String(5),
-        db.ForeignKey('users.id')
-    )
-
-    project_id = db.Column(
-        db.String(5),
-        db.ForeignKey('projects.id')
-    )
-
-    IS_MANY_TO_MANY = True
