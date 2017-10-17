@@ -27,7 +27,6 @@ Jinja2==2.8
 Mako==1.0.7
 MarkupSafe==1.0
 misaka==2.1.0
-promise==2.1.dev0
 psycopg2==2.7.3.1
 pycparser==2.18
 pycrypto==2.6.1
