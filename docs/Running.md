@@ -23,7 +23,7 @@ in ```crm.middlewares```
 - To run in development mode
     ```
     export ENV=dev
-    python app.py # (if you want DEBUG mode activated)
+    python3 app.py # (if you want DEBUG mode activated)
     ## OR##
     flask run
     ```

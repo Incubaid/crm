@@ -8,7 +8,7 @@ class DealState(Enum):
 
 
 class DealType(Enum):
-    HOSTER, ITO, PTO, AMBASSADOR = range(4)
+    HOSTER, ITO, PTO, AMBASSADOR, ITFT = range(5)
 
 
 class DealCurrency(Enum):
@@ -64,6 +64,28 @@ class Deal(db.Model, BaseModel, RootModel):
         db.ForeignKey("contacts.id")
     )
 
+    referrer1_id = db.Column(
+        db.String(5),
+        db.ForeignKey("contacts.id")
+    )
+
+    referrer2_id = db.Column(
+        db.String(5),
+        db.ForeignKey("contacts.id")
+    )
+
+
+    referrer1 = db.relationship(
+        "Contact",
+        backref="referrer1_deals",
+        foreign_keys=[referrer1_id]
+    )
+
+    referrer2 = db.relationship(
+        "Contact",
+        backref="referrer2_deals",
+        foreign_keys=[referrer2_id]
+    ) 
     tasks = db.relationship(
         "Task",
         backref="deal"

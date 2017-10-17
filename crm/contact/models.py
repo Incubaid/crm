@@ -1,5 +1,5 @@
 from enum import Enum
-from crm.db import db, BaseModel, RootModel
+from crm.db import db, BaseModel, RootModel, ManyToManyBaseModel
 
 
 class SubgroupName(Enum):
@@ -20,17 +20,12 @@ class Subgroup(db.Model, BaseModel):
         backref="subgroups"
     )
 
-
     def __str__(self):
         return self.groupname.name
 
-class SubgroupContact(db.Model):
-    __tablename__ = "contacts_subgroups"
 
-    id = db.Column(
-        db.Integer,
-        primary_key=True
-    )
+class ContactSubgroup(db.Model, ManyToManyBaseModel):
+    __tablename__ = "contacts_subgroups"
 
     subgroup_id = db.Column(
         db.String(5),
@@ -41,8 +36,6 @@ class SubgroupContact(db.Model):
         db.String(5),
         db.ForeignKey("contacts.id")
     )
-
-    IS_MANY_TO_MANY = True
 
 
 class Contact(db.Model, BaseModel, RootModel):
@@ -81,7 +74,8 @@ class Contact(db.Model, BaseModel, RootModel):
 
     deals = db.relationship(
         "Deal",
-        backref="contact"
+        backref="contact",
+        primaryjoin="Contact.id==Deal.contact_id"
     )
 
     comments = db.relationship(
@@ -154,17 +148,13 @@ class Contact(db.Model, BaseModel, RootModel):
         return "{} {}".format(self.firstname, self.lastname)
 
 
-class ContactsSprints(db.Model):
+class ContactsSprints(db.Model, BaseModel):
     """
         Many To Many Through table
     """
 
     __tablename__ = 'contacts_sprints'
 
-    id = db.Column(
-        db.Integer,
-        primary_key=True
-    )
 
     contact_id = db.Column(
         db.String(5),
@@ -176,17 +166,12 @@ class ContactsSprints(db.Model):
         db.ForeignKey('sprints.id')
     )
 
-    IS_MANY_TO_MANY = True
 
 
-class CompaniesContacts(db.Model):
+class CompaniesContacts(db.Model, ManyToManyBaseModel):
 
     __tablename__ = 'companies_contacts'
 
-    id = db.Column(
-        db.Integer,
-        primary_key=True
-    )
 
     company_id = db.Column(
         db.String(5),
@@ -198,20 +183,13 @@ class CompaniesContacts(db.Model):
         db.ForeignKey('contacts.id')
     )
 
-    IS_MANY_TO_MANY = True
 
-
-class ContactsProjects(db.Model):
+class ContactsProjects(db.Model, ManyToManyBaseModel):
     """
         Many To Many Through Table
     """
 
     __tablename__ = 'contacts_projects'
-
-    id = db.Column(
-        db.Integer,
-        primary_key=True
-    )
 
     contact_id = db.Column(
         db.String(5),
@@ -223,4 +201,3 @@ class ContactsProjects(db.Model):
         db.ForeignKey('projects.id')
     )
 
-    IS_MANY_TO_MANY = True

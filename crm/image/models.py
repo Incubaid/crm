@@ -24,8 +24,7 @@ class Image(db.Model, BaseModel):
 
     @property
     def as_image(self):
-        return '<img width="100" height="100" src="{}"></img>'.format(
-            self.imgurl)
+        return '<a href={imgurl}><img width="100" height="100" src="{imgurl}"></img></a>'.format(imgurl=self.imgurl)
         # return os.path.join(IMAGES_DIR, self.path)
 
     def __str__(self):

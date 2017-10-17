@@ -13,7 +13,7 @@ CRM is built around the usage of IYO for authentication. Typical setup will incl
 
 :10000 {         #this is the port you want to forward the website to 
     proxy / localhost:5000 {
-        header_upstream Host "localhost:5000"
+        header_upstream Host "localhost:10000"
     }
     oauth {
         client_id       crm          

@@ -13,23 +13,13 @@
     <li>
         <a href="{{ return_url }}">{{ _gettext('List') }}</a>
     </li>
-    {%- if admin_view.can_create -%}
-    <li>
-        <a href="{{ get_url('.create_view', url=return_url) }}">{{ _gettext('Create') }}</a>
-    </li>
-    {%- endif -%}
     <li class="active">
-        <a href="javascript:void(0)">{{ _gettext('Edit') }}</a>
+        <a href="javascript:void(0)">{{ _gettext('Create') }}</a>
     </li>
-    {%- if admin_view.can_view_details -%}
-    <li>
-        <a href="{{ get_url('.details_view', id=request.args.get('id'), url=return_url) }}">{{ _gettext('Details') }}</a>
-    </li>
-    {%- endif -%}
   </ul>
   {% endblock %}
 
-  {% block edit_form %}
+  {% block create_form %}
     {{ lib.render_form(form, return_url, {}, form_opts) }}
   {% endblock %}
 {% endblock %}

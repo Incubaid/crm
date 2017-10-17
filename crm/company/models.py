@@ -1,21 +1,36 @@
-from crm.db import db, BaseModel, RootModel
+from crm.db import db, BaseModel, RootModel, ManyToManyBaseModel
 
 
-class CompanyTag(db.Model, BaseModel):
-    __tablename__ = "companytags"
+class Tag(db.Model, BaseModel):
+    __tablename__ = "tags"
 
     tag = db.Column(
-        db.String(20),
-        nullable=False
+        db.String(),
+        default="",
+    )
+
+    companies = db.relationship(
+        "Company",
+        secondary="companies_tags",
+        backref="tags"
+    )
+
+    def __str__(self):
+        return self.tag
+
+
+class CompanyTags(db.Model, ManyToManyBaseModel):
+    __tablename__ = "companies_tags"
+
+    tag_id = db.Column(
+        db.String(5),
+        db.ForeignKey('tags.id')
     )
 
     company_id = db.Column(
         db.String(5),
         db.ForeignKey("companies.id")
     )
-
-    def __str__(self):
-        return self.tag
 
 
 class Company(db.Model, BaseModel, RootModel):
@@ -89,11 +104,6 @@ class Company(db.Model, BaseModel, RootModel):
 
     links = db.relationship(
         "Link",
-        backref="company"
-    )
-
-    tags = db.relationship(
-        "CompanyTag",
         backref="company"
     )
 

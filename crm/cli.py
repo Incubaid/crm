@@ -4,7 +4,7 @@ import ujson as json
 
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
-from crm.db import BaseModel, db, RootModel
+from crm.db import BaseModel, db, RootModel, ManyToManyBaseModel
 from crm import app
 
 from crm.fixtures import generate_fixtures
@@ -72,7 +72,7 @@ def loaddata():
     models = {}
 
     # Initialize our dicts
-    for model in BaseModel.__subclasses__():
+    for model in BaseModel.__subclasses__() + ManyToManyBaseModel.__subclasses__():
         models[model.__name__] = model
         added_object_ids[model.__name__] = []
 
@@ -98,7 +98,10 @@ def loaddata():
             continue
 
         model_dir = os.path.abspath(os.path.join(data_dir, model.__name__))
-
+        # many2many objects needed to be added last
+        # after all data entered coz they contain references to other models data
+        # that may not have been added
+        m2m_objects = []
         for root, dirs, files in os.walk(model_dir):
             for file in files:
                 file_path = os.path.abspath(os.path.join(root, file))
@@ -106,8 +109,18 @@ def loaddata():
                     data = json.load(f)
                     objects = model.from_dict(data)
                     for obj in objects:
+                        if hasattr(obj, 'IS_MANY_TO_MANY'):
+                            m2m_objects.append(obj)
+                            continue
                         if obj.id in added_object_ids[obj.__class__.__name__]:
                             continue
                         added_object_ids[obj.__class__.__name__].append(obj.id)
                         db.session.add(obj)
             db.session.commit()
+
+        for obj in m2m_objects:
+            if obj.id in added_object_ids[obj.__class__.__name__]:
+                continue
+            db.session.add(obj)
+            added_object_ids[obj.__class__.__name__].append(obj.id)
+        db.session.commit()

@@ -34,6 +34,7 @@ class Organization(db.Model, BaseModel, RootModel):
     users = db.relationship(
         "User",
         secondary="users_organizations",
+        secondaryjoin="Organization.id==UsersOrganizations.id",
         backref="organizations"
     )
 

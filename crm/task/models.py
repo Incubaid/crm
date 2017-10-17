@@ -5,7 +5,7 @@ from crm.db import db, BaseModel
 
 
 class TaskType(Enum):
-    FEATURE, QUESTION, TASK, STORY, CONTACT = range(5)
+    TASK, FEATURE, QUESTION, STORY, CONTACT = range(5)
 
 
 class TaskPriority(Enum):
@@ -32,7 +32,7 @@ class Task(db.Model, BaseModel):
 
     type = db.Column(
         db.Enum(TaskType),
-        default=TaskType.FEATURE
+        default=TaskType.TASK
     )
 
     priority = db.Column(

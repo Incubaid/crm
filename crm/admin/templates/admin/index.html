@@ -13,7 +13,7 @@
     {% set tofilterview, filtername = g._admin_view._template_args['filtered_objects'][tasksview] %}
     <li><a href="/{{tofilterview.model.__name__.lower()}}/?{{tofilterview.get_filter_arg_helper(filtername, 'contains')}}={{g._admin_view._template_args['current_user_id']}}"> My Tasks </a></li>
     {% endif %}
-    {% for item in ["contact", "company", "organization", "project", "sprint", "deal", "task", "message", "comment","link"]  %}
+    {% for item in ["contact", "company", "user", "organization", "project", "sprint"]  %}
         <li><a href="/{{item}}/new/?url=/{{item}}">Create new {{item}}</a></li>
     {% endfor %}
 </ul>

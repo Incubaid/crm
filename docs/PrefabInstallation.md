@@ -13,7 +13,7 @@ source ~/.bash_profile
 **Build Docker CRM Image**
 
 ```
-ZInstall_crm -p 443 -u "crm.threefoldtoken.com" -o threefold.crm_users -s UrzXJ81iWdckOoOcqUbIoTeG_BD4Xo9-6ThaMpfOC5sW8apUYwad -i production_crm -e hamdya@greenitglobe.com
+ZInstall_crm -p 443 -u "crm.threefoldtoken.com" -o threefold.crm_users -s UrzXJ81iWdckOoOcsBD4Xo9-6ThaMpfOC5sW8apUYwad -i production_crm -e hamdya@greenitglobe.com
 ```
 
 **Build Docker CRM Container**

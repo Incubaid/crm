@@ -82,8 +82,8 @@ def generate_fixtures():
         company.owner = newuser()
         company.ownerbackup = newuser()
         db.session.add(company)
-        company.comments = [newcomment() for i in range(5)]
-        company.messages = [newmsg() for i in range(20)]
+        company.comments = [newcomment() for i in range(3)]
+        company.messages = [newmsg() for i in range(3)]
 
         return company
 
@@ -98,9 +98,9 @@ def generate_fixtures():
         org.guardian = newuser()
         org.users = [newuser(), newuser()]
         org.emails = newemails()
-        org.comments = [newcomment() for i in range(5)]
-        org.tasks = [newtask() for i in range(5)]
-        org.messages = [newmsg() for i in range(20)]
+        org.comments = [newcomment() for i in range(3)]
+        org.tasks = [newtask() for i in range(3)]
+        org.messages = [newmsg() for i in range(3)]
 
         org.links = [newlink() for i in range(3)]
         db.session.add(org)
@@ -110,11 +110,11 @@ def generate_fixtures():
         projname = fake.name() + "proj"
         projdesc = fake.paragraph()
         proj = Project(name=projname, description=projdesc)
-        proj.comments = [newcomment() for i in range(5)]
+        proj.comments = [newcomment() for i in range(3)]
         proj.promotor = newuser()
         proj.guardian = newuser()
-        proj.tasks = [newtask() for i in range(5)]
-        proj.messages = [newmsg() for i in range(5)]
+        proj.tasks = [newtask() for i in range(3)]
+        proj.messages = [newmsg() for i in range(3)]
         proj.links = [newlink() for i in range(3)]
         proj.contacts = [newcontact() for i in range(3)]
         proj.users = [newuser(), newuser()]
@@ -128,9 +128,9 @@ def generate_fixtures():
         sprint.users = [newuser() for i in range(2)]
         sprint.contacts = [newcontact() for i in range(2)]
         sprint.org = neworg()
-        sprint.tasks = [newtask() for i in range(5)]
-        sprint.comments = [newcomment() for i in range(5)]
-        sprint.messages = [newmsg() for i in range(5)]
+        sprint.tasks = [newtask() for i in range(3)]
+        sprint.comments = [newcomment() for i in range(3)]
+        sprint.messages = [newmsg() for i in range(3)]
         sprint.project = newproj()
         sprint.links = [newlink() for i in range(3)]
 
@@ -141,11 +141,11 @@ def generate_fixtures():
     def newdeal():
 
         dealname = fake.name() + "deal"
-        dealamount = 5000
+        dealamount = 3000
         deal = Deal(name=dealname, amount=dealamount)
-        deal.comments = [newcomment() for i in range(5)]
-        deal.tasks = [newtask() for i in range(5)]
-        deal.messages = [newmsg() for i in range(5)]
+        deal.comments = [newcomment() for i in range(3)]
+        deal.tasks = [newtask() for i in range(3)]
+        deal.messages = [newmsg() for i in range(3)]
         deal.links = [newlink() for i in range(3)]
         deal.company = newcompany()
         db.session.add(deal)
@@ -158,37 +158,23 @@ def generate_fixtures():
         return com
 
     def newtask():
-        t = Task(title=fake.sentence(5) + "task", description=fake.paragraph())
-        t.comments = [newcomment() for i in range(5)]
+        t = Task(title=fake.sentence(3) + "task", description=fake.paragraph())
+        t.comments = [newcomment() for i in range(3)]
         db.session.add(t)
         return t
 
     def newmsg():
-        m = Message(title=fake.sentence(5), content=fake.paragraph())
+        m = Message(title=fake.sentence(3), content=fake.paragraph())
         db.session.add(m)
         return m
-
     for i in range(3):
         u = newuser()
-        db.session.commit()
-
         tu = newcontact()
-        db.session.commit()
-
         com = newcompany()
-        db.session.commit()
-
         proj = newproj()
-        db.session.commit()
-
         org = neworg()
-        db.session.commit()
-
         deal = newdeal()
-        db.session.commit()
-
         sprint = newsprint()
-        db.session.commit()
 
     db.session.commit()
 
