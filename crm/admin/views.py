@@ -151,7 +151,7 @@ class EnhancedModelView(ModelView):
             filtered_objects['tasksview'] = [
                 TaskModelView(TaskModel, db.session), self.mainfilter]
             filtered_objects['ownstasksview'] = [
-                TaskModelView(TaskModel, db.session), self.mainfilter]
+                TaskModelView(TaskModel, db.session), 'assignee / Users / Id']
             filtered_objects['contactsview'] = [ContactModelView(
                 ContactModel, db.session), self.mainfilter]
 
