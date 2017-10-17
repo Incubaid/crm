@@ -151,7 +151,7 @@ class EnhancedModelView(ModelView):
             filtered_objects['tasksview'] = [
                 TaskModelView(TaskModel, db.session), self.mainfilter]
             filtered_objects['ownstasksview'] = [
-                TaskModelView(TaskModel, db.session), self.mainfilter]
+                TaskModelView(TaskModel, db.session), 'assignee / Users / Id']
             filtered_objects['contactsview'] = [ContactModelView(
                 ContactModel, db.session), self.mainfilter]
 
@@ -309,7 +309,7 @@ class UserModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-            'id', 'title', 'description', 'type', 'priority', 'assignee']}),
+            'id', 'title', 'description', 'type', 'priority', 'assignee', 'eta', 'deadline']}),
         (MessageModel, {'form_columns': [
             'id', 'title', 'content', 'channel']}),
         (CommentModel, {'form_columns': ['id', 'content']}),
@@ -417,7 +417,7 @@ class ContactModelView(EnhancedModelView):
         (AddressModel, {'form_columns': [
             'id', 'street_name', 'street_number', 'zip_code', 'country', 'city', 'state']}),
         (TaskModel, {'form_columns': [
-            'id', 'title', 'description', 'type', 'priority', 'assignee']}),
+            'id', 'title', 'description', 'type', 'priority', 'assignee', 'eta', 'deadline']}),
         (MessageModel, {'form_columns': [
             'id', 'title', 'content', 'channel']}),
         (DealModel, {'form_columns': [
@@ -461,7 +461,7 @@ class CompanyModelView(EnhancedModelView):
         (AddressModel, {'form_columns': [
             'id', 'street_name', 'street_number', 'zip_code', 'country', 'city', 'state']}),
         (TaskModel, {'form_columns': [
-            'id', 'title', 'description', 'type', 'priority', 'assignee']}),
+            'id', 'title', 'description', 'type', 'priority', 'assignee', 'eta', 'deadline']}),
         (MessageModel, {'form_columns': [
             'id', 'title', 'content', 'channel']}),
         (DealModel, {'form_columns': [
@@ -496,7 +496,7 @@ class OrganizationModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-            'id', 'title', 'type', 'priority', 'assignee']}),
+            'id', 'title', 'type', 'priority', 'assignee', 'eta', 'deadline']}),
         (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']},
          (CommentModel, {'form_columns': ['id', 'content']})),
         (LinkModel, {'form_columns': [
@@ -510,23 +510,23 @@ class DealModelView(EnhancedModelView):
     column_list = ('name', 'amount', 'currency',
                    'deal_type', 'deal_state', *EnhancedModelView.columns_list_extra)
     column_searchable_list = (
-        'id', 'name', 'amount', 'currency', 'deal_type', 'deal_state')
+        'id', 'name', 'amount', 'currency', 'deal_type', 'deal_state',)
     column_sortable_list = ('name', 'amount', 'currency',
                             'deal_type', 'deal_state', 'updated_at')
     column_details_list = ('id', 'name', 'description', 'amount', 'currency', 'deal_type', 'deal_state', 'shipping_address', 'is_paid',
-                           'contact', 'company', 'closed_at', 'referral_code', 'tasks', 'messages', 'links', 'comments', 'author_last', 'author_original', 'updated_at')
-    column_filters = ('id', 'name', 'amount', 'currency', 'deal_type', 'deal_state',
-                      'contact', 'company', 'closed_at', 'tasks', 'messages', 'comments', 'is_paid', 'referral_code', 'updated_at')
+                           'contact','referrer1', 'referrer2', 'company', 'closed_at', 'referral_code', 'tasks', 'messages', 'links', 'comments', 'author_last', 'author_original', 'updated_at')
+    column_filters = ('id', 'name', 'amount', 'currency', 'deal_type', 'deal_state', 'closed_at', 'is_paid', 'referral_code', 'updated_at',
+                      'contact', 'company', 'tasks', 'messages', 'comments', )
 
     form_rules = ('name', 'amount', 'currency', 'deal_type', 'deal_state', 'shipping_address',
-                  'contact', 'company', 'referral_code', 'comments')
+                  'contact', 'referrer1', 'referrer2', 'company', 'referral_code', 'comments')
 
     form_edit_rules = ('name', 'description', 'amount', 'currency', 'deal_type', 'deal_state', 'shipping_address',
-                       'contact', 'company', 'tasks', 'messages', 'links', 'comments', 'is_paid', 'closed_at', 'referral_code')
+                       'contact', 'referrer1', 'referrer2', 'company', 'tasks', 'messages', 'links', 'comments', 'is_paid', 'closed_at', 'referral_code')
 
     inline_models = [
         (TaskModel, {'form_columns': [
-            'id', 'title', 'type', 'priority', 'assignee']}),
+            'id', 'title', 'type', 'priority', 'assignee', 'eta', 'deadline']}),
         (AddressModel, {'form_columns': [
             'id', 'street_name', 'street_number', 'zip_code', 'country', 'city', 'state']}),
         (MessageModel, {'form_columns': ['id', 'title', 'content']}),
@@ -558,7 +558,7 @@ class ProjectModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-            'id', 'title', 'type', 'priority', 'assignee']}),
+            'id', 'title', 'type', 'priority', 'assignee', 'eta', 'deadline']}),
         (MessageModel, {'form_columns': ['id', 'title', 'content']}),
         (CommentModel, {'form_columns': ['id', 'content']}),
         (LinkModel, {'form_columns': [
@@ -588,7 +588,7 @@ class SprintModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-            'id', 'title', 'type', 'priority', 'assignee']}),
+            'id', 'title', 'type', 'priority', 'assignee', 'eta', 'deadline']}),
         (MessageModel, {'form_columns': [
             'id', 'title', 'content', 'channel']}),
         (CommentModel, {'form_columns': ['id', 'content']}),
@@ -639,21 +639,21 @@ class TaskModelView(EnhancedModelView):
                    'organization', 'company', 'project', 'sprint', 'deal', *EnhancedModelView.columns_list_extra)
     column_searchable_list = ('id', 'title', 'description',
                               'type', 'priority')
-    column_sortable_list = (['priority'])
-    column_details_list = ('id', 'title', 'description', 'assignee', 'user', 'contact',
-                           'type', 'priority', 'eta', 'state', 'time_done',
+    column_sortable_list = (['priority', 'updated_at'])
+    column_details_list = ('id', 'title', 'description', 'type', 'priority', 'eta', 'deadline', 'state',
+                           'time_done', 'time_estimate', 'assignee', 'user', 'contact',
                            'company', 'organization', 'project', 'sprint', 'deal',
                            'comments', 'messages', 'links', 'author_last', 'author_original', 'updated_at')
 
-    column_filters = ('id', 'title', 'description', 'contact', 'user', 'assignee.username', 'assignee.id',
-                      'type', 'priority', 'eta', 'time_done',
+    column_filters = ('id', 'title', 'description','type', 'priority', 'eta', 'deadline', 'time_done',
+                      'contact', 'user', 'assignee.username', 'assignee.id',
                       'company', 'organization', 'project', 'sprint', 'deal',
                       'comments', 'messages')
     form_rules = ('title', 'description',
-                  'type', 'priority', 'eta', 'time_done', 'assignee',
+                  'type', 'priority', 'eta', 'deadline', 'assignee',
                   'user', 'contact', 'company', 'organization', 'project', 'sprint', 'deal')
 
-    form_edit_rules = ('title', 'description', 'assignee', 'user', 'contact', 'state',
+    form_edit_rules = ('title', 'description', 'eta', 'deadline', 'assignee', 'user', 'contact', 'state',
                        'type', 'priority', 'time_done', 'comments', 'messages', 'links')
 
     inline_models = [

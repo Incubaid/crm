@@ -74,7 +74,8 @@ class Contact(db.Model, BaseModel, RootModel):
 
     deals = db.relationship(
         "Deal",
-        backref="contact"
+        backref="contact",
+        primaryjoin="Contact.id==Deal.contact_id"
     )
 
     comments = db.relationship(
