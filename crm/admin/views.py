@@ -645,7 +645,7 @@ class TaskModelView(EnhancedModelView):
                            'comments', 'messages', 'links', 'author_last', 'author_original', 'updated_at')
 
     column_filters = ('id', 'title', 'description', 'contact', 'user', 'assignee.username', 'assignee.id',
-                      'type', 'priority', 'eta', 'time_done',
+                      'type', 'priority', 'eta', 'deadline', 'time_done',
                       'company', 'organization', 'project', 'sprint', 'deal',
                       'comments', 'messages')
     form_rules = ('title', 'description',
