@@ -672,7 +672,7 @@ class TaskModelView(EnhancedModelView):
                            'company', 'organization', 'project', 'sprint', 'deal',
                            'comments', 'messages', 'links', 'author_last', 'author_original', 'updated_at')
 
-    column_filters = ('id', 'title', 'description', 'contact', 'user', 'assignee',
+    column_filters = ('id', 'title', 'description', 'contact', 'user', 'assignee.username', 'assignee.id',
                       'type', 'priority', 'eta', 'time_done',
                       'company', 'organization', 'project', 'sprint', 'deal',
                       'comments', 'messages')
