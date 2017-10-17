@@ -32,7 +32,7 @@ class Task(db.Model, BaseModel):
 
     type = db.Column(
         db.Enum(TaskType),
-        default=TaskType.FEATURE
+        default=TaskType.TASK
     )
 
     priority = db.Column(
