@@ -1,12 +1,35 @@
 from crm.db import db, BaseModel, RootModel
 
 
-class CompanyTag(db.Model, BaseModel, RootModel):
-    __tablename__ = "companytags"
+class Tag(db.Model, BaseModel, RootModel):
+    __tablename__ = "tags"
 
     tag = db.Column(
-        db.String(20),
-        nullable=False
+        db.String(),
+        default="",
+    )
+
+    companies = db.relationship(
+        "Company",
+        secondary="companies_tags",
+        backref="tags"
+    )
+
+
+    def __str__(self):
+        return self.tag
+
+class CompanyTags(db.Model):
+    __tablename__ = "companies_tags"
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    tag_id = db.Column(
+        db.String(5),
+        db.ForeignKey('tags.id')
     )
 
     company_id = db.Column(
@@ -14,9 +37,7 @@ class CompanyTag(db.Model, BaseModel, RootModel):
         db.ForeignKey("companies.id")
     )
 
-    def __str__(self):
-        return self.tag
-
+    IS_MANY_TO_MANY = True
 
 class Company(db.Model, BaseModel, RootModel):
 
@@ -89,11 +110,6 @@ class Company(db.Model, BaseModel, RootModel):
 
     links = db.relationship(
         "Link",
-        backref="company"
-    )
-
-    tags = db.relationship(
-        "CompanyTag",
         backref="company"
     )
 

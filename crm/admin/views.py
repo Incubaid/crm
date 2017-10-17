@@ -411,7 +411,7 @@ class SubgroupModelView(EnhancedModelView):
     column_list = ('groupname',)
 
 
-class CompanyTagModelView(EnhancedModelView):
+class TagModelView(EnhancedModelView):
     form_rules = ('tag', )
     form_edit_rules = ('tag',)
     column_details_list = ('tag', )
