@@ -280,6 +280,9 @@ class EnhancedModelView(ModelView):
 
             return flt
 
+    def get_save_return_url(self, model, is_created):
+        return self.get_url('.details_view', id=model.id)
+
     @action('export', 'Export')
     def action_export(self, ids):
         query = self.model.query.filter(self.model.id.in_(ids))
