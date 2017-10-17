@@ -7,7 +7,7 @@ CountriesEnum = enum.Enum('Countries', {v: v for k, v in countries.items()})
 CountriesEnum.__str__ = lambda self: self.value
 
 
-class Address(db.Model, BaseModel, RootModel):
+class Address(db.Model, BaseModel):
 
     __tablename__ = "addresses"
 

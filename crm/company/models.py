@@ -1,7 +1,7 @@
 from crm.db import db, BaseModel, RootModel
 
 
-class Tag(db.Model, BaseModel, RootModel):
+class Tag(db.Model, BaseModel):
     __tablename__ = "tags"
 
     tag = db.Column(
@@ -15,9 +15,9 @@ class Tag(db.Model, BaseModel, RootModel):
         backref="tags"
     )
 
-
     def __str__(self):
         return self.tag
+
 
 class CompanyTags(db.Model):
     __tablename__ = "companies_tags"
@@ -38,6 +38,7 @@ class CompanyTags(db.Model):
     )
 
     IS_MANY_TO_MANY = True
+
 
 class Company(db.Model, BaseModel, RootModel):
 

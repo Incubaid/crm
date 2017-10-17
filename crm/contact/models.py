@@ -6,7 +6,7 @@ class SubgroupName(Enum):
     AMBASSADOR, INVESTOR, HOSTER, MEMBER, PUBLIC = range(5)
 
 
-class Subgroup(db.Model, BaseModel, RootModel):
+class Subgroup(db.Model, BaseModel):
     __tablename__ = "subgroups"
 
     groupname = db.Column(
@@ -20,9 +20,9 @@ class Subgroup(db.Model, BaseModel, RootModel):
         backref="subgroups"
     )
 
-
     def __str__(self):
         return self.groupname.name
+
 
 class SubgroupContact(db.Model):
     __tablename__ = "contacts_subgroups"

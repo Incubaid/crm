@@ -5,7 +5,7 @@ from crm.db import db, BaseModel, RootModel
 from crm.settings import IMAGES_DIR, STATIC_URL_PATH
 
 
-class Image(db.Model, BaseModel, RootModel):
+class Image(db.Model, BaseModel):
     __tablename__ = "images"
     name = db.Column(db.String(255))
     path = db.Column(db.String(255))
