@@ -12,7 +12,7 @@
     - *Disable the ```authenticate``` middleware or comment it out totally in the module ```middlewares.py```*
     - *Don't send Authentication headers in your requests*
 
-- **How to get a JWT token from [IYO](https://itsyou.online)**
+- **How to get a JWT token from [IYO](https://itsyou.online) manually**
 
     - Assuming you created a sub organization from [IYO](https://itsyou.online) ```threefold.crm_users``` organization
     - Get A ```client ID```  & ```Client Secret``` for your organization
@@ -63,6 +63,11 @@
 
             jwt = response.content.decode()
             ```
+- **How to get a JWT token from [IYO](https://itsyou.online) using [Jumpscale framework](https://github.com/Jumpscale/bash)**
+```python3
+j.clients.openvcloud.getJWTTokenFromItsYouOnline(applicationId, secret, validity=3600)
+```
+
 
 # Using the HTTP client
 
