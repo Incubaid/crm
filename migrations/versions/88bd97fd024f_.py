@@ -20,6 +20,17 @@ depends_on = None
 
 COUNTRIES = postgresql.ENUM('Czech Republic', 'Nepal', 'Switzerland', 'Papua New Guinea', 'Australia', 'Kyrgyzstan', 'Antigua and Barbuda', 'Qatar', 'Pakistan', 'Ecuador', 'Palau', 'Mongolia', 'Comoros', 'Nauru', 'Belgium', 'Portugal', 'Sweden', 'Liberia', 'Kuwait', 'Brazil', 'Canada', 'Angola', 'Trinidad and Tobago', 'Cape Verde', 'Mauritius', 'Samoa', 'Ethiopia', 'Saint Vincent and the Grenadines', 'Anguilla', 'Senegal', 'Reunion', 'Morocco', 'Costa Rica', 'French Southern Territories', "Korea, Democratic People's Republic of", 'Tuvalu', 'Saint Kitts and Nevis', 'Guyana', 'Bangladesh', 'Tokelau', 'Afghanistan', 'Egypt', 'Peru', 'Moldova, Republic of', 'Rwanda', 'British Indian Ocean Territory', 'Albania', 'Philippines', 'Serbia and Montenegro', 'Lithuania', 'Mayotte', 'Saint Helena', 'Mexico', 'Timor-Leste', 'Central African Republic', 'Equatorial Guinea', 'Saudi Arabia', 'Bahamas', 'Tunisia', 'Kenya', 'United States', 'South Georgia and the South Sandwich Islands', 'Panama', 'Poland', 'Puerto Rico', 'Macedonia, the Former Yugoslav Republic of', 'Jamaica', 'Bolivia', 'Croatia', 'Virgin Islands, British', 'Chad', 'Marshall Islands', 'Italy', 'Monaco', 'Norfolk Island', 'Taiwan, Province of China', 'Grenada', 'Haiti', 'Slovenia', 'Zimbabwe', 'Namibia', 'Holy See (Vatican City State)', 'Malawi', 'Macao', 'Zambia', 'Faroe Islands', 'Vanuatu', 'Iceland', 'Iraq', 'Uruguay', 'New Caledonia', 'New Zealand', 'Kazakhstan', 'Togo', 'United Arab Emirates', 'French Polynesia', 'Netherlands Antilles', 'Armenia', 'Maldives', 'Denmark', 'Honduras', 'Lebanon', 'Cambodia', 'Chile', 'Cyprus', 'Tajikistan', 'Latvia', 'Jordan', 'Niue', 'Fiji', 'Northern Mariana Islands', 'Ireland', 'Guadeloupe', 'Cocos (Keeling) Islands', 'Yemen', 'Svalbard and Jan Mayen', 'French Guiana', 'Turkey', 'Sierra Leone', 'Germany', 'Syrian Arab Republic', 'Libyan Arab Jamahiriya', 'Gabon', 'Antarctica', 'Dominica', 'Ukraine', 'Korea, Republic of', 'Niger', 'Martinique', 'Nigeria', 'Virgin Islands, U.s.', 'Dominican Republic', 'Pitcairn', 'Malta', 'Turks and Caicos Islands', 'Viet Nam', 'Burundi', 'Swaziland', 'Argentina', "Lao People's Democratic Republic", 'Malaysia', 'Solomon Islands', 'Venezuela', 'Andorra', 'Christmas Island', 'Botswana', 'Mauritania', 'Myanmar', 'United States Minor Outlying Islands', 'Bulgaria', 'Bahrain', 'Lesotho', "Cote D'Ivoire", 'Congo', 'Belize', 'Bosnia and Herzegovina', 'Sudan', 'Spain', 'Iran, Islamic Republic of', 'Barbados', 'Somalia', 'Netherlands', 'Gibraltar', 'United Kingdom', 'Bermuda', 'Kiribati', 'Brunei Darussalam', 'Saint Lucia', 'Heard Island and Mcdonald Islands', 'South Africa', 'Palestinian Territory, Occupied', 'Austria', 'Greece', 'Mali', 'Singapore', 'France', 'Falkland Islands (Malvinas)', 'Romania', 'Finland', 'Cuba', 'Georgia', 'Guinea-Bissau', 'Bouvet Island', 'Uzbekistan', 'Hong Kong', 'Wallis and Futuna', 'Gambia', 'American Samoa', 'Aruba', 'Cook Islands', 'Israel', 'Cayman Islands', 'Estonia', 'Uganda', 'Madagascar', 'Greenland', 'Djibouti', 'Belarus', 'Liechtenstein', 'Tonga', 'San Marino', 'Sao Tome and Principe', 'Azerbaijan', 'Suriname', 'Ghana', 'Benin', 'Western Sahara', 'Bhutan', 'Guam', 'Seychelles', 'Nicaragua', 'Japan', 'Guinea', 'Cameroon', 'Saint Pierre and Miquelon', 'Slovakia', 'Micronesia, Federated States of', 'Montserrat', 'Algeria', 'Oman', 'Eritrea', 'Burkina Faso', 'Indonesia', 'Colombia', 'Norway', 'Congo, the Democratic Republic of the', 'China', 'Thailand', 'Russian Federation', 'Hungary', 'Guatemala', 'India', 'Turkmenistan', 'Paraguay', 'El Salvador', 'Tanzania, United Republic of', 'Sri Lanka', 'Mozambique', 'Luxembourg', name='countries', create_type=False)
 
+### Deal Currency
+old_dealcurrency = postgresql.ENUM('USD', 'EUR', 'AED', 'GBP' , name='dealcurrency')
+new_dealcurrency = postgresql.ENUM('USD', 'EUR', 'AED', 'GBP', 'BTC' , name='dealcurrency')
+temp_dealcurrency = postgresql.ENUM('USD', 'EUR', 'AED', 'GBP', 'BTC' , name='_dealcurrency')
+
+
+## deal types
+old_dealtype = postgresql.ENUM('HOSTER', 'ITO', 'PTO', 'AMBASSADOR', 'ITFT', name='dealtype')
+new_dealtype = postgresql.ENUM('HOSTER', 'ITO', 'PTO', 'AMBASSADOR', 'ITFT' , name='dealtype')
+temp_new_dealtype = postgresql.ENUM('HOSTER', 'ITO', 'PTO', 'AMBASSADOR', 'ITFT' , name='_dealtype')
+
 
 def get_contact_old_addresses():
     address_table = sa.sql.table('addresses',
@@ -64,6 +75,35 @@ def get_contact_old_addresses():
         })
 
     return address_table, data
+
+
+def update_deal_enums():
+    temp_dealcurrency.create(op.get_bind(), checkfirst=False)
+    op.execute('ALTER TABLE deals ALTER COLUMN currency TYPE _dealcurrency'
+               ' USING currency::text::_dealcurrency')
+
+    old_dealcurrency.drop(op.get_bind(), checkfirst=False)
+    # Create and convert to the "new" status type
+    new_dealcurrency.create(op.get_bind(), checkfirst=False)
+
+    op.execute('ALTER TABLE deals ALTER COLUMN currency TYPE dealcurrency'
+               ' USING currency::text::dealcurrency')
+
+    temp_dealcurrency.drop(op.get_bind(), checkfirst=False)
+
+    # Same for deal types
+    temp_new_dealtype.create(op.get_bind(), checkfirst=False)
+    op.execute('ALTER TABLE deals ALTER COLUMN deal_type TYPE _dealtype'
+               ' USING deal_type::text::_dealtype')
+
+    old_dealtype.drop(op.get_bind(), checkfirst=False)
+    # Create and convert to the "new" status type
+    new_dealtype.create(op.get_bind(), checkfirst=False)
+
+    op.execute('ALTER TABLE deals ALTER COLUMN deal_type TYPE dealtype'
+               ' USING deal_type::text::dealtype')
+
+    temp_new_dealtype.drop(op.get_bind(), checkfirst=False)
 
 
 def add_contact_subgroups():
@@ -247,6 +287,8 @@ def upgrade():
     op.bulk_insert(tbl, data)
 
     add_contact_subgroups()
+
+    update_deal_enums()
 
     # ### end Alembic commands ###
 
