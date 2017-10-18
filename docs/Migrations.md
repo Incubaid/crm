@@ -26,11 +26,17 @@ running and doesn't affect existing data
 - Flask migrations uses a library called [Alembic](http://alembic.zzzcomputing.com/en/latest/tutorial.html)
 Consider reading the documentation there especially if you want to alter data in database during migrations
 
-**WARNING**
+### WARNINGS
 
-In case of sqlite, you can use ```flask db init flask db migrate flask db upgrade``` and database
+- Flask migration framework not being able to detect changes
+in SQLALCHEMY ```Enum``` types so it's automatically created for you
+you have to make sure whenever you change an ```Enum``` type that you make the migration
+manually.
+An example below on how to deal with this situation
+
+- In case of sqlite, you can use ```flask db init flask db migrate flask db upgrade``` and database
 will be created for you.
-but in case of other RDBMS like postgres or mysql, you need to create DB first
+but in case of other RDBMS like postgres or mysql, you need to create DB first using ```flask createdb```
 
 
 ### Full Migrations Scenario**
@@ -63,4 +69,53 @@ We have used ```migrations``` dir, so we now sure that we used all previous migr
 and we created a new one that depends on them
 - Edit your newly migration file under ```migrations/revisions``` if needed
 - commit in ```production``` after merging ```master``` into priduction
-- **Check code in [migrations files](https://github.com/Incubaid/crm/tree/production/migrations/versions) to see how you can query and alter data during migrations
+- **Check code in [migrations files](https:https://github.com/Incubaid/crm/blob/production/migrations/versions/88bd97fd024f_.py) to see how you can query and alter data during migrations
+
+### Deal with Enum changes**
+We had this issue once before
+- Old ENum
+    ```python
+    class DealCurrency(Enum):
+        USD, EUR, AED, GBP = range(4)
+    ```
+
+- New Enum
+    ```python
+    class DealCurrency(Enum):
+        USD, EUR, AED, GBP, BTC = range(5)
+    ```
+
+- Now after creating new migration file, these changes was not detected
+- How to do the migrarion?
+    - since old and new enum names are same, and you can't just create enum with same name as old one
+       We create temporary type with different enum name but holding new data
+
+    - we alter table field to use the temp one, then we drop old one
+    - we create new one and alter table field with to use the new then we drop temp one
+
+        ```
+        ## Deal Currency
+        old_dealcurrency = postgresql.ENUM('USD', 'EUR', 'AED', 'GBP' , name='dealcurrency')
+        new_dealcurrency = postgresql.ENUM('USD', 'EUR', 'AED', 'GBP', 'BTC' , name='dealcurrency')
+        temp_dealcurrency = postgresql.ENUM('USD', 'EUR', 'AED', 'GBP', 'BTC' , name='_dealcurrency')
+
+        def update_deal_enums():
+            temp_dealcurrency.create(op.get_bind(), checkfirst=False)
+            op.execute('ALTER TABLE deals ALTER COLUMN currency TYPE _dealcurrency'
+                       ' USING currency::text::_dealcurrency')
+
+            old_dealcurrency.drop(op.get_bind(), checkfirst=False)
+            # Create and convert to the "new" status type
+            new_dealcurrency.create(op.get_bind(), checkfirst=False)
+
+            op.execute('ALTER TABLE deals ALTER COLUMN currency TYPE dealcurrency'
+                       ' USING currency::text::dealcurrency')
+
+            temp_dealcurrency.drop(op.get_bind(), checkfirst=False)
+
+
+        def upgrade():
+            ...
+            ...
+            update_deal_enums()
+        ```
