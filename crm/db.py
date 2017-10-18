@@ -179,7 +179,8 @@ class ParentModel(AdminLinksMixin):
             records = item['records']
 
             table = prop.secondary
-
+            if table is None:
+                continue
             model_cls = self.get_model_from_table_name(table.name)
             data[model_cls.__name__] = []
             join_expression = str(prop.secondaryjoin.expression) # i.e 'subgroups.id = contacts_subgroups.subgroup_id'

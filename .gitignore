@@ -113,3 +113,7 @@ data
 
 # static
 static
+
+
+# graphql schema
+schema.graphql

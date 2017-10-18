@@ -8,10 +8,14 @@ from crm.db import BaseModel, db, RootModel, ManyToManyBaseModel
 from crm import app
 
 from crm.fixtures import generate_fixtures
+from crm.user.models import User
 
 
 @app.cli.command()
 def createdb():
+    """
+    Create DB    
+    """
     if not database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
         create_database(app.config['SQLALCHEMY_DATABASE_URI'])
     print("DB created.")
@@ -19,6 +23,9 @@ def createdb():
 
 @app.cli.command()
 def loadfixtures():
+    """
+    populate DB with Test/Random Data 
+    """
     generate_fixtures()
 
 
@@ -32,7 +39,8 @@ def dumpdata():
         os.mkdir(data_dir)
 
     for model in BaseModel.__subclasses__():
-        # Root models are 'Company', 'Contact', 'Deal', 'Sprint', 'Project', 'Organization','User'
+        # Root models are 'Company', 'Contact', 'Deal', 'Sprint', 'Project',
+        # 'Organization','User'
         if not model in RootModel.__subclasses__():
             continue
 
@@ -45,7 +53,8 @@ def dumpdata():
             if len(obj_as_str) > 100:
                 obj_as_str = obj_as_str[:100]
 
-            record_path = os.path.abspath(os.path.join(model_dir, '%s_%s.json' % (obj.id, obj_as_str)))
+            record_path = os.path.abspath(os.path.join(
+                model_dir, '%s_%s.json' % (obj.id, obj_as_str)))
             data = obj.as_dict()
             with open(record_path, 'w') as f:
                 json.dump(data, f, indent=4)
@@ -68,12 +77,8 @@ def loaddata():
     # example: {model_name: [], another_model_name:[]}
     added_object_ids = {}
 
-    # example: {model_name1: model_obj1,model_name12 model_obj2}
-    models = {}
-
     # Initialize our dicts
     for model in BaseModel.__subclasses__() + ManyToManyBaseModel.__subclasses__():
-        models[model.__name__] = model
         added_object_ids[model.__name__] = []
 
     # Delete all data in db
@@ -84,18 +89,48 @@ def loaddata():
     create_database(app.config['SQLALCHEMY_DATABASE_URI'])
 
     # Create tables and run migrations
-    p = Popen(['flask', 'db', 'upgrade'], stdout = PIPE, stderr=PIPE)
+    p = Popen(['flask', 'db', 'upgrade'], stdout=PIPE, stderr=PIPE)
     p.communicate()[0]
 
     if p.returncode != 0:
         print('Error in executing command : flask db upgrade .. Make sure migrations dir exists and up2date')
         exit(1)
 
+    # Save users 1st
+    model_dir = os.path.abspath(os.path.join(data_dir, User.__name__))
+
+    user_data = {}
+    for root, dirs, files in os.walk(model_dir):
+        for file in files:
+            file_path = os.path.abspath(os.path.join(root, file))
+            with open(file_path, 'r') as f:
+                data = json.load(f)
+                obj = User.from_dict(data)[0]
+
+                if obj.id in added_object_ids[obj.__class__.__name__]:
+                    continue
+
+                user_data[obj.id] = {
+                    'author_last_id': obj.author_last_id,
+                    'author_original_id': obj.author_original_id,
+                }
+
+                obj.author_last_id = None
+                obj.author_original_id = None
+                added_object_ids[obj.__class__.__name__].append(obj.id)
+                db.session.add(obj)
+
+    db.session.commit()
+
+    # Now update authors
+    for id, info in user_data.items():
+        User.query.filter_by(id=id).update(info)
+    db.session.commit()
+
     # START loading
-    for model in models.values():
-        # Root models are 'Company', 'Contact', 'Deal', 'Sprint', 'Project', 'Organization','User'
-        if not model in RootModel.__subclasses__():
-            continue
+    for model in RootModel.__subclasses__():
+        # Root models are 'Company', 'Contact', 'Deal', 'Sprint', 'Project',
+        # 'Organization','User'
 
         model_dir = os.path.abspath(os.path.join(data_dir, model.__name__))
         # many2many objects needed to be added last
@@ -124,3 +159,27 @@ def loaddata():
             db.session.add(obj)
             added_object_ids[obj.__class__.__name__].append(obj.id)
         db.session.commit()
+
+
+@app.cli.command()
+def generate_graphql_docs():
+    """
+    Generates schema.graphql IDL file and the GraphQL API documentation for queries and mutations.
+
+    requires graphdoc to be installed.
+
+    """
+    from crm import app
+    sc = app.graphql_schema
+
+    with open('./schema.graphql', "w") as f:
+        f.write(str(sc))
+
+    p = Popen(['graphdoc', '--force', '-s', './schema.graphql', '-o',
+               'docs/graphqlapi'], stdout=PIPE, stderr=PIPE)
+
+    p.communicate()[0]
+
+    if p.returncode != 0:
+        print("Failed to generate graphqlapi docs.")
+        exit(1)
