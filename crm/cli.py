@@ -33,7 +33,8 @@ def dumpdata():
         os.mkdir(data_dir)
 
     for model in BaseModel.__subclasses__():
-        # Root models are 'Company', 'Contact', 'Deal', 'Sprint', 'Project', 'Organization','User'
+        # Root models are 'Company', 'Contact', 'Deal', 'Sprint', 'Project',
+        # 'Organization','User'
         if not model in RootModel.__subclasses__():
             continue
 
@@ -46,7 +47,8 @@ def dumpdata():
             if len(obj_as_str) > 100:
                 obj_as_str = obj_as_str[:100]
 
-            record_path = os.path.abspath(os.path.join(model_dir, '%s_%s.json' % (obj.id, obj_as_str)))
+            record_path = os.path.abspath(os.path.join(
+                model_dir, '%s_%s.json' % (obj.id, obj_as_str)))
             data = obj.as_dict()
             with open(record_path, 'w') as f:
                 json.dump(data, f, indent=4)
@@ -81,7 +83,7 @@ def loaddata():
     create_database(app.config['SQLALCHEMY_DATABASE_URI'])
 
     # Create tables and run migrations
-    p = Popen(['flask', 'db', 'upgrade'], stdout = PIPE, stderr=PIPE)
+    p = Popen(['flask', 'db', 'upgrade'], stdout=PIPE, stderr=PIPE)
     p.communicate()[0]
 
     if p.returncode != 0:
@@ -121,7 +123,8 @@ def loaddata():
 
     # START loading
     for model in RootModel.__subclasses__():
-        # Root models are 'Company', 'Contact', 'Deal', 'Sprint', 'Project', 'Organization','User'
+        # Root models are 'Company', 'Contact', 'Deal', 'Sprint', 'Project',
+        # 'Organization','User'
 
         model_dir = os.path.abspath(os.path.join(data_dir, model.__name__))
         # many2many objects needed to be added last
@@ -150,3 +153,24 @@ def loaddata():
             db.session.add(obj)
             added_object_ids[obj.__class__.__name__].append(obj.id)
         db.session.commit()
+
+
+@app.cli.command()
+def generate_graphql_docs():
+    """
+    Generates schema.graphql IDL file and the GraphQL API documentation for queries and mutations.
+
+    requires graphdoc to be installed.
+
+    """
+    from crm import app
+    sc = app.graphql_schema
+    with open('schema.graphql', "w") as f:
+        f.write(str(sc))
+    p = Popen(['graphdoc', '-s', './schema.graphql', '-o',
+               'docs/graphqlapi'], stdout=PIPE, stderr=PIPE)
+    p.communicate()[0]
+
+    if p.returncode != 0:
+        print("Failed to generate graphqlapi docs.")
+        exit(1)
