@@ -13,6 +13,9 @@ from crm.user.models import User
 
 @app.cli.command()
 def createdb():
+    """
+    Create DB    
+    """
     if not database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
         create_database(app.config['SQLALCHEMY_DATABASE_URI'])
     print("DB created.")
@@ -20,6 +23,9 @@ def createdb():
 
 @app.cli.command()
 def loadfixtures():
+    """
+    populate DB with Test/Random Data 
+    """
     generate_fixtures()
 
 
@@ -165,10 +171,13 @@ def generate_graphql_docs():
     """
     from crm import app
     sc = app.graphql_schema
-    with open('schema.graphql', "w") as f:
+
+    with open('./schema.graphql', "w") as f:
         f.write(str(sc))
-    p = Popen(['graphdoc', '-s', './schema.graphql', '-o',
+
+    p = Popen(['graphdoc', '--force', '-s', './schema.graphql', '-o',
                'docs/graphqlapi'], stdout=PIPE, stderr=PIPE)
+
     p.communicate()[0]
 
     if p.returncode != 0:

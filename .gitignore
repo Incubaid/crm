@@ -117,3 +117,5 @@ migrations
 # static
 static
 
+# graphql schema
+schema.graphql

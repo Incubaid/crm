@@ -22,7 +22,7 @@
 **Graphql**
 - [Intro](docs/GraphqlOverview.md)
 - [CRM API General overview](docs/GraphqlQueriesAndMutations.md)
-- [CRM complete list of API](docs/GraphqlAPI.md)
+- [Graphql API Docs](http://htmlpreview.github.io/?https://github.com/Incubaid/crm/blob/master/docs/graphqlapi/index.html)
 - [Using HTTP client to access CRM Graphql API](docs/GraphqlHTTPClient.md)
 - [Define new Types, Queries, and Mutations](docs/GraphqlAdvanced.md)
 

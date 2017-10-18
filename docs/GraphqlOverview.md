@@ -49,3 +49,6 @@ in a query which is unique internal representation of the record, but this intro
 to us, because this hides the original (id) field coming from DB.
 To overcome this **we refer to the original id field with (uid) in our queries and mutations***
 
+
+**complete List of Graphql API**
+- [Find it here](http://htmlpreview.github.io/?https://github.com/Incubaid/crm/blob/master/docs/graphqlapi/index.html) or simply browse the endpoint ```/docs/graphqlapi``` assuming you are using caddy installation
