@@ -1,15 +1,20 @@
 # Update Production procedures
 
-- Postgres
+We do deploy from ```production``` branch
+and after any change to our graphql api we regenerate graphql api usig ```generate_graphql_docs```
+and we make sure new docs is committed
+
+
+- **Postgres**
     - Backup postgres database or ensure a recent version of postgres backup
 
-- Caddy
+- **Caddy**
     - Update ```caddy``` config with the latest config if any
     - stop and start caddy with new config
         ```
         echo **START**;ulimit -n 8192; /opt/bin/caddy -conf=/opt/cfg/caddy.cfg  -agree && echo **OK** || echo **ERROR**
         ```
-- CRM
+- **CRM**
     - check where is ```DATA_DIR``` in ```crm.settings.py``` and backup this DIR
     - make sure you're in production branch and pull new production code
     - stop crm
