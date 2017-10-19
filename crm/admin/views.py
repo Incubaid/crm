@@ -638,7 +638,7 @@ class TaskModelView(EnhancedModelView):
     column_list = ('title', 'type', 'priority', 'state', 'assignee', 'user', 'contact',
                    'organization', 'company', 'project', 'sprint', 'deal', *EnhancedModelView.columns_list_extra)
     column_searchable_list = ('id', 'title', 'description',
-                              'type', 'priority')
+                              'type', 'priority', 'assignee.firstname', 'assignee.lastname', 'assignee.username')
     column_sortable_list = (['priority', 'updated_at'])
     column_details_list = ('id', 'title', 'description', 'type', 'priority', 'eta', 'deadline', 'state',
                            'time_done', 'time_estimate', 'assignee', 'user', 'contact',
@@ -646,7 +646,7 @@ class TaskModelView(EnhancedModelView):
                            'comments', 'messages', 'links', 'author_last', 'author_original', 'updated_at')
 
     column_filters = ('id', 'title', 'description','type', 'priority', 'eta', 'deadline', 'time_done',
-                      'contact', 'user', 'assignee.username', 'assignee.id',
+                      'contact', 'user', 'assignee.username', 'assignee.id','assignee.firstname', 'assignee.lastname',
                       'company', 'organization', 'project', 'sprint', 'deal',
                       'comments', 'messages')
     form_rules = ('title', 'description',
