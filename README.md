@@ -8,6 +8,7 @@
 - [Installation](docs/Installation.md)
 - [Running](docs/Running.md)
 - [Configuration](docs/Configuration.md)
+- [Procedures to update production](docs/Production.md)
 
 
 **Advanced**
