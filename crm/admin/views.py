@@ -26,6 +26,7 @@ from crm.message.models import Message as MessageModel
 from crm.comment.models import Comment as CommentModel
 from crm.contact.models import Contact as ContactModel
 from crm.company.models import Company as CompanyModel
+from crm.event.models import Event as EventModel
 from crm.image.models import Image as ImageModel
 from flask import session
 from .formatters import column_formatters
@@ -48,6 +49,10 @@ class MyAdminIndexView(AdminIndexView):
                 TaskModelView(TaskModel, db.session), self.mainfilter]
             filtered_objects['contactsview'] = [ContactModelView(
                 ContactModel, db.session), self.mainfilter]
+            filtered_objects['eventsview'] = [EventModelView(
+                EventModel, db.session), self.mainfilter]
+            filtered_objects['ownstasksview'] = [
+                TaskModelView(TaskModel, db.session), 'assignee / Users / Id']
 
             filtered_objects['companiesview'] = [
                 CompanyModelView(CompanyModel, db.session), self.mainfilter]
@@ -125,6 +130,8 @@ class EnhancedModelView(ModelView):
                 TaskModelView(TaskModel, db.session), self.mainfilter]
             filtered_objects['contactsview'] = [ContactModelView(
                 ContactModel, db.session), self.mainfilter]
+            filtered_objects['eventsview'] = [EventModelView(
+                EventModel, db.session), self.mainfilter]
 
             filtered_objects['companiesview'] = [
                 CompanyModelView(CompanyModel, db.session), self.mainfilter]
@@ -154,6 +161,8 @@ class EnhancedModelView(ModelView):
                 TaskModelView(TaskModel, db.session), 'assignee / Users / Id']
             filtered_objects['contactsview'] = [ContactModelView(
                 ContactModel, db.session), self.mainfilter]
+            filtered_objects['eventsview'] = [EventModelView(
+                EventModel, db.session), self.mainfilter]
 
             filtered_objects['companiesview'] = [
                 CompanyModelView(CompanyModel, db.session), self.mainfilter]
@@ -384,7 +393,6 @@ class TagModelView(EnhancedModelView):
     form_edit_rules = ('tag',)
 
 
-
 class ContactModelView(EnhancedModelView):
     column_list = ('firstname', 'lastname', 'emails',
                    'telephones', 'short_description', *EnhancedModelView.columns_list_extra)
@@ -435,11 +443,11 @@ class ContactModelView(EnhancedModelView):
 
 class CompanyModelView(EnhancedModelView):
 
-    column_list = ('name', 'short_description', 'vatnumber', 'website', *EnhancedModelView.columns_list_extra)
+    column_list = ('name', 'short_description', 'vatnumber',
+                   'website', *EnhancedModelView.columns_list_extra)
     column_searchable_list = (
         'id', 'name', 'description', 'vatnumber', 'website',)
     column_sortable_list = ('name',)
-
 
     column_details_list = (
         'name', 'description', 'emails', 'telephones',  'addresses', 'vatnumber', 'website', 'tags',
@@ -478,7 +486,8 @@ class CompanyModelView(EnhancedModelView):
 
 class OrganizationModelView(EnhancedModelView):
 
-    column_list = ('name', 'emails', 'short_description', 'owner', *EnhancedModelView.columns_list_extra)
+    column_list = ('name', 'emails', 'short_description',
+                   'owner', *EnhancedModelView.columns_list_extra)
     column_searchable_list = ('id', 'name', 'description',)
     column_sortable_list = ('name',)
     column_details_list = ('name', 'description', 'emails', 'owner',
@@ -514,7 +523,7 @@ class DealModelView(EnhancedModelView):
     column_sortable_list = ('name', 'amount', 'currency',
                             'deal_type', 'deal_state', 'updated_at')
     column_details_list = ('id', 'name', 'description', 'amount', 'currency', 'deal_type', 'deal_state', 'shipping_address', 'is_paid',
-                           'contact','referrer1', 'referrer2', 'company', 'closed_at', 'referral_code', 'tasks', 'messages', 'links', 'comments', 'author_last', 'author_original', 'updated_at')
+                           'contact', 'referrer1', 'referrer2', 'company', 'closed_at', 'referral_code', 'tasks', 'messages', 'links', 'comments', 'author_last', 'author_original', 'updated_at')
     column_filters = ('id', 'name', 'amount', 'currency', 'deal_type', 'deal_state', 'closed_at', 'is_paid', 'referral_code', 'updated_at',
                       'contact', 'company', 'tasks', 'messages', 'comments', )
 
@@ -539,7 +548,8 @@ class DealModelView(EnhancedModelView):
 
 class ProjectModelView(EnhancedModelView):
 
-    column_list = ('name', 'short_description', 'start_date', 'deadline', *EnhancedModelView.columns_list_extra)
+    column_list = ('name', 'short_description', 'start_date',
+                   'deadline', *EnhancedModelView.columns_list_extra)
     column_searchable_list = (
         'id', 'name', 'description', 'start_date', 'deadline')
     column_sortable_list = ('name', 'start_date', 'deadline')
@@ -568,7 +578,8 @@ class ProjectModelView(EnhancedModelView):
 
 
 class SprintModelView(EnhancedModelView):
-    column_list = ('name', 'short_description', 'start_date', 'deadline', *EnhancedModelView.columns_list_extra)
+    column_list = ('name', 'short_description', 'start_date',
+                   'deadline', *EnhancedModelView.columns_list_extra)
     column_searchable_list = (
         'id', 'name', 'description', 'start_date', 'deadline')
     column_sortable_list = ('name', 'start_date', 'deadline')
@@ -585,7 +596,6 @@ class SprintModelView(EnhancedModelView):
     form_edit_rules = ('name', 'description', 'start_date', 'deadline',
                        'project', 'contacts', 'tasks', 'messages', 'comments', 'links')
 
-
     inline_models = [
         (TaskModel, {'form_columns': [
             'id', 'title', 'type', 'priority', 'assignee', 'eta', 'deadline']}),
@@ -600,7 +610,8 @@ class SprintModelView(EnhancedModelView):
 
 
 class CommentModelView(EnhancedModelView):
-    column_list = ('id', 'short_content', *EnhancedModelView.columns_list_extra)
+    column_list = ('id', 'short_content', *
+                   EnhancedModelView.columns_list_extra)
     column_searchable_list = ('id', 'content')
     column_sortable_list = ('content',)
 
@@ -630,7 +641,6 @@ class LinkModelView(EnhancedModelView):
                   'deal', 'sprint', 'labels',)
     form_edit_rules = ('url', 'labels')
 
-
     mainfilter = 'Links / Id'
 
 
@@ -645,8 +655,8 @@ class TaskModelView(EnhancedModelView):
                            'company', 'organization', 'project', 'sprint', 'deal',
                            'comments', 'messages', 'links', 'author_last', 'author_original', 'updated_at')
 
-    column_filters = ('id', 'title', 'description','type', 'priority', 'eta', 'deadline', 'time_done',
-                      'contact', 'user', 'assignee.username', 'assignee.id','assignee.firstname', 'assignee.lastname',
+    column_filters = ('id', 'title', 'description', 'type', 'priority', 'eta', 'deadline', 'time_done',
+                      'contact', 'user', 'assignee.username', 'assignee.id', 'assignee.firstname', 'assignee.lastname',
                       'company', 'organization', 'project', 'sprint', 'deal',
                       'comments', 'messages')
     form_rules = ('title', 'description',
@@ -689,11 +699,39 @@ class TaskAssignmentModelView(EnhancedModelView):
     column_details_list = ('contact', 'task', 'tasktracking')
 
 
-
 class TaskTrackingModelView(EnhancedModelView):
     column_list = column_details_list = ('remarks',
                                          'time_done', *EnhancedModelView.columns_list_extra)
 
+
+class EventModelView(EnhancedModelView):
+    column_list = ('title', 'description',
+                   'event_datetime',  *EnhancedModelView.columns_list_extra)
+    column_searchable_list = ('title', 'event_datetime')
+    column_sortable_list = ('title', 'event_datetime')
+
+    column_details_list = ('id', 'title', 'description', 'event_datetime',
+                           'contacts', 'messages', 'comments', 'links',
+                           'author_last', 'author_original', 'updated_at')
+
+    column_filters = ('title', 'description',
+                      'event_datetime')
+
+    form_rules = ('title', 'description',
+                  'event_datetime', 'contacts', 'links')
+
+    form_edit_rules = ('title', 'description',
+                       'event_datetime', 'contacts', 'messages', 'comments', 'links')
+
+    inline_models = [
+        (MessageModel, {'form_columns': [
+            'id', 'title', 'content', 'channel']}),
+        (CommentModel, {'form_columns': ['id', 'content']}),
+        (LinkModel, {'form_columns': [
+            'id', 'url', ]}),
+    ]
+
+    # mainfilter = "Events / Id"
 # class AlertModelView(EnhancedModelView):
 #     pass
 #

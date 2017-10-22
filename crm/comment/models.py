@@ -54,6 +54,10 @@ class Comment(db.Model, BaseModel):
         db.String(5),
         db.ForeignKey("links.id")
     )
+    event_id = db.Column(
+        db.String,
+        db.ForeignKey("events.id")
+    )
 
     # alert_id = db.Column(
     #     db.String,
