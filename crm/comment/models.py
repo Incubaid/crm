@@ -70,10 +70,10 @@ class Comment(db.Model, BaseModel):
     #     db.ForeignKey("alertsources.id")
     # )
 
-    # knowledgebase_id = db.Column(
-    #     db.String,
-    #     db.ForeignKey("knowledgebases.id")
-    # )
+    knowledge_base_id = db.Column(
+        db.String,
+        db.ForeignKey("knowledgebases.id")
+    )
 
     def __str__(self):
         return self.content

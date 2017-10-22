@@ -134,10 +134,11 @@ class User(db.Model, BaseModel, RootModel):
         primaryjoin="User.id==Project.guardian_id"
     )
 
-    # knowledgebases = db.relationship(
-    #     "KnowledgeBase",
-    #     backref="author"
-    # )
+    knowledge_bases = db.relationship(
+        "KnowledgeBase",
+        backref="author",
+        primaryjoin="User.id==KnowledgeBase.author_id"
+    )
 
     def __str__(self):
         return self.username or '%s %s'.strip() % (self.firstname or '', self.lastname or '')

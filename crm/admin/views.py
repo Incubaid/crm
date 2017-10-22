@@ -753,8 +753,8 @@ class EventModelView(EnhancedModelView):
 # class AlertProfileModelView(EnhancedModelView):
 #     pass
 #
-# class KnowledgeBaseModelView(EnhancedModelView):
-#     pass
+class KnowledgeBaseModelView(EnhancedModelView):
+    pass
 #
-# class KnowledgeBaseCategoryModelView(EnhancedModelView):
-#     pass
+class KnowledgeBaseCategoryModelView(EnhancedModelView):
+    pass
