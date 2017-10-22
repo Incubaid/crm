@@ -8,15 +8,18 @@ class User(db.Model, BaseModel, RootModel):
     username = db.Column(
         db.String(255),
         unique=True,
-        nullable=True
+        nullable=True,
+        index=True
     )
 
     firstname = db.Column(
         db.String(255),
+        index=True
     )
 
     lastname = db.Column(
-        db.String(255)
+        db.String(255),
+        index=True
     )
 
     # should be markdown.
@@ -32,12 +35,14 @@ class User(db.Model, BaseModel, RootModel):
 
     # Comma  separated emails
     emails = db.Column(
-        db.Text()
+        db.Text(),
+        index=True
     )
 
     # Comma separated phones
     telephones = db.Column(
-        db.Text()
+        db.Text(),
+        index=True
     )
 
     # Tasks Linked to this user (may be someone is doing it for him) like

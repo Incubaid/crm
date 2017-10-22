@@ -7,11 +7,13 @@ class Link(db.Model, BaseModel):
 
     url = db.Column(
         db.String(255),
-        nullable=False
+        nullable=False,
+        index=True
     )
 
     labels = db.Column(
-        db.Text()
+        db.Text(),
+        index=True
     )
 
     contact_id = db.Column(

@@ -1,7 +1,6 @@
 import enum
 from crm.db import db, BaseModel, RootModel, ManyToManyBaseModel
-from sqlalchemy.sql.sqltypes import TIMESTAMP
-from datetime import datetime, date
+from datetime import datetime
 
 
 class ContactEventStatus(enum.Enum):
@@ -15,11 +14,14 @@ class Event(db.Model, BaseModel, RootModel):
 
     title = db.Column(
         db.String(255),
-        default=""
+        default="",
+        index=True
     )
+
     description = db.Column(
         db.Text(),
-        default=""
+        default="",
+        index=True
     )
     contact_event_status = db.Column(
         db.Enum(ContactEventStatus),
@@ -30,10 +32,12 @@ class Event(db.Model, BaseModel, RootModel):
         secondary="contacts_events",
         backref="events"
     )
+
     comments = db.relationship(
         "Comment",
         backref="event",
     )
+
     messages = db.relationship(
         "Message",
         backref="event",
@@ -43,11 +47,13 @@ class Event(db.Model, BaseModel, RootModel):
         "Link",
         backref="event",
     )
+
     event_datetime = db.Column(
         db.TIMESTAMP,
         default=datetime.utcnow,
         onupdate=datetime.utcnow,
-        nullable=False
+        nullable=False,
+        index=True
     )
 
     def __str__(self):

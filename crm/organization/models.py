@@ -7,18 +7,21 @@ class Organization(db.Model, BaseModel, RootModel):
 
     name = db.Column(
         db.String(255),
-        nullable=False
+        nullable=False,
+        index=True
     )
 
     # should be markdown
     description = db.Column(
         db.Text(),
-        default=""
+        default="",
+        index=True
     )
 
     # Comma  separated emails
     emails = db.Column(
-        db.Text()
+        db.Text(),
+        index=True
     )
 
     tasks = db.relationship(

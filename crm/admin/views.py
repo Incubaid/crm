@@ -743,6 +743,7 @@ class EventModelView(EnhancedModelView):
     ]
 
     mainfilter = "Events / Id"
+
 # class AlertModelView(EnhancedModelView):
 #     pass
 #

@@ -7,11 +7,13 @@ class Message(db.Model, BaseModel):
 
     title = db.Column(
         db.String(255),
-        nullable=False
+        nullable=False,
+        index=True
     )
 
     content = db.Column(
-        db.Text()
+        db.Text(),
+        index=True
     )
 
     channel = db.Column(
@@ -75,6 +77,7 @@ class Message(db.Model, BaseModel):
         db.String,
         db.ForeignKey("sprints.id")
     )
+
     event_id = db.Column(
         db.String,
         db.ForeignKey("events.id")

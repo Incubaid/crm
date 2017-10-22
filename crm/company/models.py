@@ -7,6 +7,7 @@ class Tag(db.Model, BaseModel):
     tag = db.Column(
         db.String(),
         default="",
+        index=True
     )
 
     companies = db.relationship(
@@ -39,31 +40,37 @@ class Company(db.Model, BaseModel, RootModel):
 
     name = db.Column(
         db.String(255),
-        nullable=False
+        nullable=False,
+        index=True
     )
 
     # should be markdown.
     description = db.Column(
         db.Text(),
-        default=""
+        default="",
+        index=True
     )
 
     vatnumber = db.Column(
-        db.String(255)
+        db.String(255),
+        index=True
     )
 
     website = db.Column(
-        db.String(255)
+        db.String(255),
+        index=True
     )
 
     # Comma  separated emails
     emails = db.Column(
-        db.Text()
+        db.Text(),
+        index=True
     )
 
     # Comma separated phones
     telephones = db.Column(
-        db.Text()
+        db.Text(),
+        index=True
     )
 
     deals = db.relationship(

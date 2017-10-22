@@ -22,27 +22,32 @@ class Task(db.Model, BaseModel):
 
     title = db.Column(
         db.String(255),
-        nullable=False
+        nullable=False,
+        index=True
     )
 
     description = db.Column(
         db.Text(),
-        default=""
+        default="",
+        index=True
     )
 
     type = db.Column(
         db.Enum(TaskType),
-        default=TaskType.TASK
+        default=TaskType.TASK,
+        index=True
     )
 
     priority = db.Column(
         db.Enum(TaskPriority),
-        default=TaskPriority.MINOR
+        default=TaskPriority.MINOR,
+        index=True
     )
 
     state = db.Column(
         db.Enum(TaskState),
-        default=TaskState.NEW
+        default=TaskState.NEW,
+        index=True
     )
 
     assignee_id = db.Column(
@@ -53,12 +58,15 @@ class Task(db.Model, BaseModel):
     deadline = db.Column(
         db.TIMESTAMP,
         default=datetime.utcnow,
-        nullable=False)
+        nullable=False,
+        index=True
+    )
 
     eta = db.Column(
         db.TIMESTAMP,
         default=datetime.utcnow,
-        nullable=False
+        nullable=False,
+
     )
 
     # in hours

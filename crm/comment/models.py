@@ -7,7 +7,8 @@ class Comment(db.Model, BaseModel):
 
     # should be markdown.
     content = db.Column(
-        db.Text()
+        db.Text(),
+        index=True
     )
 
     company_id = db.Column(
