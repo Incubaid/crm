@@ -21,7 +21,10 @@ class Event(db.Model, BaseModel, RootModel):
         db.Text(),
         default=""
     )
-
+    contact_event_status = db.Column(
+        db.Enum(ContactEventStatus),
+        default=ContactEventStatus.INVITED,
+    )
     contacts = db.relationship(
         "Contact",
         secondary="contacts_events",

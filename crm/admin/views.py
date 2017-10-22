@@ -352,6 +352,18 @@ class ImagePreviewField(StringField):
     widget = ImagePreviewWidget()
 
 
+class InlineEventModelForm(InlineFormAdmin):
+    form_columns = ('id', 'title', 'contact_event_status')
+    form_widget_args = {
+        'title': {
+            'readonly': True
+        }
+    }
+
+    def __init__(self,):
+        return super(InlineEventModelForm, self).__init__(EventModel)
+
+
 class InlineImageModelForm(InlineFormAdmin):
     form_excluded_columns = ('path', 'name', 'created_at',
                              'updated_at',)
@@ -415,13 +427,14 @@ class ContactModelView(EnhancedModelView):
         'firstname', 'lastname', 'images', 'description', 'bio', 'belief_statement',
         'addresses',
         'emails', 'telephones', 'companies', 'tasks', 'deals', 'messages',
-        'comments', 'links',
+        'comments', 'links', 'events',
         'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code', 'owner', 'ownerbackup')
 
     inline_models = [
         InlineImageModelForm(),
         (AddressModel, {'form_columns': [
             'id', 'street_name', 'street_number', 'zip_code', 'country', 'city', 'state']}),
+        InlineEventModelForm(),
         (TaskModel, {'form_columns': [
             'id', 'title', 'description', 'type', 'priority', 'assignee', 'eta', 'deadline']}),
         (MessageModel, {'form_columns': [
@@ -553,7 +566,7 @@ class ProjectModelView(EnhancedModelView):
     column_sortable_list = ('name', 'start_date', 'deadline')
     column_details_list = ('name', 'description', 'start_date', 'deadline',
                            'promoter', 'sprints', 'tasks', 'messages', 'links', 'guardian', 'author_last', 'author_original', 'updated_at')
-    column_filters = ('name', 'description', 'start_date', 'deadline',
+    column_filters = ('name', 'description', 'start_date', 'deadline', 'contacts',
                       'promoter', 'sprints', 'tasks', 'messages', 'guardian',)
 
     form_rules = ('name', 'description', 'start_date', 'deadline',
