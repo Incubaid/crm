@@ -47,10 +47,8 @@ class MyAdminIndexView(AdminIndexView):
 
             filtered_objects['tasksview'] = [
                 TaskModelView(TaskModel, db.session), self.mainfilter]
-            filtered_objects['contactsview'] = [ContactModelView(
-                ContactModel, db.session), self.mainfilter]
-            filtered_objects['eventsview'] = [EventModelView(
-                EventModel, db.session), self.mainfilter]
+            filtered_objects['contactsview'] = [
+                ContactModelView(ContactModel, db.session), self.mainfilter]
             filtered_objects['ownstasksview'] = [
                 TaskModelView(TaskModel, db.session), 'assignee / Users / Id']
 
@@ -130,8 +128,8 @@ class EnhancedModelView(ModelView):
                 TaskModelView(TaskModel, db.session), self.mainfilter]
             filtered_objects['contactsview'] = [ContactModelView(
                 ContactModel, db.session), self.mainfilter]
-            filtered_objects['eventsview'] = [EventModelView(
-                EventModel, db.session), self.mainfilter]
+            # filtered_objects['eventsview'] = [EventModelView(
+            #     EventModel, db.session), self.mainfilter]
 
             filtered_objects['companiesview'] = [
                 CompanyModelView(CompanyModel, db.session), self.mainfilter]
@@ -402,10 +400,10 @@ class ContactModelView(EnhancedModelView):
         'firstname', 'lastname', 'description', 'images', 'bio', 'belief_statement',
         'addresses',
         'emails', 'telephones', 'companies', 'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code',
-        'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup', 'author_last', 'author_original', 'updated_at')
+        'deals', 'events', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup', 'author_last', 'author_original', 'updated_at')
 
-    column_filters = ('firstname', 'lastname', 'description', 'emails', 'telephones', 'addresses.country', 'message_channels', 'referral_code',
-                      'deals', 'comments', 'tasks', 'projects', 'companies', 'messages', 'sprints', 'links', 'owner',
+    column_filters = ('id', 'firstname', 'lastname', 'description', 'emails', 'telephones', 'addresses.country', 'message_channels', 'referral_code',
+                      'deals', 'comments', 'tasks', 'projects', 'companies', 'messages', 'sprints', 'links', 'owner', 'events',
                       'ownerbackup')
 
     form_rules = (
@@ -714,8 +712,8 @@ class EventModelView(EnhancedModelView):
                            'contacts', 'messages', 'comments', 'links',
                            'author_last', 'author_original', 'updated_at')
 
-    column_filters = ('title', 'description',
-                      'event_datetime')
+    column_filters = ('id', 'title', 'description',
+                      'event_datetime', 'contacts')
 
     form_rules = ('title', 'description',
                   'event_datetime', 'contacts', 'links')
@@ -731,7 +729,7 @@ class EventModelView(EnhancedModelView):
             'id', 'url', ]}),
     ]
 
-    # mainfilter = "Events / Id"
+    mainfilter = "Events / Id"
 # class AlertModelView(EnhancedModelView):
 #     pass
 #

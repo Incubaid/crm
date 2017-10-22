@@ -47,6 +47,9 @@ class Event(db.Model, BaseModel, RootModel):
         nullable=False
     )
 
+    def __str__(self):
+        return self.title
+
 
 class ContactEvents(db.Model, ManyToManyBaseModel):
     __tablename__ = "contacts_events"

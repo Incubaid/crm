@@ -158,7 +158,7 @@ def format_author(view, context, model, name):
 
 
 column_formatters = dict(
-    list(zip(["users", "contacts", "companies", "organizations", "projects",  "deals", "sprints",
+    list(zip(["users", "contacts", "companies", "organizations", "projects",  "deals", "sprints", 'events',
                                    "links", "messages", "ownsTasks", "ownsContacts", "ownsCompanies",
                                    "ownsOrganizations", "ownsSprints", "ownsAsBackupContacts", "ownsAsBackupCompanies"], cycle([format_instrumented_list]))),
     telephones=format_telephones, website=format_url, destination=format_destination_emails,
