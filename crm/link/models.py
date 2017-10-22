@@ -53,6 +53,10 @@ class Link(db.Model, BaseModel):
         db.String,
         db.ForeignKey("companies.id")
     )
+    event_id = db.Column(
+        db.String,
+        db.ForeignKey("events.id")
+    )
 
     # alert_id = db.Column(
     #     db.String,

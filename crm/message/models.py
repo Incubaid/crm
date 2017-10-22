@@ -75,6 +75,10 @@ class Message(db.Model, BaseModel):
         db.String,
         db.ForeignKey("sprints.id")
     )
+    event_id = db.Column(
+        db.String,
+        db.ForeignKey("events.id")
+    )
 
     def __str__(self):
         return self.title
