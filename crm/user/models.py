@@ -135,7 +135,7 @@ class User(db.Model, BaseModel, RootModel):
     # )
 
     def __str__(self):
-        return self.username or '%s %s' % (self.firstname, self.lastname)
+        return self.username or '%s %s'.strip() % (self.firstname or '', self.lastname or '')
 
     __repr__ = __str__
 

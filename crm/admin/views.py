@@ -489,9 +489,9 @@ class OrganizationModelView(EnhancedModelView):
                       'tasks', 'users', 'comments', 'messages',
                       'links',)
 
-    form_rules = ('name', 'description', 'emails', 'owner',)
+    form_rules = ('name', 'description', 'emails', 'owner', 'users')
 
-    form_edit_rules = ('name', 'description', 'emails',
+    form_edit_rules = ('name', 'description', 'emails', 'users',
                        'owner', 'tasks', 'links', 'messages', 'comments')
 
     inline_models = [

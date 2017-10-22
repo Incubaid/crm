@@ -148,7 +148,7 @@ class Contact(db.Model, BaseModel, RootModel):
         return "{} {}".format(self.firstname, self.lastname)
 
 
-class ContactsSprints(db.Model, BaseModel):
+class ContactsSprints(db.Model, ManyToManyBaseModel):
     """
         Many To Many Through table
     """
