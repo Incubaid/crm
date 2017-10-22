@@ -38,7 +38,7 @@ def format_tasks(view, context, model, name):
             else:
                 task_formatted += " not assigned "
             task_formatted += "  (Updated at: {} )".format(
-                task.updated_at.strftime("%Y-%m-%d %H:%M"))
+                task.updated_at.strftime("%Y-%m-%d"))
             out += "<li>{}</li>".format(task_formatted)
 
         out += "</ul>"
@@ -54,7 +54,7 @@ def format_url(view, context, model, name):
 def format_datetime(view, context, model, name):
     value = getattr(model, name)
     if isinstance(value, datetime):
-        return value.strftime("%Y-%m-%d %H:%M")
+        return value.strftime("%Y-%m-%d")
 
 
 def format_messages(view, context, model, name):
