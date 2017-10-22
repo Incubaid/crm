@@ -51,6 +51,8 @@ class MyAdminIndexView(AdminIndexView):
                 ContactModel, db.session), self.mainfilter]
             filtered_objects['eventsview'] = [EventModelView(
                 EventModel, db.session), self.mainfilter]
+            filtered_objects['ownstasksview'] = [
+                TaskModelView(TaskModel, db.session), 'assignee / Users / Id']
 
             filtered_objects['companiesview'] = [
                 CompanyModelView(CompanyModel, db.session), self.mainfilter]
@@ -653,8 +655,8 @@ class TaskModelView(EnhancedModelView):
                            'company', 'organization', 'project', 'sprint', 'deal',
                            'comments', 'messages', 'links', 'author_last', 'author_original', 'updated_at')
 
-    column_filters = ('id', 'title', 'description','type', 'priority', 'eta', 'deadline', 'time_done',
-                      'contact', 'user', 'assignee.username', 'assignee.id','assignee.firstname', 'assignee.lastname',
+    column_filters = ('id', 'title', 'description', 'type', 'priority', 'eta', 'deadline', 'time_done',
+                      'contact', 'user', 'assignee.username', 'assignee.id', 'assignee.firstname', 'assignee.lastname',
                       'company', 'organization', 'project', 'sprint', 'deal',
                       'comments', 'messages')
     form_rules = ('title', 'description',
