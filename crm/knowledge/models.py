@@ -13,7 +13,7 @@ class KnowledgeBase(db.Model, BaseModel):
 
     category_id = db.Column(
         db.String(5),
-        db.ForeignKey("categories.id")
+        db.ForeignKey("knowledgebase_categories.id")
     )
 
     author_id = db.Column(
@@ -39,7 +39,7 @@ class KnowledgeBase(db.Model, BaseModel):
 
 class KnowledgeBaseCategory(db.Model, BaseModel):
 
-    __tablename__ = "categories"
+    __tablename__ = "knowledgebase_categories"
 
     name = db.Column(
         db.String(255),
