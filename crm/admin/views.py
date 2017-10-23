@@ -729,7 +729,7 @@ class EventModelView(EnhancedModelView):
                       'event_datetime', 'contacts', 'tasks')
 
     form_rules = ('title', 'description',
-                  'event_datetime', 'contacts', 'links')
+                  'event_datetime', 'contacts', 'tasks', 'links')
 
     form_edit_rules = ('title', 'description',
                        'event_datetime', 'contacts', 'tasks', 'messages', 'comments', 'links',)
