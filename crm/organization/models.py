@@ -7,18 +7,21 @@ class Organization(db.Model, BaseModel, RootModel):
 
     name = db.Column(
         db.String(255),
-        nullable=False
+        nullable=False,
+        index=True
     )
 
     # should be markdown
     description = db.Column(
         db.Text(),
-        default=""
+        default="",
+        index=True
     )
 
     # Comma  separated emails
     emails = db.Column(
-        db.Text()
+        db.Text(),
+        index=True
     )
 
     tasks = db.relationship(
@@ -34,7 +37,7 @@ class Organization(db.Model, BaseModel, RootModel):
     users = db.relationship(
         "User",
         secondary="users_organizations",
-        secondaryjoin="Organization.id==UsersOrganizations.organization_id",
+        secondaryjoin="User.id==UsersOrganizations.user_id",
         backref="organizations"
     )
 

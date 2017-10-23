@@ -7,7 +7,8 @@ class Comment(db.Model, BaseModel):
 
     # should be markdown.
     content = db.Column(
-        db.Text()
+        db.Text(),
+        index=True
     )
 
     company_id = db.Column(
@@ -54,6 +55,10 @@ class Comment(db.Model, BaseModel):
         db.String(5),
         db.ForeignKey("links.id")
     )
+    event_id = db.Column(
+        db.String,
+        db.ForeignKey("events.id")
+    )
 
     # alert_id = db.Column(
     #     db.String,
@@ -65,10 +70,10 @@ class Comment(db.Model, BaseModel):
     #     db.ForeignKey("alertsources.id")
     # )
 
-    # knowledgebase_id = db.Column(
-    #     db.String,
-    #     db.ForeignKey("knowledgebases.id")
-    # )
+    knowledge_base_id = db.Column(
+        db.String,
+        db.ForeignKey("knowledgebases.id")
+    )
 
     def __str__(self):
         return self.content

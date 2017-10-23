@@ -21,32 +21,39 @@ class Deal(db.Model, BaseModel, RootModel):
 
     name = db.Column(
         db.String(255),
-        nullable=False
+        nullable=False,
+        index=True
     )
 
     # should be markdown.
     description = db.Column(
         db.Text(),
-        default=""
+        default="",
+
     )
 
     amount = db.Column(
-        db.Float()
+        db.Float(),
+        index=True
+
     )
 
     currency = db.Column(
         db.Enum(DealCurrency),
-        default=DealCurrency.EUR
+        default=DealCurrency.EUR,
+        index=True
     )
 
     deal_type = db.Column(
         db.Enum(DealType),
-        default=DealType.HOSTER
+        default=DealType.HOSTER,
+        index=True
     )
 
     deal_state = db.Column(
         db.Enum(DealState),
-        default=DealState.NEW
+        default=DealState.NEW,
+        index=True
     )
 
     closed_at = db.Column(
@@ -107,10 +114,12 @@ class Deal(db.Model, BaseModel, RootModel):
     )
 
     is_paid = db.Column(
-        db.Boolean()
+        db.Boolean(),
+        index=True
     )
     referral_code = db.Column(
         db.String(255),
+        index=True
     )
 
     shipping_address = db.relationship(

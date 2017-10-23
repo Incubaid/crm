@@ -38,7 +38,7 @@ def authenticate():
 
     if jwt is None:
         authheader = request.headers.get("Authorization", None)
-        if authheader is None or 'bearer' not in authheader.lower():
+        if authheader is None or 'bearer ' not in authheader.lower():
             abort(401)
         jwt = authheader.split(" ", 1)[1]  # Bearer JWT
 

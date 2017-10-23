@@ -13,45 +13,54 @@ class Address(db.Model, BaseModel):
 
     street_number = db.Column(
         db.String(255),
+        index=True
     )
 
     street_name = db.Column(
         db.String(255),
-        default=""
+        default="",
+        index=True
     )
 
     description = db.Column(
         db.Text(),
-        default=""
+        default="",
+        index=True
     )
 
     city = db.Column(
         db.Text(),
-        default=""
+        default="",
+        index=True
     )
 
     state = db.Column(
         db.Text(),
-        default=""
+        default="",
+        index=True
     )
 
     zip_code = db.Column(
-        db.String(255)
+        db.String(255),
+        index=True
     )
 
     country = db.Column(
         db.Enum(CountriesEnum),
-        default=CountriesEnum.Belgium
+        default=CountriesEnum.Belgium,
+        index=True
     )
 
     contact_id = db.Column(
         db.String(5),
         db.ForeignKey('contacts.id')
     )
+
     company_id = db.Column(
         db.String(5),
         db.ForeignKey('companies.id')
     )
+
     deal_id = db.Column(
         db.String(5),
         db.ForeignKey('deals.id')

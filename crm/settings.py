@@ -1,6 +1,7 @@
 import os
 from importlib import import_module
 from os.path import dirname
+
 LOGGING_CONF = {
     'version': 1,
     'formatters': {'default': {
@@ -16,8 +17,6 @@ LOGGING_CONF = {
     }
 }
 
-
-DATA_DIR = 'data'
 
 # ../crm.
 STATIC_DIR = os.path.abspath(os.path.join(

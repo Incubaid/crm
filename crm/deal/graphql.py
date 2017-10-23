@@ -6,7 +6,8 @@ from graphene_sqlalchemy import SQLAlchemyObjectType
 from graphql.error.base import GraphQLError
 
 from crm.address.models import Address
-from crm.graphql import BaseMutation, BaseQuery, CRMConnectionField, AddressArguments
+from crm.graphql import BaseMutation, BaseQuery, AddressArguments
+from graphene_sqlalchemy.fields import SQLAlchemyConnectionField
 from .models import Deal
 from crm import db
 
@@ -30,7 +31,7 @@ class DealQuery(BaseQuery):
     """
 
     # no need for resplve_Deals function here
-    deals = CRMConnectionField(DealType)
+    deals = SQLAlchemyConnectionField(DealType)
     # Deal query to return one Deal and takes (uid) argument
     # uid is the original object.id in db
     deal = graphene.Field(DealType, uid=graphene.String())
@@ -61,6 +62,7 @@ class UpdateDealArguments(CreateDealArguments):
     currency = graphene.String()
     deal_type = graphene.String()
     deal_state = graphene.String()
+    is_paid = graphene.String()
 
 
 class CreateDeals(graphene.Mutation):

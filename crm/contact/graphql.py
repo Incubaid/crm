@@ -7,7 +7,8 @@ from graphql.error.base import GraphQLError
 
 from crm.address.models import Address
 from crm.contact.models import Subgroup
-from crm.graphql import BaseMutation, BaseQuery, CRMConnectionField, AddressArguments
+from crm.graphql import BaseMutation, BaseQuery, AddressArguments
+from graphene_sqlalchemy.fields import SQLAlchemyConnectionField
 from .models import Contact
 from crm import db
 
@@ -15,8 +16,8 @@ from crm import db
 class ContactType(SQLAlchemyObjectType):
     # object.id in graphene contains internal
     # representation of id.
-    # we add another uid field that we fill
-    # with original object.id
+    # we add another uid field that will return obj.uid property
+    # obj.uid returns obj.id if id is set
     uid = graphene.String()
 
     class Meta:
@@ -31,7 +32,7 @@ class ContactQuery(BaseQuery):
     """
 
     # no need for resplve_contacts function here
-    contacts = CRMConnectionField(ContactType)
+    contacts = SQLAlchemyConnectionField(ContactType)
     # contact query to return one contact and takes (uid) argument
     # uid is the original object.id in db
     contact = graphene.Field(ContactType, uid=graphene.String())

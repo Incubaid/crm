@@ -38,7 +38,7 @@ def format_tasks(view, context, model, name):
             else:
                 task_formatted += " not assigned "
             task_formatted += "  (Updated at: {} )".format(
-                task.updated_at.strftime("%Y-%m-%d %H:%M"))
+                task.updated_at.strftime("%Y-%m-%d"))
             out += "<li>{}</li>".format(task_formatted)
 
         out += "</ul>"
@@ -54,7 +54,7 @@ def format_url(view, context, model, name):
 def format_datetime(view, context, model, name):
     value = getattr(model, name)
     if isinstance(value, datetime):
-        return value.strftime("%Y-%m-%d %H:%M")
+        return value.strftime("%Y-%m-%d")
 
 
 def format_messages(view, context, model, name):
@@ -158,7 +158,7 @@ def format_author(view, context, model, name):
 
 
 column_formatters = dict(
-    list(zip(["users", "contacts", "companies", "organizations", "projects",  "deals", "sprints",
+    list(zip(["users", "contacts", "companies", "organizations", "projects",  "deals", "sprints", 'events',
                                    "links", "messages", "ownsTasks", "ownsContacts", "ownsCompanies",
                                    "ownsOrganizations", "ownsSprints", "ownsAsBackupContacts", "ownsAsBackupCompanies"], cycle([format_instrumented_list]))),
     telephones=format_telephones, website=format_url, destination=format_destination_emails,

@@ -7,21 +7,25 @@ class Sprint(db.Model, BaseModel, RootModel):
 
     name = db.Column(
         db.String(255),
-        nullable=False
+        nullable=False,
+        index=True
     )
 
     # should be markdown.
     description = db.Column(
         db.Text(),
-        default=""
+        default="",
+        index=True
     )
 
     start_date = db.Column(
-        db.TIMESTAMP
+        db.TIMESTAMP,
+        index=True
     )
 
     deadline = db.Column(
-        db.TIMESTAMP
+        db.TIMESTAMP,
+        index=True
     )
 
     contacts = db.relationship(

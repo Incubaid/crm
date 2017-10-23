@@ -9,12 +9,12 @@
     </li>
     {%- if admin_view.can_create -%}
     <li>
-        <a href="{{ get_url('.create_view', url=return_url) }}">{{ _gettext('Create') }}</a>
+        <a href="{{ get_url('.create_view') }}">{{ _gettext('Create') }}</a>
     </li>
     {%- endif -%}
     {%- if admin_view.can_edit -%}
     <li>
-        <a href="{{ get_url('.edit_view', id=request.args.get('id'), url=return_url) }}">{{ _gettext('Edit') }}</a>
+        <a href="{{ get_url('.edit_view', id=request.args.get('id')) }}">{{ _gettext('Edit') }}</a>
     </li>
     {%- endif -%}
     <li class="active">

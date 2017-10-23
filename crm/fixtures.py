@@ -4,6 +4,7 @@ from crm.company.models import Company
 from crm.contact.models import Contact
 from crm.deal.models import Deal
 from crm.link.models import Link
+from crm.event.models import Event
 from crm.organization.models import Organization
 from crm.project.models import Project
 from crm.sprint.models import Sprint
@@ -34,8 +35,6 @@ def generate_fixtures():
 
         return l
 
-
-
     def newcontact():
         firstname = fake.first_name()
         lastname = fake.last_name()
@@ -52,7 +51,6 @@ def generate_fixtures():
         u.links = [newlink() for i in range(3)]
         db.session.add(u)
         return u
-
 
     def newuser():
         firstname = fake.first_name()
@@ -167,6 +165,14 @@ def generate_fixtures():
         m = Message(title=fake.sentence(3), content=fake.paragraph())
         db.session.add(m)
         return m
+
+    def newevent():
+        e = Event(title=fake.sentence(3) + " event",
+                  description=fake.paragraph())
+        e.contacts = [newcontact(), newcontact()]
+        db.session.add(e)
+        return e
+
     for i in range(3):
         u = newuser()
         tu = newcontact()
@@ -175,8 +181,9 @@ def generate_fixtures():
         org = neworg()
         deal = newdeal()
         sprint = newsprint()
+        event = newevent()
 
-    db.session.commit()
+        db.session.commit()
 
 
 def import_fixtures():

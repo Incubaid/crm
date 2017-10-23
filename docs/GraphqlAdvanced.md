@@ -56,7 +56,7 @@ value of ```object.id```
         we have 2 queries here contact and contacts
         """
 
-        contacts = CRMConnectionField(ContactType)
+        contacts = SQLAlchemyConnectionField(ContactType)
         # contact query to return one contact and takes (uid) argument
         # uid is the original object.id in db
         contact = graphene.Field(ContactType, uid=graphene.String())
@@ -72,7 +72,7 @@ value of ```object.id```
     - ```contact``` takes ```uid``` field and returns one record
 - For each query you define, usually you define the ```query_name```and a resolver function
 ```resolve_{query_name}``` that is used when query executed
-- Sometimes a resolver function may not be needed for queries of type ```CRMConnectionField```
+- Sometimes a resolver function may not be needed for queries of type ```SQLAlchemyConnectionField```
     - these queries return all/subset of data automatically from your model
     - i.e ```contacts``` query, however we may need to add a resolver function later to ```contacts``` if we need
     add more filtration options

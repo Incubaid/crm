@@ -11,7 +11,8 @@ class Subgroup(db.Model, BaseModel):
 
     groupname = db.Column(
         db.Enum(SubgroupName),
-        default=SubgroupName.MEMBER
+        default=SubgroupName.MEMBER,
+        index=True
     )
 
     contacts = db.relationship(
@@ -44,12 +45,14 @@ class Contact(db.Model, BaseModel, RootModel):
 
     firstname = db.Column(
         db.String(255),
-        nullable=False
+        nullable=False,
+        index=True
     )
 
     lastname = db.Column(
         db.String(255),
-        default=""
+        default="",
+        index=True
     )
     description = db.Column(
         db.Text()
@@ -115,12 +118,14 @@ class Contact(db.Model, BaseModel, RootModel):
 
     # Comma  separated emails
     emails = db.Column(
-        db.Text()
+        db.Text(),
+        index=True
     )
 
     # Comma separated phones
     telephones = db.Column(
-        db.Text()
+        db.Text(),
+        index=True
     )
 
     tf_app = db.Column(
@@ -148,7 +153,7 @@ class Contact(db.Model, BaseModel, RootModel):
         return "{} {}".format(self.firstname, self.lastname)
 
 
-class ContactsSprints(db.Model, BaseModel):
+class ContactsSprints(db.Model, ManyToManyBaseModel):
     """
         Many To Many Through table
     """
