@@ -57,16 +57,14 @@ class Task(db.Model, BaseModel):
 
     deadline = db.Column(
         db.TIMESTAMP,
-        default=datetime.utcnow,
-        nullable=False,
+        nullable=True,
         index=True
     )
 
     eta = db.Column(
         db.TIMESTAMP,
-        default=datetime.utcnow,
-        nullable=False,
-
+        nullable=True,
+        index=True
     )
 
     # in hours
