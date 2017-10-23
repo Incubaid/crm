@@ -630,7 +630,7 @@ class CommentModelView(EnhancedModelView):
                            'company', 'contact', 'user', 'organization', 'project', 'sprint', 'task',
                            'link', 'deal', 'author_last', 'author_original', 'updated_at')
     column_filters = ('id', 'content',
-                      'company', 'contact', 'user', 'organization', 'project', 'sprint', 'task',
+                      'company', 'contact', 'user', 'organization', 'project', 'sprint', 'task', 'event',
                       'link', 'deal', )
     form_rules = ('content', 'user',
                   'company', 'contact', 'organization', 'project', 'sprint', 'task',
@@ -646,7 +646,7 @@ class LinkModelView(EnhancedModelView):
                            'deal', 'sprint', 'labels', 'comments', 'author_last', 'author_original', 'updated_at')
 
     column_filters = ('url', 'contact', 'user', 'company', 'organization', 'task', 'project',
-                      'deal', 'sprint', 'labels', 'comments',)
+                      'deal', 'sprint', 'labels', 'comments', 'event')
 
     form_rules = ('url', 'user', 'contact', 'company', 'organization', 'task', 'project',
                   'deal', 'sprint', 'labels',)
@@ -698,7 +698,7 @@ class MessageModelView(EnhancedModelView):
                            'author_last', 'author_original', 'updated_at')
 
     form_rules = column_filters = ('title', 'content', 'channel', 'time_tosend', 'time_sent',
-                                   'company', 'contact', 'author', 'organization', 'project', 'sprint', 'deal', 'task')
+                                   'company', 'contact', 'author', 'organization', 'project', 'sprint', 'deal', 'task', 'event')
 
     form_edit_rules = ('title', 'author', 'content', 'channel',
                        'time_tosend', 'time_sent',)
@@ -753,8 +753,12 @@ class EventModelView(EnhancedModelView):
 # class AlertProfileModelView(EnhancedModelView):
 #     pass
 #
+
+
 class KnowledgeBaseModelView(EnhancedModelView):
     pass
 #
+
+
 class KnowledgeBaseCategoryModelView(EnhancedModelView):
     pass
