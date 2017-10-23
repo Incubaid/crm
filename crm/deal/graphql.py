@@ -62,6 +62,7 @@ class UpdateDealArguments(CreateDealArguments):
     currency = graphene.String()
     deal_type = graphene.String()
     deal_state = graphene.String()
+    is_paid = graphene.String()
 
 
 class CreateDeals(graphene.Mutation):
