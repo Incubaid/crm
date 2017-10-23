@@ -6,6 +6,7 @@ from datetime import datetime
 class ContactEventStatus(enum.Enum):
     INVITED, WONTSHOW, ATTENDED, DENIED, COULDNTMAKEIT = range(5)
 
+ContactEventStatus.__str__ = lambda self: self.name
 
 class Event(db.Model, BaseModel, RootModel):
 
