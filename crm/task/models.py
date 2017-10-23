@@ -128,7 +128,10 @@ class Task(db.Model, BaseModel):
     #     db.String,
     #     db.ForeignKey("alertsources.id")
     # )
-
+    event_id = db.Column(
+        db.String,
+        db.ForeignKey("events.id")
+    )
     knowledge_base_id = db.Column(
         db.String,
         db.ForeignKey("knowledgebases.id")

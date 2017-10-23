@@ -49,6 +49,10 @@ class Event(db.Model, BaseModel, RootModel):
         backref="event",
     )
 
+    tasks = db.relationship(
+        "Task",
+        backref="event",
+    )
     event_datetime = db.Column(
         db.TIMESTAMP,
         default=datetime.utcnow,
