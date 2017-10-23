@@ -658,7 +658,7 @@ class LinkModelView(EnhancedModelView):
 class TaskModelView(EnhancedModelView):
     column_list = ('title', 'type', 'priority', 'state', 'assignee', 'user', 'contact',
                    'organization', 'company', 'project', 'sprint', 'deal', *EnhancedModelView.columns_list_extra)
-    column_searchable_list = ('id', 'title', 'description',
+    column_searchable_list = ('id', 'title', 'description', 'event.title', 'event.description',
                               'type', 'priority', 'assignee.firstname', 'assignee.lastname', 'assignee.username')
     column_sortable_list = (['priority', 'updated_at'])
     column_details_list = ('id', 'title', 'description', 'type', 'priority', 'eta', 'deadline', 'state',
@@ -672,9 +672,9 @@ class TaskModelView(EnhancedModelView):
                       'comments', 'messages')
     form_rules = ('title', 'description',
                   'type', 'priority', 'eta', 'deadline', 'assignee',
-                  'user', 'contact', 'company', 'organization', 'project', 'sprint', 'deal')
+                  'user', 'contact', 'event', 'company', 'organization', 'project', 'sprint', 'deal')
 
-    form_edit_rules = ('title', 'description', 'eta', 'deadline', 'assignee', 'user', 'contact', 'state',
+    form_edit_rules = ('title', 'description', 'eta', 'deadline', 'assignee', 'user', 'contact', 'event', 'state',
                        'type', 'priority', 'time_done', 'comments', 'messages', 'links')
 
     inline_models = [
