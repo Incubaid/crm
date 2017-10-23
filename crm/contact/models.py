@@ -5,6 +5,8 @@ from crm.db import db, BaseModel, RootModel, ManyToManyBaseModel
 class SubgroupName(Enum):
     AMBASSADOR, INVESTOR, HOSTER, MEMBER, PUBLIC = range(5)
 
+SubgroupName.__str__ = lambda self: self.name
+
 
 class Subgroup(db.Model, BaseModel):
     __tablename__ = "subgroups"
