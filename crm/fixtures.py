@@ -170,6 +170,7 @@ def generate_fixtures():
         e = Event(title=fake.sentence(3) + " event",
                   description=fake.paragraph())
         e.contacts = [newcontact(), newcontact()]
+        e.tasks = [newtask(), newtask()]
         db.session.add(e)
         return e
 

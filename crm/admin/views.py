@@ -353,12 +353,12 @@ class ImagePreviewField(StringField):
 
 
 class InlineEventModelForm(InlineFormAdmin):
-    form_columns = ('id', 'title', 'contact_event_status')
-    form_widget_args = {
-        'title': {
-            'readonly': True
-        }
-    }
+    form_columns = ('id', 'title', 'contact_event_status', 'event_datetime')
+    # form_widget_args = {
+    #     'title': {
+    #         'readonly': True
+    #     }
+    # }
 
     def __init__(self,):
         return super(InlineEventModelForm, self).__init__(EventModel)
@@ -516,7 +516,7 @@ class OrganizationModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-            'id', 'title', 'type', 'priority', 'assignee', 'eta', 'deadline']}),
+            'id', 'title', 'description', 'type', 'priority', 'assignee', 'eta', 'deadline']}),
         (MessageModel, {'form_columns': ['id', 'title', 'content', 'channel']},
          (CommentModel, {'form_columns': ['id', 'content']})),
         (LinkModel, {'form_columns': [
@@ -546,7 +546,7 @@ class DealModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-            'id', 'title', 'type', 'priority', 'assignee', 'eta', 'deadline']}),
+            'id', 'title', 'description', 'type', 'priority', 'assignee', 'eta', 'deadline']}),
         (AddressModel, {'form_columns': [
             'id', 'street_name', 'street_number', 'zip_code', 'country', 'city', 'state']}),
         (MessageModel, {'form_columns': ['id', 'title', 'content']}),
@@ -579,7 +579,7 @@ class ProjectModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-            'id', 'title', 'type', 'priority', 'assignee', 'eta', 'deadline']}),
+            'id', 'title', 'description', 'type', 'priority', 'assignee', 'eta', 'deadline']}),
         (MessageModel, {'form_columns': ['id', 'title', 'content']}),
         (CommentModel, {'form_columns': ['id', 'content']}),
         (LinkModel, {'form_columns': [
@@ -609,7 +609,7 @@ class SprintModelView(EnhancedModelView):
 
     inline_models = [
         (TaskModel, {'form_columns': [
-            'id', 'title', 'type', 'priority', 'assignee', 'eta', 'deadline']}),
+            'id', 'title', 'description', 'type', 'priority', 'assignee', 'eta', 'deadline']}),
         (MessageModel, {'form_columns': [
             'id', 'title', 'content', 'channel']}),
         (CommentModel, {'form_columns': ['id', 'content']}),
@@ -662,13 +662,13 @@ class TaskModelView(EnhancedModelView):
                               'type', 'priority', 'assignee.firstname', 'assignee.lastname', 'assignee.username')
     column_sortable_list = (['priority', 'updated_at'])
     column_details_list = ('id', 'title', 'description', 'type', 'priority', 'eta', 'deadline', 'state',
-                           'time_done', 'time_estimate', 'assignee', 'user', 'contact',
+                           'time_done', 'time_estimate', 'assignee', 'user', 'contact', 'event',
                            'company', 'organization', 'project', 'sprint', 'deal',
                            'comments', 'messages', 'links', 'author_last', 'author_original', 'updated_at')
 
     column_filters = ('id', 'title', 'description', 'type', 'priority', 'eta', 'deadline', 'time_done',
                       'contact', 'user', 'assignee.username', 'assignee.id', 'assignee.firstname', 'assignee.lastname',
-                      'company', 'organization', 'project', 'sprint', 'deal',
+                      'company', 'organization', 'event', 'project', 'sprint', 'deal',
                       'comments', 'messages')
     form_rules = ('title', 'description',
                   'type', 'priority', 'eta', 'deadline', 'assignee',
@@ -716,25 +716,27 @@ class TaskTrackingModelView(EnhancedModelView):
 
 
 class EventModelView(EnhancedModelView):
-    column_list = ('title', 'description',
+    column_list = ('title', 'short_description',
                    'event_datetime',  *EnhancedModelView.columns_list_extra)
     column_searchable_list = ('title', 'event_datetime')
     column_sortable_list = ('title', 'event_datetime')
 
     column_details_list = ('id', 'title', 'description', 'event_datetime',
-                           'contacts', 'messages', 'comments', 'links',
+                           'contacts', 'tasks', 'messages', 'comments', 'links',
                            'author_last', 'author_original', 'updated_at')
 
     column_filters = ('id', 'title', 'description',
-                      'event_datetime', 'contacts')
+                      'event_datetime', 'contacts', 'tasks')
 
     form_rules = ('title', 'description',
                   'event_datetime', 'contacts', 'links')
 
     form_edit_rules = ('title', 'description',
-                       'event_datetime', 'contacts', 'messages', 'comments', 'links')
+                       'event_datetime', 'contacts', 'tasks', 'messages', 'comments', 'links',)
 
     inline_models = [
+        (TaskModel, {'form_columns': [
+            'id', 'title', 'description', 'type', 'priority', 'assignee', 'eta', 'deadline']}),
         (MessageModel, {'form_columns': [
             'id', 'title', 'content', 'channel']}),
         (CommentModel, {'form_columns': ['id', 'content']}),
