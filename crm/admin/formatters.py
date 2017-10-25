@@ -3,7 +3,6 @@ from itertools import cycle
 from sqlalchemy.orm.collections import InstrumentedList
 from jinja2 import Markup
 from flask_misaka import markdown
-from crm.settings import IMAGES_DIR
 
 
 def format_instrumented_list(view, context, model, name):
