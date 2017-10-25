@@ -57,7 +57,7 @@ def dumpdata():
                 model_dir, '%s_%s.json' % (obj.id, obj_as_str)))
             data = obj.as_dict()
             with open(record_path, 'w') as f:
-                json.dump(data, f, indent=4)
+                json.dump(data, f, indent=4, sort_keys=True)
 
 
 @app.cli.command()
