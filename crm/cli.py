@@ -153,12 +153,24 @@ def loaddata():
                         db.session.add(obj)
             db.session.commit()
 
+        m2m_tables = set()
         for obj in m2m_objects:
+            m2m_tables.add(obj.__table__.name)
             if obj.id in added_object_ids[obj.__class__.__name__]:
                 continue
+
             db.session.add(obj)
             added_object_ids[obj.__class__.__name__].append(obj.id)
         db.session.commit()
+
+        # we had that nasty bug in loading data
+        # since m2m tables has auto-incremental primary keys/idswe load it with old ids
+        # but we need our dumped data to be loaded with old Ids
+        # By doing so, postgres is not able to detect last ID inserted and causing nasty errors
+        # when inserting or updating data that is related to many2many fields
+        # we need to reset these tables after insertion and set the next ID to be max(ID) + 1
+        for table in m2m_tables:
+            db.engine.execute("SELECT setval('%s_id_seq', (SELECT MAX(id) FROM %s)+1);" % (table, table))
 
 
 @app.cli.command()
