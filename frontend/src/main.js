@@ -5,7 +5,7 @@ import App from './App'
 import router from './router'
 import { ApolloClient, createNetworkInterface } from 'apollo-client'
 import VueApollo from 'vue-apollo'
-
+import axios from 'axios';
 Vue.config.productionTip = false
 
 // Create the apollo client
@@ -22,10 +22,11 @@ const apolloProvider = new VueApollo({
   defaultClient: apolloClient
 })
 /* eslint-disable no-new */
-new Vue({
+var crmapp = new Vue({
   el: '#app',
   apolloProvider,
   router,
   template: '<App/>',
   components: { App }
 })
+console.log(crmapp)
