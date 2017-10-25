@@ -1,4 +1,5 @@
 from enum import Enum
+from decimal import Decimal
 
 from crm.db import db, BaseModel, RootModel
 
@@ -20,6 +21,25 @@ class DealCurrency(Enum):
 DealCurrency.__str__ = lambda self: self.name
 
 
+class CurrencyExchangeRate(db.Model, BaseModel):
+    __tablename__ = "currency_exchange"
+
+    currency = db.Column(
+        db.Enum(DealCurrency),
+        default=DealCurrency.EUR,
+        index=True
+    )
+
+    value_usd = db.Column(
+        db.Float(),
+        nullable=False,
+        default=1.0
+    )
+
+    def __str__(self):
+        return str('%s = %s' % (self.currency, self.value_usd))
+
+
 class Deal(db.Model, BaseModel, RootModel):
 
     __tablename__ = "deals"
@@ -37,7 +57,7 @@ class Deal(db.Model, BaseModel, RootModel):
 
     )
 
-    amount = db.Column(
+    value = db.Column(
         db.Float(),
         index=True
 
@@ -131,6 +151,19 @@ class Deal(db.Model, BaseModel, RootModel):
         "Address",
         backref="deal"
     )
+
+    @property
+    def value_usd(self):
+
+        if self.currency == DealCurrency.USD:
+            return self.value
+
+        rate = CurrencyExchangeRate.query.filter_by(
+            currency=self.currency
+        ).first()
+
+        if rate:
+            return '$%s' % str(round(Decimal(self.value) * Decimal(rate.value_usd), 2))
 
     def __str__(self):
         return self.name
