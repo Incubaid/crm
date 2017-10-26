@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>List of Deals</h1>
+    <h1>List of Pending Deals</h1>
     <span v-if="loading">Still loading</span>
     <span v-else>
     <ul>
@@ -10,41 +10,30 @@
             </div>
         </li>
     </ul>
-
-    <h1>TOTAL:</h1>{{total}}
-    <h2>TOTAL PENDING: </h2>{{totalpending}}
-    <h2>TOTAL CLOSED: </h2>{{totalclosed}}
+    <h1>TOTAL of pending: </h1>{{total}}
     </span>
   </div>
   </div>
 </template>
 <script>
-
-
 import * as axioshelpers from '../axioshelpers'
+
 import Deal from './Deal.vue'
 
 export default {
-  name: 'DealsList',
+  name: 'DealsPending',
   data: function(){
-      return ({loading: 1, allDeals:this._getAllDeals(), total:0, totalpending:0, totalclosed:0})
+      return ({loading: 1, allDeals:this.getPendingDeals(), total:0})
   },
   created: function () {
-      this.allDeals = this._getAllDeals()
+      this.allDeals = this.getPendingDeals()
   },
   methods: {
-    _getAllDeals: function() {
+    getPendingDeals: function() {
       axioshelpers.getAllDeals()
       .then(response => {
-        this.allDeals = response.data['items'].filter( (deal) =>["PENDING", "CLOSED"].includes(deal.dealState)).sort( (deal) => deal.dealState)
-        this.allDeals.forEach( (d) => {
-            this.total += d.amount
-            if (d.dealState == "PENDING"){
-                this.totalpending += d.amount
-            }else{
-                this.totalclosed += d.amount
-            }
-        })
+        this.allDeals = response.data['items'].filter( (deal) => deal.dealState=='PENDING')
+        this.allDeals.forEach( (d) => this.total += d.amount)
         this.loading = 0
       })
       .catch(e => {

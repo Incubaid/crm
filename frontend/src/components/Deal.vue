@@ -1,7 +1,7 @@
 
 <template>
   <div class='container'>
-  <div><h1>{{ deal.name }}</h1> {{deal.amount}}
+  <div><span><a v-bind:href="deal.uid">{{deal.uid}}</a> / {{ deal.name }} ( {{deal.amount}} ) : {{deal.dealState}} <span v-if="deal.contact">{{deal.contact['firstname'] + " " +  deal.contact['lastname']}}</span>
   </div>
   </div>
 </template>
@@ -14,10 +14,10 @@
       deal: {
         type: Object,
         default: function () {
-          return {id:'', name: '', amount: '' }
+          return {id: '', uid: '', name: '', amount: '', dealState:'', contact:{}}
         }
-      },
-    },
+      }
+    }
   }
 </script>
 <style>

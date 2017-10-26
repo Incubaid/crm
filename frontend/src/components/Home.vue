@@ -2,7 +2,7 @@
   <div>
     <h1>{{ msg }}</h1>
      <ul>
-      <li><a href="https://localhost:10000/" target="_blank">CRM</a></li>
+      <li><a href="http://localhost:5000/" target="_blank">CRM</a></li>
      </ul>
   </div>
   </div>
