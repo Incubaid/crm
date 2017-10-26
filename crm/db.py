@@ -4,8 +4,10 @@ import base64
 
 from enum import Enum
 from datetime import datetime, date
+from collections import OrderedDict
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import and_
 from sqlalchemy import inspect
 from sqlalchemy.orm.collections import InstrumentedList
 from sqlalchemy.sql.sqltypes import TIMESTAMP
@@ -134,6 +136,63 @@ class ParentModel(AdminLinksMixin):
                 dt_fields.append(c.name)
         return dt_fields
 
+    @classmethod
+    def encode_graphene_id(cls, id):
+        """
+        Record ID to Graphene ID
+        :param id: Record ID
+        :type id: str
+        :return: Graphene ID base64 encoded string of ('ModelName:recordID')
+        :rtype: str
+        """
+        return base64.b64encode(
+            '{class_name}:{id}'.format(
+                class_name=cls.__name__,
+                id=id
+            )
+        )
+
+    @classmethod
+    def decode_graphene_id(cls, id):
+        """
+        Graphene ID to Record ID
+        :param id: Graphene ID -> base64 encoded string of ('ModelName:recordID')
+        :type id: str
+        :return: Record ID
+        :rtype: str
+        """
+        try:
+            base64.b64decode(id).split(':')[-1]
+        except:
+            pass
+
+    def _get_model_from_table_name(self, name):
+        """
+        model names and classes associations are saved in all db.models 
+        using these data, and given a table name, we can return its model class
+        :param name: table name
+        :type name: str
+        :return: model class associated with this table name
+        :rtype: db.Model
+        """
+        for c in self.__class__._decl_class_registry.values():
+            if hasattr(c, '__tablename__') and c.__tablename__ == name:
+                return c
+
+    def _get_fk_pk_for(self, model_cls):
+        """
+        Given model class, return the F.K in that model that is referencing the
+        current model object (self) and get the PK being referenced
+        :param model_cls: Model class
+        :return: F.K in the model_cls, P.K being referenced by F.K in the current object
+        :rtype: tuple
+        """
+        for column_name, sqlalchemy_prop in inspect(model_cls).attrs.items():
+            for fk in sqlalchemy_prop.columns[0].foreign_keys:
+                table, primary_key = fk.target_fullname.split('.')
+                if table == self.__tablename__:
+                    return column_name, primary_key
+
     def as_dict(self, resolve_refs=True):
         """
         If we are serializing object, we serialize all fields then we go into
@@ -159,19 +218,20 @@ class ParentModel(AdminLinksMixin):
             elif isinstance(value, InstrumentedList):
                 data[column] = []  # Leave empty if resolve_refs == False
                 if resolve_refs:
-                    for item in value:
+                    for item in sorted(value, key=lambda obj: str(obj)):
                         data[column].append(item.as_dict(resolve_refs=False))
                     # If The current field actually has a secondary many2many field
                     # append the data to m2m list for further parsing after this loop
                     if hasattr(sqlalchemy_prop, 'secondary') and len(value) > 0:
                         m2m.append({'property': sqlalchemy_prop, 'records': value})
+
             # Enums are represented as {'name': 'PENDING', 'value': 0}
             # Enum -- We care only about name field.
             elif isinstance(value, Enum):
                 data[column] = value.name
 
         # backrefs that have secondary relationships (manytomany)
-        # They pass the previous test  elif isinstance(value, InstrumentedList) as well
+        # They pass the previous test  ```elif isinstance(value, InstrumentedList)``` as well
         # but now we are going to get the related data from the manytomany field
 
         for item in m2m:
@@ -181,32 +241,34 @@ class ParentModel(AdminLinksMixin):
             table = prop.secondary
             if table is None:
                 continue
-            model_cls = self.get_model_from_table_name(table.name)
+
+            model_cls = self._get_model_from_table_name(table.name)
             data[model_cls.__name__] = []
             join_expression = str(prop.secondaryjoin.expression) # i.e 'subgroups.id = contacts_subgroups.subgroup_id'
 
+            # Get field name in the m2m model that refers to data in (records) i.e subgroup_id
             field = join_expression.split('%s.' % model_cls.__table__.name)[-1]
-            query_expression = getattr(model_cls, field)
+            query_expression1 = getattr(model_cls, field).in_([item.id for item in records])
 
-            result = model_cls.query.filter(query_expression.in_([item.id for item in records])).all()
+            # Get F.K in the many2many model that is referencing current object and also the referenced pk
+            fk, pk = self._get_fk_pk_for(model_cls)
+
+            # Now getting data from many2any field that belongs to the current object
+            result = model_cls.query.filter(and_(query_expression1, getattr(model_cls, fk) == getattr(self, pk))).all()
+
             for item in result:
                 dikt = item.as_dict(resolve_refs=False)
                 data[model_cls.__name__].append(dikt)
-        data['model'] = self.__class__.__name__
-        return data
 
-    def get_model_from_table_name(self, name):
-        """
-        model names and classes associations are saved in all db.models 
-        using these data, and given a table name, we can return its model class
-        :param name: table name
-        :type name: str
-        :return: model class associated with this table name
-        :rtype: db.Model
-        """
-        for c in self.__class__._decl_class_registry.values():
-            if hasattr(c, '__tablename__') and c.__tablename__ == name:
-                return c
+            # Now append many2many class/table data to the final dictionary
+            # when loading data from json/dicts we know that a field belongs to
+            # many2many field because this field does not exist in the object being loaded
+            # so it's OK
+            data[model_cls.__name__].sort(key=lambda d: d['created_at'])
+
+        data['model'] = self.__class__.__name__
+
+        return OrderedDict(data.items(), key=lambda t: t[0])
 
     @staticmethod
     def from_dict(data):
@@ -271,36 +333,6 @@ class ParentModel(AdminLinksMixin):
             deserialized.append(model)
             serialized.extend(raw)
         return deserialized
-
-    @classmethod
-    def encode_graphene_id(cls, id):
-        """
-        Record ID to Graphene ID
-        :param id: Record ID
-        :type id: str
-        :return: Graphene ID base64 encoded string of ('ModelName:recordID')
-        :rtype: str
-        """
-        return base64.b64encode(
-            '{class_name}:{id}'.format(
-                class_name=cls.__name__,
-                id=id
-            )
-        )
-
-    @classmethod
-    def decode_graphene_id(cls, id):
-        """
-        Graphene ID to Record ID
-        :param id: Graphene ID -> base64 encoded string of ('ModelName:recordID')
-        :type id: str
-        :return: Record ID
-        :rtype: str
-        """
-        try:
-            base64.b64decode(id).split(':')[-1]
-        except:
-            pass
 
 
 class BaseModel(ParentModel):

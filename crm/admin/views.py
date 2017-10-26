@@ -100,6 +100,7 @@ class EnhancedModelView(ModelView):
         'short_description': 'Description',
         'short_content': 'Content',
         'vatnumber': 'VAT Number',
+        'value_usd': 'Value in USD ($)',
         'ownsTasks': 'Tasks assigned',
         'ownsContacts': 'Owns contacts',
         'ownsCompanies': 'Owns companies',
@@ -440,7 +441,7 @@ class ContactModelView(EnhancedModelView):
         (MessageModel, {'form_columns': [
             'id', 'title', 'content', 'channel']}),
         (DealModel, {'form_columns': [
-            'id', 'name', 'amount', 'currency', 'deal_type', 'description']}),
+            'id', 'name', 'value', 'currency', 'deal_type', 'description']}),
         (CommentModel, {'form_columns': ['id', 'content']}),
         (LinkModel, {'form_columns': [
             'id', 'url', ]}), ]
@@ -484,7 +485,7 @@ class CompanyModelView(EnhancedModelView):
         (MessageModel, {'form_columns': [
             'id', 'title', 'content', 'channel']}),
         (DealModel, {'form_columns': [
-            'id', 'name', 'amount', 'currency', 'deal_type', 'description', ]}),
+            'id', 'name', 'value', 'currency', 'deal_type', 'description', ]}),
         (CommentModel, {'form_columns': ['id', 'content']}),
         (LinkModel, {'form_columns': [
             'id', 'url', ]}), ]
@@ -522,26 +523,42 @@ class OrganizationModelView(EnhancedModelView):
         (LinkModel, {'form_columns': [
             'id', 'url', ]}),
     ]
+
     mainfilter = "Organizations / Id"
+
+
+class CurrencyExchangeRateModelView(EnhancedModelView):
+    column_list = ('currency', 'value_usd', *EnhancedModelView.columns_list_extra)
+    column_details_list = ('currency', 'value_usd', )
+    form_rules = ('currency', 'value_usd',)
+    form_edit_rules = ('currency', 'value_usd',)
+
+    form_args = {
+        'value_usd': {'label': 'Value in USD ($)'},
+
+    }
 
 
 class DealModelView(EnhancedModelView):
 
-    column_list = ('name', 'amount', 'currency',
+    column_list = ('name', 'value', 'currency', 'value_usd',
                    'deal_type', 'deal_state', *EnhancedModelView.columns_list_extra)
+
     column_searchable_list = (
-        'id', 'name', 'amount', 'currency', 'deal_type', 'deal_state',)
-    column_sortable_list = ('name', 'amount', 'currency',
+        'id', 'name', 'value', 'currency', 'deal_type', 'deal_state',)
+
+    column_sortable_list = ('name', 'value', 'currency',
                             'deal_type', 'deal_state', 'updated_at')
-    column_details_list = ('id', 'name', 'description', 'amount', 'currency', 'deal_type', 'deal_state', 'shipping_address', 'is_paid',
+    column_details_list = ('id', 'name', 'description', 'value', 'currency', 'value_usd', 'deal_type', 'deal_state', 'shipping_address', 'is_paid',
                            'contact', 'referrer1', 'referrer2', 'company', 'closed_at', 'referral_code', 'tasks', 'messages', 'links', 'comments', 'author_last', 'author_original', 'updated_at')
-    column_filters = ('id', 'name', 'amount', 'currency', 'deal_type', 'deal_state', 'closed_at', 'is_paid', 'referral_code', 'updated_at',
+
+    column_filters = ('id', 'name', 'value', 'currency', 'deal_type', 'deal_state', 'closed_at', 'is_paid', 'referral_code', 'updated_at',
                       'contact', 'company', 'tasks', 'messages', 'comments', )
 
-    form_rules = ('name', 'amount', 'currency', 'deal_type', 'deal_state', 'shipping_address',
+    form_rules = ('name', 'value', 'currency', 'deal_type', 'deal_state', 'shipping_address',
                   'contact', 'referrer1', 'referrer2', 'company', 'referral_code', 'comments')
 
-    form_edit_rules = ('name', 'description', 'amount', 'currency', 'deal_type', 'deal_state', 'shipping_address',
+    form_edit_rules = ('name', 'description', 'value', 'currency', 'deal_type', 'deal_state', 'shipping_address',
                        'contact', 'referrer1', 'referrer2', 'company', 'tasks', 'messages', 'links', 'comments', 'is_paid', 'closed_at', 'referral_code')
 
     inline_models = [
@@ -554,7 +571,10 @@ class DealModelView(EnhancedModelView):
         (LinkModel, {'form_columns': [
             'id', 'url', ]}),
     ]
+
     mainfilter = "Deals / Id"
+
+
 
 
 class ProjectModelView(EnhancedModelView):
