@@ -33,7 +33,7 @@ def format_tasks(view, context, model, name):
                 task.admin_view_link(), task)
             if task.assignee is not None:
                 task_formatted += " assigned to <a href='{}'>{}</a> ".format(
-                    task.assignee.admin_view_link(), task.assignee.username)
+                    task.assignee.admin_view_link(), str(task.assignee))
             else:
                 task_formatted += " not assigned "
             task_formatted += "  (Updated at: {} )".format(

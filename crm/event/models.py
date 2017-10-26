@@ -15,7 +15,7 @@ class Event(db.Model, BaseModel, RootModel):
 
     title = db.Column(
         db.String(255),
-        default="",
+        nullable=False,
         index=True
     )
 
