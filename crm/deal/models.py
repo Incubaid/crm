@@ -21,7 +21,7 @@ class DealCurrency(Enum):
 DealCurrency.__str__ = lambda self: self.name
 
 
-class CurrencyExchangeRate(db.Model, BaseModel):
+class CurrencyExchangeRate(db.Model, BaseModel, RootModel):
     __tablename__ = "currency_exchange"
 
     currency = db.Column(
