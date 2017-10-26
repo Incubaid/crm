@@ -163,7 +163,7 @@ class Deal(db.Model, BaseModel, RootModel):
         ).first()
 
         if rate:
-            return '$%s' % str(round(Decimal(self.value) * Decimal(rate.value_usd), 2))
+            return '$%s' % str(round(Decimal(self.value ) * Decimal(rate.value_usd), 2)) if self.value else None
 
     def __str__(self):
         return self.name
