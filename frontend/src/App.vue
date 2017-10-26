@@ -1,7 +1,10 @@
 <template>
   <div id="app">
     <!-- <img src="./assets/logo.png"> -->
-    <a href="#/deals">All Deals </a>
+    <div>
+    <router-link to="/home">Home</router-link>
+    <router-link to="/reports">Reports</router-link>
+    </div>
     <router-view/>
   </div>
 </template>

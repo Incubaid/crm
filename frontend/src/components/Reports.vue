@@ -1,69 +1,19 @@
 <template>
   <div>
     <h1>{{ msg }}</h1>
-     <ul>
-      <li><a href="https://localhost:10000/" target="_blank">CRM</a></li>
-      <li><a href="https://vuejs.org" target="_blank">total funding received & from who </a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank">show open pending amount for investors </a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank">Example query</a></li>
-     </ul>
+    <router-link to="/deals">All Deals</router-link>
+    <router-link to="pendingdeals">All pending deals</router-link>
+    <router-view></router-view>
   </div>
   </div>
 
 
 </template>
 <script>
-import gql from 'graphql-tag'
-  // GraphQL query
-const DealsQuery = gql`
-  query allDeals {
-    deals(first:3){
-      edges{
-        node{
-          id,
-          name,
-          amount
-        }
-      }
-    }
-  }
-`
-const myq = `
-  query allDeals {
-    deals(first:3){
-      edges{
-        node{
-          id,
-          name,
-          amount
-        }
-      }
-    }
-  }
-
-`
-import axios from 'axios';
 export default {
   name: 'Reports',
   data: function(){
-      return ({allDeals: {}, loading: 0, allDealsAxios:this.getAllDeals()})
-  },
-  // apollo: {
-  //   allDeals: {
-  //     query: DealsQuery,
-  //     loadingKey: 'loading'
-  //   }
-  // },
-  methods: {
-    getAllDeals: function() {
-      axios.post(`http://localhost:5000/api`, {'query': myq }, {'headers':{'Content-Type':'application/json'}})
-      .then(response => {
-        this.allDealsAxios = response.data
-      })
-      .catch(e => {
-        console.log(e)
-      })
-    }
+      return ({msg:"Welcome to reporter"})
   }
 }
 </script>
