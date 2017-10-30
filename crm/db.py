@@ -267,8 +267,7 @@ class ParentModel(AdminLinksMixin):
             data[model_cls.__name__].sort(key=lambda d: d['created_at'])
 
         data['model'] = self.__class__.__name__
-
-        return OrderedDict(data.items(), key=lambda t: t[0])
+        return OrderedDict(sorted(data.items(), key=lambda t: t[0]))
 
     @staticmethod
     def from_dict(data):
