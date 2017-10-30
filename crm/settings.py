@@ -36,3 +36,7 @@ globals().update(env_settings)
 if not globals()['SQLALCHEMY_DATABASE_URI']:
     print('Missing SQLALCHEMY_DATABASE_URI')
     exit(1)
+
+if not globals()['CACHE_BACKEND_URI']:
+    print('MISSING CACHE_BACKEND_URI SETTING')
+    exit(1)

@@ -14,9 +14,10 @@ from flask_admin.helpers import get_url
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_admin import Admin
+from flask_cache import Cache
 
 from crm.graphql import BaseMutation, BaseQuery
-from .settings import LOGGING_CONF, STATIC_DIR, IMAGES_DIR, STATIC_URL_PATH
+from .settings import LOGGING_CONF, STATIC_DIR, IMAGES_DIR, STATIC_URL_PATH, CACHE_BACKEND_URI
 from .db import BaseModel, db
 from crm.admin.config import NAV_BAR_ORDER
 
@@ -226,9 +227,33 @@ class CRM(object):
     def app(self):
         return self._app
 
+    @property
+    def cache(self):
+        if hasattr(self, '_cache'):
+            return self._cache
+        if CACHE_BACKEND_URI == 'memory://':
+            cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+        elif CACHE_BACKEND_URI.startswith('redis://'):
+            try:
+                from redis import from_url as redis_from_url
+                redis_from_url(CACHE_BACKEND_URI)
+            except:
+                print('BAD REDIS URL PROVIDED BY (CACHE_BACKEND_URI)')
+                exit(1)
+
+            cache = Cache(app, config={
+                'CACHE_TYPE': 'redis',
+                'CACHE_REDIS_URL': CACHE_BACKEND_URI,
+                'CACHE_DEFAULT_TIMEOUT': 0 # NEVER EXPIRES
+            })
+
+        cache.init_app(self.app)
+        self._cache = cache
+        return self._cache
 
 crm = CRM()
 app = crm.app
+app.cache = crm.cache
 
 # Initialize app.graphql_schema with apps defined graphql Schema
 app.graphql_schema = crm.graphql_schema
