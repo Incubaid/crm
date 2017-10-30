@@ -136,6 +136,23 @@ class ParentModel(AdminLinksMixin):
                 dt_fields.append(c.name)
         return dt_fields
 
+    def update_auto_fields(self, update=False):
+        """
+        Update self.id with self.uid
+        Uodate author_original
+        Update author_last
+        """
+
+        from flask import session
+        cur_user = session.get('user') or {} if session else {}
+
+        if not update:
+            # Add UID to newly created objects
+            self.id = self.uid
+            self.author_original_id = cur_user.get('id')
+        else:
+            self.author_last_id = cur_user.get('id')
+
     @classmethod
     def encode_graphene_id(cls, id):
         """

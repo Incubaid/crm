@@ -1,63 +1,115 @@
+from datetime import datetime
+
 from sqlalchemy.event import listen
 from flask import session
 
-from crm.db import BaseModel
+from crm import app
+from .db import db
 
 
-def generate_record_id(mapper, connect, target):
+def before_flush(db_session, flush_context, instances):
     """
-    Given a target (model) replace target.id with target.uid
-    target.uid is a unique uid of 5 characters used to identify
-    record and auto generated
-    :param mapper: 
-    :param connect: 
-    :param target: Target model
+    WARNING
+    ----------------------------------------------------------
+    THIS FUNCTION IS CALLED SEVERAL TIMES.
+    WHATEVER IS PUT HERE SHOULD BE IDEMPOTENT OPERATIONS ONLY
+    ----------------------------------------------------------
+    
+    This is called after u do session.add() before any operation on objects
+    It's the right place to manipulate objects we need to alter before trying
+    to Hit DB
+    
+    :param db_session:  DB session
+    :param flush_context:  Internal UOWTransaction object which handles the details of the flush.
+    :param instances: affected instances, but usually holds value of None
     """
-    target.id = target.uid
+
+    cur_user = session.get('user') or {} if session else {}
+
+    # Update ID and original_author
+    for created in db_session.new:
+        created.update_auto_fields()
+
+    # Update last modifier
+    for updated in db_session.dirty:
+        if not db_session.is_modified(updated):
+            continue
+        updated.update_auto_fields(update=True)
 
 
-def update_last_author(mapper, connect, target):
+def after_flush(db_session, flush_context):
     """
-    Only used if model actually successfully changed
-    Given a target (model) update target.author_last 
-    with the current user.
+    WARNING
+    ----------------------------------------------------------
+    THIS FUNCTION IS CALLED SEVERAL TIMES.
+    WHATEVER IS PUT HERE SHOULD BE IDEMPOTENT OPERATIONS ONLY
+    ----------------------------------------------------------
+    
+    
+    
+    :param db_session:  DB session
+    :param flush_context:  Internal UOWTransaction object which handles the details of the flush.
+    """
 
-    :param mapper: 
-    :param connect: 
-    :param target: Target model
+    # db_session.dirty, db_session.created, db_session.new
+    # are vanished during (after_commit) & after_transaction_end events
+    # we cache these values in db_session.info['changes'] so we can process them later
+    # after data is written to DB
+    # this because obj.as_dict() may actually do some calls to DB
+    # We need to guarantee that obj.as_dict() gets latest data updates to an object
+    # at this point, we can't because the data is not written to DB yet, so we cache these values
+    # and process them later in an (after_commit or after_transaction_end)event handler
+
+    db_session.info['changes'] = {
+        'updated': db_session.dirty,
+        'created': db_session.new,
+        'deleted': db_session.deleted
+    }
+
+
+def after_transaction(db_session, transaction):
     """
-    # If session is None means we're running in non-HTTP context
-    # i.e through flask commands (flask loadfixtures)
-    if not session:
+    :param db_session: DB session
+    :param transaction: DB transaction
+    """
+    if not 'changes' in db_session.info:
         return
 
-    curr_user = session.get('user')
-    if curr_user:
-        target.author_last_id = curr_user['id']
+    cur_user = session.get('user') or {} if session else {}
+    username = cur_user.get('username') or 'guest'
+    now = str(datetime.now())
+
+    cache = {
+            'username': username,
+            'created': [],
+            'updated': [],
+            'deleted': []
+        }
+
+    for created in db_session.info['changes']['created']:
+        cache['created'].append({
+            'obj_as_str': str(created),
+            'data': created.as_dict()
+        })
+
+    for deleted in db_session.info['changes']['deleted']:
+        cache['deleted'].append({
+            'obj_as_str': str(deleted),
+            'data': {'id': deleted['id'], 'model': deleted.__class__.__name__}
+        })
+
+    for updated in db_session.info['changes']['updated']:
+        cache['created'].append({
+            'obj_as_str': str(updated),
+            'data': updated.as_dict()
+        })
+
+    app.cache.set(now, cache)
+
+    del db_session.info['changes']
 
 
-def update_original_author(mapper, connect, target):
-    """
-    Only used if model actually created
 
-    Given a target (model) update target.author_original 
-    with the current user.
-
-    :param mapper: 
-    :param connect: 
-    :param target: Target model
-    """
-    # If session is None means we're running in non-HTTP context
-    # i.e through flask commands (flask loadfixtures)
-    if not session:
-        return
-
-    curr_user = session.get('user')
-    if curr_user:
-        target.author_original_id = curr_user['id']
-
-
-for klass in BaseModel.__subclasses__():
-    listen(klass, 'before_insert', generate_record_id)
-    listen(klass, 'before_insert', update_original_author)
-    listen(klass, 'before_update', update_last_author)
+listen(db.session, 'before_flush', before_flush)
+listen(db.session, 'after_flush', after_flush)
+listen(db.session, 'after_transaction_end', after_transaction)
