@@ -1,5 +1,6 @@
 import os
 from subprocess import Popen, PIPE
+import subprocess
 
 import ujson as json
 
@@ -116,10 +117,12 @@ def dumpcache():
                 json.dump(data, f, indent=4, sort_keys=True)
 
         # app.cache.delete(key)
-        import ipdb;
-        ipdb.set_trace()
-        p = Popen(['git', 'add', '.'])
+        p = Popen(['git', 'add', '.'], stdout=PIPE, stderr=PIPE)
         p.communicate()
+
+        if p.returncode != 0:
+            print('Error addigitng changes to ')
+            exit(1)
 
         p = Popen(['git', 'commit', '-m', 'DB Updated', '--author', '%s <%s@incubaid.com>' % (username, username)], stdout=PIPE, stderr=PIPE)
         p.communicate()
