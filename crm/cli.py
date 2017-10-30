@@ -1,8 +1,10 @@
 import os
 from subprocess import Popen, PIPE
+
 import ujson as json
 
 from sqlalchemy_utils import create_database, database_exists, drop_database
+from redis import from_url as redis_from_url
 
 from crm.db import BaseModel, db, RootModel, ManyToManyBaseModel
 from crm import app
@@ -36,14 +38,11 @@ def dumpdata():
 
     data_dir = app.config["DATA_DIR"]
     if not os.path.exists(data_dir):
-        os.mkdir(data_dir)
+        os.makedirs(data_dir)
 
-    for model in BaseModel.__subclasses__():
+    for model in RootModel.__subclasses__():
         # Root models are 'Company', 'Contact', 'Deal', 'Sprint', 'Project',
         # 'Organization','User'
-        if not model in RootModel.__subclasses__():
-            continue
-
         model_dir = os.path.abspath(os.path.join(data_dir, model.__name__))
         if not os.path.exists(model_dir):
             os.mkdir(model_dir)
@@ -58,6 +57,76 @@ def dumpdata():
             data = obj.as_dict()
             with open(record_path, 'w') as f:
                 json.dump(data, f, indent=4, sort_keys=True)
+
+
+@app.cli.command()
+def dumpcache():
+    """
+    Dump root objects in Cache
+    We support only redis from now
+    """
+
+
+
+    data_dir = app.config["DATA_DIR"]
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir)
+
+    config = app.cache.config
+    cache_type = config['CACHE_TYPE']
+    if cache_type != 'redis':
+        print('NOT SUPPORTED CACHE BACKEND, ONLY SUPPORTED IS (redis)')
+        exit(1)
+
+    redis = None
+    try:
+        redis = redis_from_url(app.cache.config['CACHE_REDIS_URL'])
+    except:
+        print('BAD REDIS URL PROVIDED BY (CACHE_BACKEND_URI)')
+        exit(1)
+
+    # we use bare python redis client to get list of all keys
+    # since this is not supported in the flask cache
+
+    redis.keys().sort()
+
+
+    for key in redis.keys():
+        key = key.replace(b'flask_cache_', b'').decode()
+        cached = app.cache.get(key)
+
+        created = cached['created']
+        username = cached['username']
+
+        for item in created:
+
+            data = item['data']
+            obj_as_str = item['obj_as_str']
+
+            if len(obj_as_str) > 100:
+                obj_as_str = obj_as_str[:100]
+
+            model_dir = os.path.abspath(os.path.join(data_dir, data['model']))
+            if not os.path.exists(model_dir):
+                os.mkdir(model_dir)
+
+            record_path = os.path.abspath(os.path.join(
+                model_dir, '%s_%s.json' % (data['id'], obj_as_str)))
+            with open(record_path, 'w') as f:
+                json.dump(data, f, indent=4, sort_keys=True)
+
+        # app.cache.delete(key)
+        import ipdb;
+        ipdb.set_trace()
+        p = Popen(['git', 'add', '.'])
+        p.communicate()
+
+        p = Popen(['git', 'commit', '-m', 'DB Updated', '--author', '%s <%s@incubaid.com>' % (username, username)], stdout=PIPE, stderr=PIPE)
+        p.communicate()
+
+        if p.returncode != 0:
+            print('Error committing change to DB')
+            exit(1)
 
 
 @app.cli.command()
