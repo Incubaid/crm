@@ -117,6 +117,7 @@ def dumpcache():
                 json.dump(data, f, indent=4, sort_keys=True)
 
         # app.cache.delete(key)
+        import ipdb; ipdb.set_trace()
         p = Popen(['git', 'add', '.'], stdout=PIPE, stderr=PIPE)
         p.communicate()
 
