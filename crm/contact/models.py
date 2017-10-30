@@ -152,7 +152,7 @@ class Contact(db.Model, BaseModel, RootModel):
         return "{} {} {}".format(self.street_number or '', '%s,' % self.street_name if self.street_name else '',  self.country).strip()
 
     def __str__(self):
-        return "{} {}".format(self.firstname, self.lastname)
+        return "{} {}".format(self.firstname, self.lastname or '').strip()
 
 
 class ContactsSprints(db.Model, ManyToManyBaseModel):
