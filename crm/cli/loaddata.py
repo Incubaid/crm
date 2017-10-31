@@ -7,6 +7,7 @@ from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from crm.db import BaseModel, db, RootModel, ManyToManyBaseModel
 from crm import app
+from crm.user.models import User
 
 
 @app.cli.command()

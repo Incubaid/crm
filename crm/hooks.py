@@ -4,6 +4,7 @@ from sqlalchemy.event import listen
 from flask import session
 
 from crm import app
+from crm.db import BaseModel, RootModel
 from .db import db
 
 
@@ -69,6 +70,11 @@ def after_flush(db_session, flush_context):
 
 def after_transaction(db_session, transaction):
     """
+    Intercept transaction after finishes and cache changes
+    We need to cache data after being written to DB since some 
+    functions called during cache like as_dict() may return invalid data
+    if DB is still not up2date
+    
     :param db_session: DB session
     :param transaction: DB transaction
     """
@@ -92,16 +98,33 @@ def after_transaction(db_session, transaction):
             'data': created.as_dict()
         })
 
-    for deleted in db_session.info['changes']['deleted']:
-        cache['deleted'].append({
-            'obj_as_str': str(deleted),
-            'data': {'id': deleted['id'], 'model': deleted.__class__.__name__}
-        })
+    for updated in [ e for e in db_session.info['changes']['updated']] + [e for e in db_session.info['changes']['deleted']]:
+        # Get all objects referenced by or referencing updated object
+        for obj in BaseModel.from_dict(updated.as_dict()):
+            if not isinstance(obj, RootModel):
+                continue
+            obj = obj.__class__.query.filter_by(id=obj.id).first()
 
-    for updated in db_session.info['changes']['updated']:
-        cache['updated'].append({
-            'obj_as_str': str(updated),
-            'data': updated.as_dict()
+            record = {
+                'obj_as_str': str(obj),
+                'data': obj.as_dict()
+            }
+
+            if record not in cache['updated']:
+                cache['updated'].append(record)
+
+    for deleted in db_session.info['changes']['deleted']:
+        obj = BaseModel.from_dict(deleted.as_dict())[0]
+        if not isinstance(obj, RootModel):
+            continue
+        obj = obj.__class__.query.filter_by(id=obj.id).first().as_dict()
+
+        if obj in cache['updated']:
+            cache['updated'].remove(obj)
+
+        cache['deleted'].append({
+            'obj_as_str': str(obj),
+            'data': obj
         })
 
     app.cache.set(now, cache)

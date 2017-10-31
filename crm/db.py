@@ -325,11 +325,17 @@ class ParentModel(AdminLinksMixin):
                     continue
                 # Make datetime from epoch -- If field type is TIMESTAMP
                 # Remember that when serializing, ujson converts datetime
-                # objects to epoch
+                # objects to epoch which is float
+                # in the main time we support also datetime objects because in some cases
+                # we want to deserialize some objects that was serialized into dictionaries
+                # using as_dict()
                 prop = getattr(all_models[model_name], field).property
                 if hasattr(prop, 'columns') and isinstance(prop.columns[0].type, TIMESTAMP):
                     if value:
-                        setattr(model, field, datetime.fromtimestamp(value))
+                        if isinstance(value, (datetime, date)):
+                            setattr(model, field, value)
+                        else:
+                            setattr(model, field, datetime.fromtimestamp(value))
                 # defer F.Ks to later
                 elif isinstance(value, dict):
                     not_serialized.append(value)
