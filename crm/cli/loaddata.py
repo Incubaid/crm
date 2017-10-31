@@ -1,136 +1,12 @@
-import os
 from subprocess import Popen, PIPE
-import subprocess
+import os
 
 import ujson as json
 
 from sqlalchemy_utils import create_database, database_exists, drop_database
-from redis import from_url as redis_from_url
 
 from crm.db import BaseModel, db, RootModel, ManyToManyBaseModel
 from crm import app
-
-from crm.fixtures import generate_fixtures
-from crm.user.models import User
-
-
-@app.cli.command()
-def createdb():
-    """
-    Create DB    
-    """
-    if not database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
-        create_database(app.config['SQLALCHEMY_DATABASE_URI'])
-    print("DB created.")
-
-
-@app.cli.command()
-def loadfixtures():
-    """
-    populate DB with Test/Random Data 
-    """
-    generate_fixtures()
-
-
-@app.cli.command()
-def dumpdata():
-    """Dump data table models into filesystem."""
-    # ensure database directory
-
-    data_dir = app.config["DATA_DIR"]
-    if not os.path.exists(data_dir):
-        os.makedirs(data_dir)
-
-    for model in RootModel.__subclasses__():
-        # Root models are 'Company', 'Contact', 'Deal', 'Sprint', 'Project',
-        # 'Organization','User'
-        model_dir = os.path.abspath(os.path.join(data_dir, model.__name__))
-        if not os.path.exists(model_dir):
-            os.mkdir(model_dir)
-
-        for obj in model.query.all():
-            obj_as_str = str(obj).replace('/', '_')
-            if len(obj_as_str) > 100:
-                obj_as_str = obj_as_str[:100]
-
-            record_path = os.path.abspath(os.path.join(
-                model_dir, '%s_%s.json' % (obj.id, obj_as_str)))
-            data = obj.as_dict()
-            with open(record_path, 'w') as f:
-                json.dump(data, f, indent=4, sort_keys=True)
-
-
-@app.cli.command()
-def dumpcache():
-    """
-    Dump root objects in Cache
-    We support only redis from now
-    """
-
-
-
-    data_dir = app.config["DATA_DIR"]
-    if not os.path.exists(data_dir):
-        os.makedirs(data_dir)
-
-    config = app.cache.config
-    cache_type = config['CACHE_TYPE']
-    if cache_type != 'redis':
-        print('NOT SUPPORTED CACHE BACKEND, ONLY SUPPORTED IS (redis)')
-        exit(1)
-
-    redis = None
-    try:
-        redis = redis_from_url(app.cache.config['CACHE_REDIS_URL'])
-    except:
-        print('BAD REDIS URL PROVIDED BY (CACHE_BACKEND_URI)')
-        exit(1)
-
-    # we use bare python redis client to get list of all keys
-    # since this is not supported in the flask cache
-
-    redis.keys().sort()
-
-
-    for key in redis.keys():
-        key = key.replace(b'flask_cache_', b'').decode()
-        cached = app.cache.get(key)
-
-        created = cached['created']
-        username = cached['username']
-
-        for item in created:
-
-            data = item['data']
-            obj_as_str = item['obj_as_str']
-
-            if len(obj_as_str) > 100:
-                obj_as_str = obj_as_str[:100]
-
-            model_dir = os.path.abspath(os.path.join(data_dir, data['model']))
-            if not os.path.exists(model_dir):
-                os.mkdir(model_dir)
-
-            record_path = os.path.abspath(os.path.join(
-                model_dir, '%s_%s.json' % (data['id'], obj_as_str)))
-            with open(record_path, 'w') as f:
-                json.dump(data, f, indent=4, sort_keys=True)
-
-        # app.cache.delete(key)
-        import ipdb; ipdb.set_trace()
-        p = Popen(['git', 'add', '.'], stdout=PIPE, stderr=PIPE)
-        p.communicate()
-
-        if p.returncode != 0:
-            print('Error addigitng changes to ')
-            exit(1)
-
-        p = Popen(['git', 'commit', '-m', 'DB Updated', '--author', '%s <%s@incubaid.com>' % (username, username)], stdout=PIPE, stderr=PIPE)
-        p.communicate()
-
-        if p.returncode != 0:
-            print('Error committing change to DB')
-            exit(1)
 
 
 @app.cli.command()
@@ -244,27 +120,3 @@ def loaddata():
         # we need to reset these tables after insertion and set the next ID to be max(ID) + 1
         for table in m2m_tables:
             db.engine.execute("SELECT setval('%s_id_seq', (SELECT MAX(id) FROM %s)+1);" % (table, table))
-
-
-@app.cli.command()
-def generate_graphql_docs():
-    """
-    Generates schema.graphql IDL file and the GraphQL API documentation for queries and mutations.
-
-    requires graphdoc to be installed.
-
-    """
-    from crm import app
-    sc = app.graphql_schema
-
-    with open('./schema.graphql', "w") as f:
-        f.write(str(sc))
-
-    p = Popen(['graphdoc', '--force', '-s', './schema.graphql', '-o',
-               'docs/graphqlapi'], stdout=PIPE, stderr=PIPE)
-
-    p.communicate()[0]
-
-    if p.returncode != 0:
-        print("Failed to generate graphqlapi docs.")
-        exit(1)

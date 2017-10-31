@@ -99,7 +99,7 @@ def after_transaction(db_session, transaction):
         })
 
     for updated in db_session.info['changes']['updated']:
-        cache['created'].append({
+        cache['updated'].append({
             'obj_as_str': str(updated),
             'data': updated.as_dict()
         })
