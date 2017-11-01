@@ -1,16 +1,15 @@
 import graphene
 from graphene import relay
 from graphene.types.inputobjecttype import InputObjectType
-
 from graphene_sqlalchemy import SQLAlchemyObjectType
+from graphene_sqlalchemy.fields import SQLAlchemyConnectionField
 from graphql.error.base import GraphQLError
 
-from crm.address.models import Address
-from crm.contact.models import Subgroup
-from crm.graphql import BaseMutation, BaseQuery, AddressArguments
-from graphene_sqlalchemy.fields import SQLAlchemyConnectionField
-from .models import Contact
 from crm import db
+from crm.apps.address.models import Address
+from crm.apps.contact.models import Subgroup
+from crm.graphql import BaseMutation, BaseQuery, AddressArguments
+from .models import Contact
 
 
 class ContactType(SQLAlchemyObjectType):

@@ -1,13 +1,12 @@
-from subprocess import Popen, PIPE
 import os
-
 import ujson as json
+from subprocess import Popen, PIPE
 
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
-from crm.db import BaseModel, db, RootModel, ManyToManyBaseModel
 from crm import app
-from crm.user.models import User
+from crm.apps.user.models import User
+from crm.db import BaseModel, db, RootModel, ManyToManyBaseModel
 
 
 @app.cli.command()

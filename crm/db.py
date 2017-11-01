@@ -1,18 +1,18 @@
+import base64
 import random
 import string
-import base64
-
-from enum import Enum
-from datetime import datetime, date
 from collections import OrderedDict
+from datetime import datetime, date
+from enum import Enum
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import and_
 from sqlalchemy import inspect
+from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm.collections import InstrumentedList
 from sqlalchemy.sql.sqltypes import TIMESTAMP
-from crm.admin.mixins import AdminLinksMixin
-from sqlalchemy.ext.declarative import declared_attr
+
+from crm.apps.admin.mixins import AdminLinksMixin
 
 db = SQLAlchemy()
 db.session.autocommit = True
@@ -70,12 +70,12 @@ class ParentModel(AdminLinksMixin):
 
     @property
     def author_last(self):
-        from crm.user.models import User
+        from crm.apps.user.models import User
         return User.query.filter_by(id=self.author_last_id).first()
 
     @property
     def author_original(self):
-        from crm.user.models import User
+        from crm.apps.user.models import User
         return User.query.filter_by(id=self.author_original_id).first()
 
     @property

@@ -1,39 +1,36 @@
 import os
 import uuid
-import csv
-from io import StringIO
+
+from crm.apps.comment.models import Comment as CommentModel
+from crm.apps.company.models import Company as CompanyModel
+from crm.apps.contact.models import Contact as ContactModel
+from crm.apps.deal.models import Deal as DealModel
+from crm.apps.event.models import Event as EventModel
+from crm.apps.image.models import Image as ImageModel
+from crm.apps.message.models import Message as MessageModel
+from crm.apps.project.models import Project as ProjectModel
+from crm.apps.sprint.models import Sprint as SprintModel
+from crm.apps.task.models import Task as TaskModel
 from flask import request
-from flask_admin.contrib.sqla import ModelView
+from flask import session
 from flask_admin import AdminIndexView
-from flask_admin.base import expose
-from flask_admin.contrib.sqla.tools import is_relationship
-from flask_admin.contrib.sqla import tools
-from flask_admin._compat import string_types
-from flask_admin.model.form import InlineFormAdmin
 from flask_admin import form
-from flask_admin.actions import action
-from flask import make_response
+from flask_admin._compat import string_types
+from flask_admin.base import expose
+from flask_admin.contrib.sqla import ModelView
+from flask_admin.contrib.sqla import tools
+from flask_admin.contrib.sqla.tools import is_relationship
+from flask_admin.model.form import InlineFormAdmin
+from wtforms import fields
 from wtforms.fields import StringField
 from wtforms.widgets import HTMLString
-from wtforms import fields
-from crm.address.models import Address as AddressModel
-from crm.deal.models import Deal as DealModel
-from crm.link.models import Link as LinkModel
-from crm.project.models import Project as ProjectModel
-from crm.sprint.models import Sprint as SprintModel
-from crm.task.models import Task as TaskModel
-from crm.message.models import Message as MessageModel
-from crm.comment.models import Comment as CommentModel
-from crm.contact.models import Contact as ContactModel
-from crm.company.models import Company as CompanyModel
-from crm.event.models import Event as EventModel
-from crm.image.models import Image as ImageModel
-from flask import session
-from .formatters import column_formatters
-from .converters import CustomAdminConverter
 
+from crm.apps.address.models import Address as AddressModel
+from crm.apps.link.models import Link as LinkModel
 from crm.db import db
 from crm.settings import IMAGES_DIR
+from .converters import CustomAdminConverter
+from .formatters import column_formatters
 
 
 # Create customized index view class that handles login & registration

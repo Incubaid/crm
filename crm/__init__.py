@@ -1,25 +1,22 @@
 import os
 import warnings
 from importlib import import_module
-
 from logging.config import dictConfig
 
-import jinja2
 import graphene
-
-from graphene_sqlalchemy import SQLAlchemyObjectType
-
+import jinja2
 from flask import Flask
+from flask_admin import Admin
 from flask_admin.helpers import get_url
+from flask_cache import Cache
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
-from flask_admin import Admin
-from flask_cache import Cache
+from graphene_sqlalchemy import SQLAlchemyObjectType
 
+from crm.apps.admin.config import NAV_BAR_ORDER
 from crm.graphql import BaseMutation, BaseQuery
-from .settings import LOGGING_CONF, STATIC_DIR, IMAGES_DIR, STATIC_URL_PATH, CACHE_BACKEND_URI
 from .db import BaseModel, db
-from crm.admin.config import NAV_BAR_ORDER
+from .settings import LOGGING_CONF, STATIC_DIR, IMAGES_DIR, STATIC_URL_PATH, CACHE_BACKEND_URI
 
 
 class CRM(object):
@@ -128,7 +125,7 @@ class CRM(object):
         Initialize admin app
         """
         admin_views = __import__(
-            'crm.admin.views',
+            'crm.apps.admin.views',
             globals(),
             locals(),
             ['object']
@@ -229,6 +226,10 @@ class CRM(object):
 
     @property
     def cache(self):
+        # Remove annoying depcration warning from flask-cache
+        from flask.exthook import ExtDeprecationWarning
+        warnings.simplefilter('ignore', ExtDeprecationWarning)
+
         if hasattr(self, '_cache'):
             return self._cache
         if CACHE_BACKEND_URI == 'memory://':

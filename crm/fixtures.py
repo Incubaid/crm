@@ -1,20 +1,18 @@
+from crm.apps.comment.models import Comment
+from crm.apps.company.models import Company
+from crm.apps.contact.models import Contact
+from crm.apps.deal.models import Deal
+from crm.apps.event.models import Event
+from crm.apps.message.models import Message
+from crm.apps.organization.models import Organization
+from crm.apps.project.models import Project
+from crm.apps.sprint.models import Sprint
+from crm.apps.task.models import Task
+from crm.apps.user.models import User
 from faker import Faker
 
-from crm.company.models import Company
-from crm.contact.models import Contact
-from crm.deal.models import Deal
-from crm.link.models import Link
-from crm.event.models import Event
-from crm.organization.models import Organization
-from crm.project.models import Project
-from crm.sprint.models import Sprint
-from crm.user.models import User
-from crm.comment.models import Comment
-from crm.task.models import Task
-from crm.message.models import Message
-
+from crm.apps.link.models import Link
 from crm.db import db
-
 
 fake = Faker()
 
@@ -139,8 +137,8 @@ def generate_fixtures():
     def newdeal():
 
         dealname = fake.name() + "deal"
-        dealamount = 3000
-        deal = Deal(name=dealname, amount=dealamount)
+        dealvalue = 3000
+        deal = Deal(name=dealname, value=dealvalue)
         deal.comments = [newcomment() for i in range(3)]
         deal.tasks = [newtask() for i in range(3)]
         deal.messages = [newmsg() for i in range(3)]

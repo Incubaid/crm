@@ -1,17 +1,14 @@
-import requests
 import jose
-from flask.json import jsonify
-from jose.jwt import get_unverified_claims
-
+import requests
 from flask import session, request
-
-from werkzeug.exceptions import abort
+from flask.json import jsonify
 from flask.templating import render_template
-
+from jose.jwt import get_unverified_claims
+from werkzeug.exceptions import abort
 
 from crm import app
+from crm.apps.user.models import User
 from crm.db import db
-from crm.user.models import User
 
 
 @app.errorhandler(401)

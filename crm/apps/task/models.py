@@ -1,5 +1,4 @@
 from enum import Enum
-from datetime import datetime
 
 from crm.db import db, BaseModel
 

@@ -4,7 +4,7 @@ import subprocess
 import ujson as json
 from redis import from_url as redis_from_url
 
-from crm.db import RootModel, BaseModel
+from crm.db import RootModel
 from crm import app
 
 
@@ -19,23 +19,23 @@ def _add_to_git(data_dir, file_paths, username):
     :return: 
     """
     dot_git = os.path.abspath(os.path.join(data_dir, '.git'))
+    for path in file_paths:
+        p = subprocess.Popen(
+            [
+                'git',
+                '--git-dir=%s' % dot_git,
+                '--work-tree=%s' % os.path.abspath(data_dir),
+                'add',
+                path
+            ]
+        )
 
-    p = subprocess.Popen(
-        [
-            'git',
-            '--git-dir=%s' % dot_git,
-            '--work-tree=%s' % os.path.abspath(data_dir),
-            'add',
-            ' '.join(file_paths)
-        ]
-    )
+        out1, out2 = p.communicate()
 
-    out1, out2 = p.communicate()
-
-    if not p.returncode == 0:
-        print('Error adding files to git')
-        print( out1, out2)
-        exit(1)
+        if not p.returncode == 0:
+            print('Error adding files to git')
+            print( out1, out2)
+            exit(1)
 
     p = subprocess.Popen(
         [

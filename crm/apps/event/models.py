@@ -1,5 +1,5 @@
 import enum
-from crm.db import db, BaseModel, RootModel, ManyToManyBaseModel
+from crm.db import db, BaseModel, ManyToManyBaseModel
 from datetime import datetime
 
 

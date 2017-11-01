@@ -34,9 +34,12 @@ env_settings = import_module(settings_module).__dict__
 globals().update(env_settings)
 
 if not globals()['SQLALCHEMY_DATABASE_URI']:
-    print('Missing SQLALCHEMY_DATABASE_URI')
+    print('Missing Environment variable SQLALCHEMY_DATABASE_URI')
     exit(1)
 
 if not globals()['CACHE_BACKEND_URI']:
-    print('MISSING CACHE_BACKEND_URI SETTING')
+    print('MISSING Environment variable CACHE_BACKEND_URI')
     exit(1)
+
+# Redundant but helpful to prevent syntax errors when importing this from settings
+CACHE_BACKEND_URI = globals()['CACHE_BACKEND_URI']

@@ -1,5 +1,5 @@
 import enum
-from crm.db import db, BaseModel, RootModel
+from crm.db import db, BaseModel
 from crm.countries import countries
 
 CountriesEnum = enum.Enum('Countries', {v: v for k, v in countries.items()})
