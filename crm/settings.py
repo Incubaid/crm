@@ -19,9 +19,15 @@ LOGGING_CONF = {
 
 
 # ../crm.
-STATIC_DIR = os.path.abspath(os.path.join(
-    dirname(dirname(__file__)), 'static'))
+STATIC_DIR = os.path.abspath(
+    os.path.join(
+        dirname(dirname(__file__)),
+        'static'
+    )
+)
+
 STATIC_URL_PATH = "/" + os.path.relpath(STATIC_DIR)
+
 IMAGES_DIR = os.path.join(STATIC_DIR, "uploads", "images")
 
 ######################
