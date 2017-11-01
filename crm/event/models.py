@@ -8,7 +8,8 @@ class ContactEventStatus(enum.Enum):
 
 ContactEventStatus.__str__ = lambda self: self.name
 
-class Event(db.Model, BaseModel, RootModel):
+
+class Event(db.Model, BaseModel):
 
     __tablename__ = "events"
     __mapper_args__ = {'polymorphic_identity': 'messages'}

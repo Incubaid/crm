@@ -100,6 +100,7 @@ def after_transaction(db_session, transaction):
 
     for updated in [ e for e in db_session.info['changes']['updated']] + [e for e in db_session.info['changes']['deleted']]:
         # Get all objects referenced by or referencing updated object
+        # but all objects are not populated very well
         for obj in BaseModel.from_dict(updated.as_dict()):
             if not isinstance(obj, RootModel):
                 continue
