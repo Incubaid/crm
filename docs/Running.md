@@ -22,6 +22,7 @@
 - `export CACHE_BACKEND_URI=redis://{ip}:{port}/{db_number}` to set a redis cache backend
 - `export SQLALCHEMY_DATABASE_URI=postgresql://{user}:{pass}@{ip}:{port}/{db_name}` Use [Postgresql](https://www.postgresql.org/) db
 - `export EXCLUDED_MIDDLEWARES=iyo` Quickly disable [IYO](https://itsyou.online) authentication middleware
+- `export EXCLUDED_MIDDLEWARES=iyo,mw2,mw3` Quickly disable a comma separated list of middlewares
 - Export & Import
     - `flask dumpdata` dump db into json files
     - `flask loaddata` load json files dump into db
