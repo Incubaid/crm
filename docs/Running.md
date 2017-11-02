@@ -43,10 +43,11 @@
 
 ### Setup Caddy server as a reverse proxy to allow [IYO](https://itsyou.online) Authentication
 
-> Ignote this step if you're not familiar with [IYO](https://itsyou.online)
+> Ignore this step if you're not familiar with [IYO](https://itsyou.online)
 > you can perfectly run CRM behind any reverse proxy of your choice.
 > but in this case you'll loose the authentication part of the app
 > and you'll need to provide a middleware in the app to do authentication
+> See [Writing your own Authentication middleware](AuthenticationMiddleware.md)
 
 We usually run our CRM [Flask](https://flask.pocoo.org/) app behind [Caddy Server](https://caddyserver.com/)
 as a reverse proxy since it's powerful and has a list of interesting [Plugins](https://caddyserver.com/download)
