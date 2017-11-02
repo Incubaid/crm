@@ -1,46 +1,63 @@
 ## Configuration
 
-- Main config file is ```settings.py``` all other config files import it; So ```settings.py``` holds sared configrations among all environments
-- All production related settings goes for ```settings.prod.py```
-- All development related settings goes for ```settings.dev.py```
+### Settings files
 
-### Dev Environment
-CRM is built around the usage of IYO for authentication. Typical setup will include a Caddy [configured with IYO plugin](https://github.com/itsyouonline/caddy-integration) as a reverse proxy to CRM application  
+###### Shared settings between all environments
 
-> Recommended way to install caddy and its plugins is using [Caddyman](https://github.com/Incubaid/caddyman)
-#### Example
+goes inside `crm.sesstings.py`
 
-- For local setup if you're running caddy from same crm DIR
-    ```
+- `STATIC_DIR` static files directory
+- `STATIC_URL_PATH` static files URL prefix
+- `IMAGES_DIR` where images uploads goes
+- `LOGGING_CONF` logging configuration
 
-    :10000 {         #this is the port you want to forward the website to
-        proxy / localhost:5000 {
-            header_upstream Host "localhost:10000"
-            except /docs/graphqlapi
-        }
-        browse /docs/graphqlapi/ ./docs/graphqlapi/index.html
-        oauth {
-            client_id       crm
-            client_secret   j_V4qVf6dLwWR_jeQNVrKvkJQ-KymN7D011zFu15H8a4lg9ldx23
-            redirect_url    http://localhost:10000/iyo_callback
-            authentication_required /             #that means no authentication required
-            extra_scopes	user:address,user:email,user:phone,user:memberof:crm.crm_users
-            allow_extension api
-            allow_extension graphqlapi
-            allow_extension html
-            allow_extension png
+###### Development mode settings
 
-        }
-    }
-    ```
+goes inside ```crm.settings_dev.py```
 
-- For production
-    You may want to change ```browse /docs/graphqlapi/ ./docs/graphqlapi/index.html``` into:
-    ```
-        root /opt/code/github/incubaid/crm/
-        browse docs/graphqlapi/index.html
-    ```
+- `DEBUG = True` Enable debugging
+- `Testing = True` Enable testing mode
+- [SQLALCHEMY](https://www.sqlalchemy.org/) debugging options
+    - `SQLALCHEMY_TRACK_MODIFICATIONS = True`
+    - `SQLALCHEMY_ECHO = True`
+    - `SQLALCHEMY_RECORD_QUERIES = True`
 
-**oauth**
 
-- Here we configure caddy to accept authentication to people member of organization `crm.crm_users` and skipping the iyo authentication flow for routes on `api`, `graphql`, `png` and we use the `/docs/graphqlapi` endpoint using the `browse` directive.
+###### Production mode settings
+
+goes inside ```crm.settings_prod.py```
+
+- `DEBUG = FALSE` Disable debugging
+- [SQLALCHEMY](https://www.sqlalchemy.org/) debugging options
+    - `SQLALCHEMY_TRACK_MODIFICATIONS = False`
+    - `SQLALCHEMY_ECHO=False` &  `SQLALCHEMY_RECORD_QUERIES=False` no need to add them they're set to `False` by default
+
+
+###### Environment variables settings
+- `export CACHE_BACKEND_URI=redis://{ip}:{port}/{db_number}` to set a [redis](https://redis.io/) cache backend
+    > In **production mode**, must be set explicitly to a [redis](https://redis.io/) URL.
+
+    > In **development mode**, Not required to set, but the default Cache will be **memory**
+
+    > In **development mode**  command `flask dumpcache` won't work if Cache backend is **memory**
+
+    > Memory cache in a CRM app process can't be accessed by another process like `flask dumpcache`
+    so if you want to use `flask dumpcache` you have to use shared cache like [redis](https://redis.io/)
+
+- `export SQLALCHEMY_DATABASE_URI=postgresql://{user}:{pass}@{ip}:{port}/{db_name}` Use [Postgresql](https://www.postgresql.org/) db
+    > In **production mode**, must be set explicitly to an [RDBMS](https://en.wikipedia.org/wiki/Relational_database_management_system) like [Postgres](https://www.postgresql.org/)
+
+    > In **development mode** Not required but default is to use a [Sqlite](https://www.sqlite.org/) db called `db.dev` in root dir
+
+- `export EXCLUDED_MIDDLEWARES=iyo,mw2,mw3` Quickly disable a comma separated list of middlewares
+
+    > In **development mode only** if you want to disable some modules during development like [IYO](https://itsyou.online) authentication middleware
+    You just have to provide comma separated list of middleware module names
+
+- `export DATA_DIR={path}` change the path where `flask dumpdata` exports DB data to and `flask loaddata` load data into DB from
+    > In **production mode** is set by default to `/opt/code/github/incubaid/data_crm`
+
+    > In **development mode** is set by default to `data` dir under the root directory
+
+
+

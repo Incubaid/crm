@@ -41,8 +41,51 @@
 
 ##
 
-### Setup Caddy server to allow [IYO](https://itsyou.online) Authentication
-We can run our [Flask](https://flask.pocoo.org/) app behind 
+### Setup Caddy server as a reverse proxy to allow [IYO](https://itsyou.online) Authentication
 
-The following instructions can be used for production or development modes,
-some minor changes will be indicated between 2 environments
+> Ignote this step if you're not familiar with [IYO](https://itsyou.online)
+> you can perfectly run CRM behind any reverse proxy of your choice.
+> but in this case you'll loose the authentication part of the app
+> and you'll need to provide a middleware in the app to do authentication
+
+We usually run our CRM [Flask](https://flask.pocoo.org/) app behind [Caddy Server](https://caddyserver.com/)
+as a reverse proxy since it's powerful and has a list of interesting [Plugins](https://caddyserver.com/download)
+one of those is [IYO plugin](https://github.com/itsyouonline/caddy-integration) which can do an out of the box
+authentication against [IYO](https://itsyou.online)
+
+
+- Use [Caddyman](https://github.com/Incubaid/caddyman) to install [Caddy Server](https://caddyserver.com/) with [IYO plugin](https://github.com/itsyouonline/caddy-integration)
+- Use the following [Caddy Server](https://caddyserver.com/) configurations assuming you've met these assumptions
+    - You already created an [IYO](https://itsyou.online) organization called `crm` with a sub-organization called `crm_users` and you created an app with `client_id` & `client_secret` for this organization
+    - [IYO](https://itsyou.online) `client_id` is `crm`
+    - [IYO](https://itsyou.online) `client_secret` is `j_V4qVf6dLwWR_jeQJQssss-KymN7D011zFu15H8a4lg9lxde`
+    - you want to authenticate only people with membership in `crm.crm_users`
+    - you want to skip authentication for some routes like `/api` and `/docs/graphqlapi`
+        - in `/api` we handle the authentication through [IYO](https://itsyou.online) manually
+        - `/docs/graphqlapi` is public [Graphql](graphql.org/learn/) API docs and we serve it as staticfiles using `browse docs/graphqlapi/index.html`
+    - You need to run [Caddy Server](https://caddyserver.com/) on port `10000`
+    - You've CRM running on port `5000`
+    - ROOT dir for your CRM app is `/opt/code/github/incubaid/crm/`
+
+    ```
+    :10000 {
+        proxy / localhost:5000 {
+            header_upstream Host "localhost:10000"
+            except /docs/graphqlapi
+        }
+        root /opt/code/github/incubaid/crm/
+        browse docs/graphqlapi/index.html
+        oauth {
+            client_id       crm
+            client_secret   j_V4qVf6dLwWR_jeQJQssss-KymN7D011zFu15H8a4lg9lxde
+            redirect_url    http://localhost:10000/iyo_callback
+            authentication_required /             #that means no authentication required
+            extra_scopes	user:address,user:email,user:phone,user:memberof:crm.crm_users
+            allow_extension api
+            allow_extension graphqlapi
+            allow_extension html
+            allow_extension png
+
+        }
+    }
+    ```
