@@ -10,6 +10,7 @@
 - [Configuration](docs/Configuration.md)
 - [Project structure](docs/Structure.md)
 - [Authentication](docs/AuthenticationMiddleware.md)
+- [Caching](docs/Caching.md)
 - [How to define a new SQLALCHEMY model](docs/Models.md)
 
 
