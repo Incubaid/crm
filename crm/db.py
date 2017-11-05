@@ -93,9 +93,9 @@ class ParentModel(AdminLinksMixin):
                     5
                 )
             )
-
-            if not self.query.filter_by(id=uid).count():
-                return uid
+            with db.session.no_autoflush:
+                if not self.query.filter_by(id=uid).count():
+                    return uid
 
     @property
     def short_description(self):

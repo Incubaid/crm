@@ -17,6 +17,7 @@ def update_auto_fields_before_flush(db_session, flush_context, instances):
     
     so we update (id) field and original author here
     we update last author on updated objects
+    using model.update_auto_fields() which is idempotent
 
     :param db_session:  DB session
     :param flush_context:  Internal UOWTransaction object which handles the details of the flush.

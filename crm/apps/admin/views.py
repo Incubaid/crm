@@ -291,6 +291,12 @@ class EnhancedModelView(ModelView):
     def get_save_return_url(self, model, is_created):
         return self.get_url('.details_view', id=model.id)
 
+    def on_model_change(self, form, model, is_created):
+        # New model
+        if is_created:
+            model.update_auto_fields()
+        else:
+            model.update_auto_fields(update=True)
 
 class UserModelView(EnhancedModelView):
     column_list = ('firstname', 'lastname', 'username', 'emails',
