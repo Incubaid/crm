@@ -38,6 +38,8 @@
 - DB Events are disabled when you execute command ```flask loaddata``` because usually you don't want
 some actions that may manipulate your data to be executed when you try to load a data mirror in physical DB
 
+- Most Events won't work with bulk updates and bulk inserts unfortunately
+
 ## Explanation of existing DB events handlers in CRM
 
 **`crm.events.update_auto_fields.py`**
