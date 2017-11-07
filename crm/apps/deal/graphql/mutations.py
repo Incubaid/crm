@@ -1,67 +1,10 @@
 import graphene
-from graphene import relay
-from graphene.types.inputobjecttype import InputObjectType
-from graphene_sqlalchemy import SQLAlchemyObjectType
-from graphene_sqlalchemy.fields import SQLAlchemyConnectionField
 from graphql.error.base import GraphQLError
 
-from crm import db
 from crm.apps.address.models import Address
-from crm.graphql import BaseMutation, BaseQuery, AddressArguments
-from .models import Deal
-
-
-class DealType(SQLAlchemyObjectType):
-    # object.id in graphene contains internal
-    # representation of id.
-    # we add another uid field that we fill
-    # with original object.id
-    uid = graphene.String()
-
-    class Meta:
-        model = Deal
-        interfaces = (relay.Node,)
-        name = model.__name__
-
-
-class DealQuery(BaseQuery):
-    """
-    we have 2 queries here Deal and Deals
-    """
-
-    # no need for resplve_Deals function here
-    deals = SQLAlchemyConnectionField(DealType)
-    # Deal query to return one Deal and takes (uid) argument
-    # uid is the original object.id in db
-    deal = graphene.Field(DealType, uid=graphene.String())
-
-    def resolve_deal(self, context, uid):
-        return DealType.get_query(context).filter_by(id=uid).first()
-
-    class Meta:
-        interfaces = (relay.Node,)
-
-
-class CreateDealArguments(InputObjectType):
-    name = graphene.String(required=True)
-    description = graphene.String()
-    amount = graphene.Float()
-    currency = graphene.String(required=True)
-    deal_type = graphene.String(required=True)
-    closed_at = graphene.String()
-    company_id = graphene.String()
-    contact_id = graphene.String()
-    referral_code = graphene.String()
-    shipping_addresses = graphene.List(AddressArguments)
-
-
-class UpdateDealArguments(CreateDealArguments):
-    uid = graphene.String(required=True)
-    name = graphene.String()
-    currency = graphene.String()
-    deal_type = graphene.String()
-    deal_state = graphene.String()
-    is_paid = graphene.Boolean()
+from crm.graphql import BaseMutation
+from .arguments import CreateDealArguments, UpdateDealArguments
+from crm.apps.deal.models import Deal
 
 
 class CreateDeals(graphene.Mutation):

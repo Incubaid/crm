@@ -192,12 +192,14 @@ class CRM(object):
         defined in (graphql.py) and register them in one global schema
         """
 
-        # Import all (graphql.py) defined in all sub apps in system
+        # Import all (graphql) submodules defined in package 'graphql'
         # After importing we'll have
         # All Queries under ::  BaseQuery.__subclasses__()
         # All Types under :: SQLAlchemyObjectType.__subclasses__()
         # All Mutations under :: BaseMutation.__subclasses__()
-        CRM._load_modules(module_type='graphql')
+        CRM._load_modules(module_type='types')
+        CRM._load_modules(module_type='queries')
+        CRM._load_modules(module_type='mutations')
 
         schema = graphene.Schema(
 

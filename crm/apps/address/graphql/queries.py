@@ -1,15 +1,7 @@
 import graphene
 
-from graphene_sqlalchemy import SQLAlchemyObjectType
-
+from crm.apps.address.graphql.types import AddressType
 from crm.graphql import BaseQuery
-from .models import Address
-
-
-class AddressType(SQLAlchemyObjectType):
-
-    class Meta:
-        model = Address
 
 
 class AddressQuery(BaseQuery):

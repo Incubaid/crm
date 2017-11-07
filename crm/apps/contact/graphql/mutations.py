@@ -1,73 +1,11 @@
 import graphene
-from graphene import relay
-from graphene.types.inputobjecttype import InputObjectType
-from graphene_sqlalchemy import SQLAlchemyObjectType
-from graphene_sqlalchemy.fields import SQLAlchemyConnectionField
 from graphql.error.base import GraphQLError
 
 from crm import db
 from crm.apps.address.models import Address
-from crm.apps.contact.models import Subgroup
-from crm.graphql import BaseMutation, BaseQuery, AddressArguments
-from .models import Contact
-
-
-class ContactType(SQLAlchemyObjectType):
-    # object.id in graphene contains internal
-    # representation of id.
-    # we add another uid field that will return obj.uid property
-    # obj.uid returns obj.id if id is set
-    uid = graphene.String()
-
-    class Meta:
-        model = Contact
-        interfaces = (relay.Node,)
-        name = model.__name__
-
-
-class ContactQuery(BaseQuery):
-    """
-    we have 2 queries here contact and contacts
-    """
-
-    # no need for resplve_contacts function here
-    contacts = SQLAlchemyConnectionField(ContactType)
-    # contact query to return one contact and takes (uid) argument
-    # uid is the original object.id in db
-    contact = graphene.Field(ContactType, uid=graphene.String())
-
-    def resolve_contact(self, context, uid):
-        return ContactType.get_query(context).filter_by(id=uid).first()
-
-    class Meta:
-        interfaces = (relay.Node, )
-
-
-class CreateContactArguments(InputObjectType):
-    firstname = graphene.String(required=True)
-    lastname = graphene.String()
-    description = graphene.String()
-    telegram = graphene.String()
-    bio = graphene.String()
-    emails = graphene.String(required=True)
-    telephones = graphene.String(required=True)
-    belief_statement = graphene.String()
-    owner_id = graphene.String()
-    ownerbackup_id = graphene.String()
-    parent_id = graphene.String()
-    tf_app = graphene.Boolean()
-    tf_web = graphene.Boolean()
-    country = graphene.String()
-    message_channels = graphene.String()
-    sub_groups = graphene.List(graphene.String)
-    addresses = graphene.List(AddressArguments)
-
-
-class UpdateContactContactArguments(CreateContactArguments):
-    uid = graphene.String(required=True)
-    firstname = graphene.String()
-    emails = graphene.String()
-    telephones = graphene.String()
+from crm.apps.contact.models import Contact, Subgroup
+from crm.graphql import BaseMutation
+from .arguments import CreateContactArguments, UpdateContactContactArguments
 
 
 class CreateContacts(graphene.Mutation):
