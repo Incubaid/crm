@@ -47,5 +47,9 @@ if not globals()['CACHE_BACKEND_URI']:
     print('MISSING Environment variable CACHE_BACKEND_URI')
     exit(1)
 
-# Redundant but helpful to prevent syntax errors when importing this from settings
+# Redundant but helpful to prevent syntax errors when importing this from
+# settings
 CACHE_BACKEND_URI = globals()['CACHE_BACKEND_URI']
+
+SENDGRID_API_KEY = None
+SUPPORT_EMAIL = None

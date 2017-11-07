@@ -1,33 +1,42 @@
+from re import match
 import smtplib
 import email.utils
 import email
 from email.mime.text import MIMEText
-from re import match
 from inbox import Inbox
+import sendgrid
+from sendgrid.helpers.mail import Email, Content, Mail
+
 from crm import app
 from crm.db import RootModel, db
-from crm.user.models import User
-from crm.contact.models import Contact
-from crm.message.models import Message
+from crm.apps.user.models import User
+from crm.apps.contact.models import Contact
+from crm.apps.message.models import Message
 
 
-def sendemail(to='', from_="support@localhost", subject="User not recognized", body="Please email support at support@{domain}", host="0.0.0.0", port=4477):
-    # USE SENDGRID API
-    # Create the message
-    msg = MIMEText('This is the body of the message.')
-    msg['To'] = to
-    msg['From'] = from_
-    msg['Subject'] = 'Simple test message'
+SENDGRID_API_KEY = app.config['SENDGRID_API_KEY']
+if SENDGRID_API_KEY is None:
+    raise KeyError('SENDGRID_API_KEY is not set.')
 
-    server = smtplib.SMTP(host=host, port=port)
-
-    server.sendmail(from_, to, msg.as_string())
-    print("Email sent..")
-
-inbox = Inbox()
+SUPPORT_EMAIL = app.config['SUPPORT_EMAIL']
+if SUPPORT_EMAIL is None:
+    raise KeyError("SUPPORT_EMAIL is not set.")
 
 PATTERN_TO_ROOTOBJ = r'(?P<objid>\w{5})_(?P<rootobjtype>\w+)@(?P<domain>.+)'
 PATTERN_SUPPORT_EMAIL = r'support@(?P<domain>.+)'
+
+
+def sendemail(to='', from_="support@localhost", subject="User not recognized", body="Please email support at support@localhost"):
+    sg = sendgrid.SendGridAPIClient(apikey=SENDGRID_API_KEY)
+    from_email = Email(from_)
+    to_email = Email(to)
+    content = Content("text/plain", body)
+    mail = Mail(from_email, subject, to_email, content)
+    response = sg.client.mail.send.post(request_body=mail.get())
+    print("Email sent..")
+    print(response.status_code)
+    print(response.body)
+
 
 _contacts_emails = ",".join(
     [c.emails for c in db.session.query(Contact).all()])
@@ -35,7 +44,10 @@ _users_emails = ",".join(
     [u.emails for u in db.session.query(User).all()])
 
 RECOGNIZED_SENDERS = _contacts_emails + _users_emails
-classes = RootModel.__subclasses__()
+rootclasses = RootModel.__subclasses__()
+
+
+inbox = Inbox()
 
 
 @inbox.collate
@@ -50,12 +62,12 @@ def handle_mail(to, sender, subject, body):
         if msupport is not None:
             d = msupport.groupdict()
             domain = d['domain']
-
+            sendemail(from_=sender, to=SUPPORT_EMAIL, body=body)
         if mrootobj is not None:
             d = mrootobj.groupdict()
             objid = d['objid']
             rootobjtype = d['rootobjtype']
-            cls = [x.__name__ for x in classes if x.__name__ == rootobjtype][0]
+            cls = [x.__name__ for x in rootclasses if x.__name__ == rootobjtype][0]
             obj = cls.filter(id == objid)
             obj.messages.append(Message(title=subject, content=body))
             db.session.add(obj)
@@ -84,8 +96,8 @@ def handle_mail(to, sender, subject, body):
             #     fp.write(part.get_payload(decode=True))
             #     fp.close()
 
-            db.commit()
             domain = d['domain']
+            db.commit()
 
 
 @app.cli.command()
