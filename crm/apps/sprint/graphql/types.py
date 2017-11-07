@@ -1,13 +1,15 @@
+import graphene
 from graphene import relay
 
 from graphene_sqlalchemy import SQLAlchemyObjectType
 
-from crm.apps.task.models import Task
+from crm.apps.sprint.models import Sprint
 
 
-class TaskType(SQLAlchemyObjectType):
+class SprintType(SQLAlchemyObjectType):
 
     class Meta:
-        model = Task
+        model = Sprint
         interfaces = (relay.Node,)
         name = model.__name__
+

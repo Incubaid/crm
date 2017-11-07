@@ -1,4 +1,5 @@
 import graphene
+from sqlalchemy.inspection import inspect
 
 
 class BaseMutation(graphene.ObjectType):
@@ -13,3 +14,4 @@ class BaseQuery(graphene.ObjectType):
     Base class for all Queries
     """
     pass
+

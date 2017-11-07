@@ -1,12 +1,13 @@
 from graphene import relay
+
 from graphene_sqlalchemy import SQLAlchemyObjectType
 
-from crm.apps.comment.models import Comment
+from crm.apps.task.models import Task
 
 
-class CommentType(SQLAlchemyObjectType):
+class TaskType(SQLAlchemyObjectType):
 
     class Meta:
-        model = Comment
+        model = Task
         interfaces = (relay.Node,)
         name = model.__name__

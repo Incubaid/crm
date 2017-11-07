@@ -1,13 +1,13 @@
 import graphene
 
-from .types import TaskType
+from .types import SprintType
 
 from crm.graphql import BaseQuery
 
 
-class TaskQuery(BaseQuery):
-    tasks = graphene.List(TaskType)
+class SprintQuery(BaseQuery):
+    sprints = graphene.List(SprintType)
 
-    def resolve_tasks(self, args, context, info):
-        query = TaskType.get_query(context)
+    def resolve_sprints(self, args, context, info):
+        query = SprintType.get_query(context)
         return query.all()
