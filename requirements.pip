@@ -49,3 +49,4 @@ WTForms-Alchemy==0.16.5
 WTForms-Components==0.10.3
 Flask-Cache==0.13.1
 redis==2.10.6
+inbox.py
