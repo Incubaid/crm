@@ -16,3 +16,6 @@
     - Get difference between 2 files `diff file1.txt file2.txt`
     - Add difference package to `requirements.pip` & `requirements-testing.pip`
 
+**Nodejs package**
+    - Add to `requirements.npm`
+   
