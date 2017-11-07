@@ -119,3 +119,8 @@ static
 
 # graphql schema
 schema.graphql
+
+# tar.gz
+*.gz
+*.zip
+
