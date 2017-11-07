@@ -12,7 +12,7 @@
 - [Authentication](docs/AuthenticationMiddleware.md)
 - [Caching](docs/Caching.md)
 - [How to define a new SQLALCHEMY model](docs/Models.md)
-
+- [How to add a requirements](docs/AddNewRequirement.md)
 
 **Advanced**
 - [Admin Interface](docs/AdminInterface.md)

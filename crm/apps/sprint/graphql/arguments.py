@@ -1,0 +1,2 @@
+class TaskArguments(object):
+    pass
