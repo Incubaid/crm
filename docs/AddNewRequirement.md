@@ -1,4 +1,4 @@
-## How to add new System requirement
+## How to add new dependency
 
 **System requirements**
 
