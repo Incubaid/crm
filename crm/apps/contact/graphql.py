@@ -96,9 +96,12 @@ class CreateContacts(graphene.Mutation):
             c = Contact(**data)
             c.addresses = [ Address(**address) for address in addresses]
             c.subgroups = [Subgroup(groupname=subgroup) for subgroup in subgroups]
-            db.session.add(c)
+            # db.session.add(c)
+            c.update_auto_fields()
             objs.append(c)
         try:
+            db.session.info['changes'] = {'created': objs, 'updated': [], 'deleted':{}}
+            db.session.bulk_save_objects(objs)
             db.session.commit()
             return cls(ok=True, ids=[obj.id for obj in objs])
         except Exception as e:
@@ -166,10 +169,17 @@ class DeleteContacts(graphene.Mutation):
 
         # More details about synchronize_session options in SqlAlchemy
         # http://docs.sqlalchemy.org/en/latest/orm/query.html#sqlalchemy.orm.query.Query.delete
-        Contact.query.filter(
-            Contact.id.in_(kwargs.get('uids', []))
-        ).delete(synchronize_session=False)
 
+        query = Contact.query.filter(
+            Contact.id.in_(kwargs.get('uids', [])))
+
+        objs = []
+
+        for obj in query:
+            db.session.delete(obj)
+            objs.append(obj)
+
+        db.session.info['changes'] = {'created': [], 'updated': [], 'deleted': objs}
         try:
             db.session.commit()
             return cls(ok=True)

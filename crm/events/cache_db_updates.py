@@ -51,22 +51,19 @@ def cache_db_updates_after_transaction(db_session, transaction):
                 continue
             obj = obj.__class__.query.filter_by(id=obj.id).first()
 
-            record = {
-                'obj_as_str': str(obj),
-                'data': obj.as_dict()
-            }
+            if obj:
+                record = {
+                    'obj_as_str': str(obj),
+                    'data': obj.as_dict()
+                }
 
-            if record not in cache['updated']:
-                cache['updated'].append(record)
+                if record not in cache['updated']:
+                    cache['updated'].append(record)
 
     for deleted in db_session.info['changes']['deleted']:
         obj = BaseModel.from_dict(deleted.as_dict())[0]
         if not isinstance(obj, RootModel):
             continue
-        obj = obj.__class__.query.filter_by(id=obj.id).first().as_dict()
-
-        if obj in cache['updated']:
-            cache['updated'].remove(obj)
 
         cache['deleted'].append({
             'obj_as_str': str(obj),
