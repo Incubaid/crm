@@ -1,6 +1,6 @@
 from crm.apps.comment.models import Comment
 from crm.apps.company.models import Company
-from crm.apps.contact.models import Contact
+from crm.apps.contact.models import Contact, Gender
 from crm.apps.deal.models import Deal
 from crm.apps.event.models import Event
 from crm.apps.message.models import Message
@@ -9,7 +9,9 @@ from crm.apps.project.models import Project
 from crm.apps.sprint.models import Sprint
 from crm.apps.task.models import Task
 from crm.apps.user.models import User
+from crm.apps.passport.models import Passport, CountriesEnum
 from faker import Faker
+from random import choice
 
 from crm.apps.link.models import Link
 from crm.db import db
@@ -33,6 +35,15 @@ def generate_fixtures():
 
         return l
 
+    def newpassport():
+
+        passport = Passport(passport_fullname="{} {}".format(fake.first_name(), fake.last_name()),
+                            passport_number="{}{}".format(
+                                fake.numerify(), fake.numerify()),
+                            country=choice([CountriesEnum.Belgium, CountriesEnum.Egypt]))
+        db.session.add(passport)
+        return passport
+
     def newcontact():
         firstname = fake.first_name()
         lastname = fake.last_name()
@@ -42,7 +53,8 @@ def generate_fixtures():
         u.emails = newemails()
         u.owner = newuser()
         u.ownerbackup = newuser()
-
+        u.gender = choice([Gender.MALE, Gender.FEMALE])
+        u.passports = [newpassport(), newpassport()]
         u.comments = [newcomment() for i in range(2)]
         u.tasks = [newtask() for i in range(2)]
         u.messages = [newmsg() for i in range(2)]
