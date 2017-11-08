@@ -298,6 +298,7 @@ class EnhancedModelView(ModelView):
         else:
             model.update_auto_fields(update=True)
 
+
 class UserModelView(EnhancedModelView):
     column_list = ('firstname', 'lastname', 'username', 'emails',
                    'telephones', *EnhancedModelView.columns_list_extra)
@@ -409,28 +410,29 @@ class TagModelView(EnhancedModelView):
 
 class ContactModelView(EnhancedModelView):
     column_list = ('firstname', 'lastname', 'emails',
-                   'telephones', 'short_description', *EnhancedModelView.columns_list_extra)
-    column_searchable_list = ('firstname', 'lastname',)
-    column_sortable_list = ('firstname', 'lastname')
+                   'telephones', 'short_description', 'gender', 'date_of_birth', *EnhancedModelView.columns_list_extra)
+    column_searchable_list = ('firstname', 'lastname',
+                              'emails', 'gender', 'date_of_birth')
+    column_sortable_list = ('firstname', 'lastname', 'gender', 'date_of_birth')
     column_details_list = (
         'firstname', 'lastname', 'description', 'images', 'bio', 'belief_statement',
         'addresses',
-        'emails', 'telephones', 'companies', 'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code',
+        'emails', 'telephones', 'gender', 'date_of_birth', 'companies', 'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code',
         'deals', 'events', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup', 'author_last', 'author_original', 'updated_at')
 
-    column_filters = ('id', 'firstname', 'lastname', 'description', 'emails', 'telephones', 'addresses.country', 'message_channels', 'referral_code',
+    column_filters = ('id', 'firstname', 'lastname', 'gender', 'date_of_birth', 'description', 'emails', 'telephones', 'addresses.country', 'message_channels', 'referral_code',
                       'deals', 'comments', 'tasks', 'projects', 'companies', 'messages', 'sprints', 'links', 'owner', 'events',
                       'ownerbackup')
 
     form_rules = (
         'firstname', 'lastname', 'images', 'description', 'bio', 'belief_statement',
-        'addresses', 'emails', 'telephones', 'companies', 'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code',
+        'addresses', 'emails', 'telephones', 'gender', 'date_of_birth', 'companies', 'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code',
         'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
 
     form_edit_rules = (
         'firstname', 'lastname', 'images', 'description', 'bio', 'belief_statement',
-        'addresses',
-        'emails', 'telephones', 'companies', 'tasks', 'deals', 'messages',
+        'addresses', 'emails', 'telephones', 'gender', 'date_of_birth',
+        'companies', 'tasks', 'deals', 'messages',
         'comments', 'links', 'events',
         'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code', 'owner', 'ownerbackup')
 
@@ -531,7 +533,8 @@ class OrganizationModelView(EnhancedModelView):
 
 
 class CurrencyExchangeRateModelView(EnhancedModelView):
-    column_list = ('currency', 'value_usd', *EnhancedModelView.columns_list_extra)
+    column_list = ('currency', 'value_usd', *
+                   EnhancedModelView.columns_list_extra)
     column_details_list = ('currency', 'value_usd', )
     form_rules = ('currency', 'value_usd',)
     form_edit_rules = ('currency', 'value_usd',)
@@ -576,8 +579,6 @@ class DealModelView(EnhancedModelView):
     ]
 
     mainfilter = "Deals / Id"
-
-
 
 
 class ProjectModelView(EnhancedModelView):
