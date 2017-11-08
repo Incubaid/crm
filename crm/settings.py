@@ -29,7 +29,7 @@ STATIC_DIR = os.path.abspath(
 STATIC_URL_PATH = "/" + os.path.relpath(STATIC_DIR)
 
 IMAGES_DIR = os.path.join(STATIC_DIR, "uploads", "images")
-
+ATTACHMENTS_DIR = os.path.join(STATIC_DIR, "uploads", "attachments")
 ######################
 # Leave as the last line
 ########################
