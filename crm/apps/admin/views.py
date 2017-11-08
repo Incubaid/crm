@@ -26,6 +26,7 @@ from wtforms.fields import StringField
 from wtforms.widgets import HTMLString
 
 from crm.apps.address.models import Address as AddressModel
+from crm.apps.passport.models import Passport as PassportModel
 from crm.apps.link.models import Link as LinkModel
 from crm.db import db
 from crm.settings import IMAGES_DIR
@@ -417,21 +418,21 @@ class ContactModelView(EnhancedModelView):
     column_details_list = (
         'firstname', 'lastname', 'description', 'images', 'bio', 'belief_statement',
         'addresses',
-        'emails', 'telephones', 'gender', 'date_of_birth', 'companies', 'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code',
+        'emails', 'telephones', 'gender', 'date_of_birth', 'passports', 'companies', 'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code',
         'deals', 'events', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup', 'author_last', 'author_original', 'updated_at')
 
-    column_filters = ('id', 'firstname', 'lastname', 'gender', 'date_of_birth', 'description', 'emails', 'telephones', 'addresses.country', 'message_channels', 'referral_code',
+    column_filters = ('id', 'firstname', 'lastname', 'gender', 'passports', 'date_of_birth', 'description', 'emails', 'telephones', 'addresses.country', 'message_channels', 'referral_code',
                       'deals', 'comments', 'tasks', 'projects', 'companies', 'messages', 'sprints', 'links', 'owner', 'events',
                       'ownerbackup')
 
     form_rules = (
         'firstname', 'lastname', 'images', 'description', 'bio', 'belief_statement',
-        'addresses', 'emails', 'telephones', 'gender', 'date_of_birth', 'companies', 'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code',
+        'addresses', 'emails', 'telephones', 'passports', 'gender', 'date_of_birth', 'companies', 'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code',
         'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
 
     form_edit_rules = (
         'firstname', 'lastname', 'images', 'description', 'bio', 'belief_statement',
-        'addresses', 'emails', 'telephones', 'gender', 'date_of_birth',
+        'addresses', 'emails', 'telephones', 'passports', 'gender', 'date_of_birth',
         'companies', 'tasks', 'deals', 'messages',
         'comments', 'links', 'events',
         'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code', 'owner', 'ownerbackup')
@@ -440,6 +441,8 @@ class ContactModelView(EnhancedModelView):
         InlineImageModelForm(),
         (AddressModel, {'form_columns': [
             'id', 'street_name', 'street_number', 'zip_code', 'country', 'city', 'state']}),
+        (PassportModel, {'form_columns': [
+            'id', 'passport_fullname', 'passport_number', 'issuance_date', 'expiration_date', 'country']}),
         InlineEventModelForm(),
         (TaskModel, {'form_columns': [
             'id', 'title', 'description', 'type', 'priority', 'assignee', 'eta', 'deadline']}),
