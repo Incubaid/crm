@@ -33,6 +33,7 @@ Commands:
   loadfixtures           populate DB with Test/Random Data
   run                    Runs a development server.
   shell                  Runs a shell in the app context.
+  mailer                 Start mailin/out services.
 
 ```
 
