@@ -164,6 +164,11 @@ class Contact(db.Model, BaseModel, RootModel):
         backref="contact"
     )
 
+    passports = db.relationship(
+        "Passport",
+        backref="contact"
+    )
+
     @property
     def address(self):
         return "{} {} {}".format(self.street_number or '', '%s,' % self.street_name if self.street_name else '',  self.country).strip()
