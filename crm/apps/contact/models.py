@@ -1,3 +1,4 @@
+import datetime
 from enum import Enum
 from crm.db import db, BaseModel, RootModel, ManyToManyBaseModel
 
@@ -41,6 +42,12 @@ class ContactSubgroup(db.Model, ManyToManyBaseModel):
     )
 
 
+class Gender(Enum):
+    MALE, FEMALE = range(2)
+
+Gender.__str__ = lambda self: self.name
+
+
 class Contact(db.Model, BaseModel, RootModel):
 
     __tablename__ = "contacts"
@@ -70,6 +77,16 @@ class Contact(db.Model, BaseModel, RootModel):
     belief_statement = db.Column(
         db.Text(),
         default=""
+    )
+    gender = db.Column(
+        db.Enum(Gender),
+        default=Gender.MALE,
+        index=True
+    )
+    date_of_birth = db.Column(
+        db.Date(),
+        default=datetime.date(1990, 1, 1),
+        nullable=True
     )
 
     message_channels = db.Column(
@@ -162,7 +179,6 @@ class ContactsSprints(db.Model, ManyToManyBaseModel):
 
     __tablename__ = 'contacts_sprints'
 
-
     contact_id = db.Column(
         db.String(5),
         db.ForeignKey('contacts.id')
@@ -174,11 +190,9 @@ class ContactsSprints(db.Model, ManyToManyBaseModel):
     )
 
 
-
 class CompaniesContacts(db.Model, ManyToManyBaseModel):
 
     __tablename__ = 'companies_contacts'
-
 
     company_id = db.Column(
         db.String(5),
@@ -207,4 +221,3 @@ class ContactsProjects(db.Model, ManyToManyBaseModel):
         db.String(5),
         db.ForeignKey('projects.id')
     )
-
