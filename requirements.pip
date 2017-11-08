@@ -68,3 +68,4 @@ Werkzeug==0.12.2
 WTForms==2.1
 WTForms-Alchemy==0.16.5
 WTForms-Components==0.10.3
+inbox.py==0.0.6
