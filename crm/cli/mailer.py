@@ -1,8 +1,10 @@
+import os
 from re import match
 import smtplib
 import email.utils
 import email
 from email.mime.text import MIMEText
+from pyblake2 import blake2b
 from inbox import Inbox
 import sendgrid
 from sendgrid.helpers.mail import Email, Content, Mail
@@ -11,14 +13,22 @@ from crm.db import RootModel, db
 from crm.apps.user.models import User
 from crm.apps.contact.models import Contact
 from crm.apps.message.models import Message
-
+from crm.settings import ATTACHMENTS_DIR
 
 PATTERN_TO_ROOTOBJ = r'(?P<objid>\w{5})_(?P<rootobjtype>\w+)@(?P<domain>.+)'
 PATTERN_SUPPORT_EMAIL = r'support@(?P<domain>.+)'
 
 
 def sendemail(to='', from_="support@localhost", subject="User not recognized", body="Please email support at support@localhost"):
+    """
+    Sends email using sendgrid API.
 
+    @param to str: receiver email.
+    @param from_ str: sender email. [defaults to support_email]
+    @param subject str: email subject.
+    @param body str: email message content.
+
+    """
     sg = sendgrid.SendGridAPIClient(apikey=app.config['SENDGRID_API_KEY'])
     from_email = Email(from_)
     to_email = Email(to)
@@ -57,17 +67,34 @@ def handle_mail(to, sender, subject, body):
     rootclasses = RootModel.__subclasses__()
 
     if sender not in RECOGNIZED_SENDERS:
-        sendemail(to=sender)
+        print("CANT RECOGNIZE SENDER ", sender)
+        sendemail(to=sender, from_=SUPPORT_EMAIL)
     else:
-
         message = email.message_from_string(body)
         body = ""
-        # TODO: support attachments.
-        attachmentsfiles = []
         if message.is_multipart():
-            for part in message.walk():
+            g = message.walk()
+            next(g)  # SKIP THE ROOT ONE.
+            for part in g:
                 part_content_type = part.get_content_type()
                 part_body = part.get_payload()
+                part_filename = part.get_param(
+                    "filename", None, "content-disposition")
+                # make sure to check if gmail sends 2 versions always
+                if part_content_type == "text/plain":
+                    body += part_body
+
+                elif part_content_type == "application/octet-stream":
+                    bhash = blake2b()
+                    part_binary_content = part.get_payload(decode=True)
+                    bhash.update(part_binary_content)
+                    part_extension = os.path.splitext(part_filename)[1]
+                    hashedfilename = bhash.hexdigest() + part_extension
+                    hashedfilepath = os.path.join(
+                        ATTACHMENTS_DIR, hashedfilename)
+                    if not os.path.exists(hashedfilepath):
+                        with open(hashedfilepath, "wb") as hf:
+                            hf.write(part_binary_content)
         else:
             body = message.get_payload(decode=True).decode()
         for x in to:
