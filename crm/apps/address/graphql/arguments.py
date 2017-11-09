@@ -3,9 +3,17 @@ from graphene.types.inputobjecttype import InputObjectType
 
 
 class AddressArguments(InputObjectType):
+    """
+    Address Arguments
+    """
     street_number = graphene.String()
     street_name = graphene.String()
     city = graphene.String()
     state = graphene.String()
     country = graphene.String()
     zip_code = graphene.String()
+
+# ****************************************************
+# NO NEED FOR CREATE/UPDATE ADDRESS                   *
+# THIS IS DONE IMPLICITLY THROUGH CONTACT & DEAL APIs *
+# *****************************************************

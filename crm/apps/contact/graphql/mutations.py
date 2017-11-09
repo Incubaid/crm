@@ -5,7 +5,7 @@ from crm import db
 from crm.apps.address.models import Address
 from crm.apps.contact.models import Contact, Subgroup
 from crm.graphql import BaseMutation
-from .arguments import CreateContactArguments, UpdateContactContactArguments
+from .arguments import CreateContactArguments, UpdateContactArguments
 
 
 class CreateContacts(graphene.Mutation):
@@ -23,23 +23,16 @@ class CreateContacts(graphene.Mutation):
         """
         Mutation logic is handled here
         """
-
         # 'before_insert' hooks won't work with db.session.bulk_save_objects
         # we need to find a way to get hooks to work with bulk_save_objects @todo
-        records = kwargs.get('records', [])
+
         objs = []
-        for data in records:
-            addresses = data.pop('addresses') if 'addresses' in data else []
-            subgroups = data.pop('sub_groups') if 'sub_groups' in data else []
-            c = Contact(**data)
-            c.addresses = [ Address(**address) for address in addresses]
-            c.subgroups = [Subgroup(groupname=subgroup) for subgroup in subgroups]
-            # db.session.add(c)
-            c.update_auto_fields()
+
+        for data in kwargs.get('records', []):
+            c = Contact.get_object_from_graphql_input(data)
+            db.session.add(c)
             objs.append(c)
         try:
-            db.session.info['changes'] = {'created': objs, 'updated': [], 'deleted':{}}
-            db.session.bulk_save_objects(objs)
             db.session.commit()
             return cls(ok=True, ids=[obj.id for obj in objs])
         except Exception as e:
@@ -51,7 +44,7 @@ class UpdateContacts(graphene.Mutation):
         """
             Mutation Arguments        
         """
-        records = graphene.List(UpdateContactContactArguments, required=True)
+        records = graphene.List(UpdateContactArguments, required=True)
 
     ok = graphene.Boolean()
     ids = graphene.List(graphene.String)

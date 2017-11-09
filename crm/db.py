@@ -170,6 +170,44 @@ class ParentModel(AdminLinksMixin):
         )
 
     @classmethod
+    def get_object_from_graphql_input(cls, graphql_input_dict):
+        """
+        Given a dictionary of graphql mutation input
+        return an object of the current model classe
+        with data populated with the input dictionary
+        replacing `uid` fields with `id`
+        :param graphql_input_dict: {'forstname': 'blah', 'tasks': [{'nam':'task1'}]}
+        :return: Model object from cls
+        """
+
+        d = dict(graphql_input_dict)
+
+        if 'uid' in d:
+            d['id'] = d.pop('uid')
+
+        for k, v in d.items():
+            if isinstance(v, dict):
+                m = cls()._get_model_from_table_name(getattr(cls, k).prop.table.name)
+                if 'uid' in v:
+                    id = v.pop('uid')
+                    d[k] = m.query.filter_by(id=id).first()
+                    if not d[k]:
+                        raise Exception('Invalid uid %s' % id)
+                else:
+                    d[k] = m(**dict(v))
+            elif isinstance(v, list):
+                m = cls()._get_model_from_table_name(getattr(cls, k).prop.table.name)
+                for i, item in enumerate(v):
+                    if 'uid' in item:
+                        id = item.pop('uid')
+                        v[i] = m.query.filter_by(id=id).first()
+                        if not v[i]:
+                            raise Exception('Invalid uid %s' % id)
+                    else:
+                        v[i] = m(**dict(item))
+        return cls(**d)
+
+    @classmethod
     def decode_graphene_id(cls, id):
         """
         Graphene ID to Record ID
