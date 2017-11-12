@@ -721,7 +721,7 @@ class MessageModelView(EnhancedModelView):
     column_sortable_list = ('title', 'author')
 
     column_details_list = ('id', 'title', 'destination', 'author', 'content', 'company',
-                           'contact', 'organization', 'project', 'sprint', 'deal', 'task', 'time_tosend', 'time_sent',
+                           'contact', 'links', 'organization', 'project', 'sprint', 'deal', 'task', 'time_tosend', 'time_sent',
                            'author_last', 'author_original', 'updated_at')
 
     form_rules = column_filters = ('title', 'content', 'channel', 'time_tosend', 'time_sent',

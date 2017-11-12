@@ -13,7 +13,9 @@ from crm.db import RootModel, db
 from crm.apps.user.models import User
 from crm.apps.contact.models import Contact
 from crm.apps.message.models import Message
-from crm.settings import ATTACHMENTS_DIR
+from crm.apps.link.models import Link
+
+from crm.settings import ATTACHMENTS_DIR, STATIC_URL_PATH
 
 
 PATTERN_TO_ROOTOBJ = r'(?P<objid>\w{5})_(?P<rootobjtype>\w+)@(?P<domain>.+)'
@@ -52,6 +54,7 @@ def handle_mail(to, sender, subject, body):
     else:
         message = email.message_from_string(body)
         body = ""
+        attachments = []  # list of tuples (filename, filepath)
         if message.is_multipart():
             g = message.walk()
             next(g)  # SKIP THE ROOT ONE.
@@ -72,6 +75,11 @@ def handle_mail(to, sender, subject, body):
                     hashedfilename = bhash.hexdigest() + part_extension
                     hashedfilepath = os.path.join(
                         ATTACHMENTS_DIR, hashedfilename)
+                    hashedfileurl = os.path.join(
+                        STATIC_URL_PATH, "uploads", "attachments", hashedfilename)
+
+                    attachments.append(
+                        (hashedfilename, hashedfileurl, part_filename))
                     if not os.path.exists(hashedfilepath):
                         with open(hashedfilepath, "wb") as hf:
                             hf.write(part_binary_content)
@@ -97,10 +105,15 @@ def handle_mail(to, sender, subject, body):
                     continue
 
                 obj = cls.query.filter(cls.id == objid).first()
-                obj.notify()
-                msgobj = Message(title=subject, content=body)
-                obj.messages.append(msgobj)
-                db.session.add(obj)
+
+                if obj:
+                    obj.notify()
+                    msgobj = Message(title=subject, content=body)
+                    for hashedfilename, hashedfileurl, part_filename in attachments:
+                        msgobj.links.append(
+                            Link(url=hashedfileurl, labels=hashedfilename + "," + part_filename))
+                    obj.messages.append(msgobj)
+                    db.session.add(obj)
 
                 domain = d['domain']
                 db.session.commit()

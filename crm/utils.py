@@ -4,6 +4,7 @@ import string
 from collections import OrderedDict
 import sendgrid
 from sendgrid.helpers.mail import Email, Content, Mail
+from crm import app
 
 
 def sendemail(to='', from_="support@localhost", subject="User not recognized", body="Please email support at support@localhost"):
