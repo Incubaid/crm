@@ -1,3 +1,5 @@
+import enum
+
 countries = {
     "AF": "Afghanistan",
     "AL": "Albania",
@@ -239,3 +241,8 @@ countries = {
     "ZM": "Zambia",
     "ZW": "Zimbabwe"
 }
+
+
+CountriesEnum = enum.Enum('Countries', {v: v for k, v in countries.items()})
+
+CountriesEnum.__str__ = lambda self: self.value

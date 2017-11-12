@@ -19,14 +19,15 @@ db.session.autocommit = True
 
 
 class RootModel(object):
-    pass
+
+    def notify(self):
+        pass
 
 
 class ParentModel(AdminLinksMixin):
     """
     Base Class for all models
     """
-
 
     created_at = db.Column(
         db.TIMESTAMP,
@@ -53,7 +54,6 @@ class ParentModel(AdminLinksMixin):
             db.ForeignKey('users.id'),
             nullable=True,
         )
-
 
     @declared_attr
     def author_original_id(cls):
@@ -261,7 +261,7 @@ class ParentModel(AdminLinksMixin):
         """
         data = {}
 
-        m2m = [] # manytomany fields
+        m2m = []  # manytomany fields
 
         for column, sqlalchemy_prop in inspect(self.__class__).attrs.items():
             value = getattr(self, column)
@@ -276,9 +276,11 @@ class ParentModel(AdminLinksMixin):
                     for item in sorted(value, key=lambda obj: str(obj)):
                         data[column].append(item.as_dict(resolve_refs=False))
                     # If The current field actually has a secondary many2many field
-                    # append the data to m2m list for further parsing after this loop
+                    # append the data to m2m list for further parsing after
+                    # this loop
                     if hasattr(sqlalchemy_prop, 'secondary') and len(value) > 0:
-                        m2m.append({'property': sqlalchemy_prop, 'records': value})
+                        m2m.append(
+                            {'property': sqlalchemy_prop, 'records': value})
 
             # Enums are represented as {'name': 'PENDING', 'value': 0}
             # Enum -- We care only about name field.
@@ -287,7 +289,8 @@ class ParentModel(AdminLinksMixin):
 
         # backrefs that have secondary relationships (manytomany)
         # They pass the previous test  ```elif isinstance(value, InstrumentedList)``` as well
-        # but now we are going to get the related data from the manytomany field
+        # but now we are going to get the related data from the manytomany
+        # field
 
         for item in m2m:
             prop = item['property']
@@ -299,17 +302,23 @@ class ParentModel(AdminLinksMixin):
 
             model_cls = self._get_model_from_table_name(table.name)
             data[model_cls.__name__] = []
-            join_expression = str(prop.secondaryjoin.expression) # i.e 'subgroups.id = contacts_subgroups.subgroup_id'
+            # i.e 'subgroups.id = contacts_subgroups.subgroup_id'
+            join_expression = str(prop.secondaryjoin.expression)
 
-            # Get field name in the m2m model that refers to data in (records) i.e subgroup_id
+            # Get field name in the m2m model that refers to data in (records)
+            # i.e subgroup_id
             field = join_expression.split('%s.' % model_cls.__table__.name)[-1]
-            query_expression1 = getattr(model_cls, field).in_([item.id for item in records])
+            query_expression1 = getattr(model_cls, field).in_(
+                [item.id for item in records])
 
-            # Get F.K in the many2many model that is referencing current object and also the referenced pk
+            # Get F.K in the many2many model that is referencing current object
+            # and also the referenced pk
             fk, pk = self._get_fk_pk_for(model_cls)
 
-            # Now getting data from many2any field that belongs to the current object
-            result = model_cls.query.filter(and_(query_expression1, getattr(model_cls, fk) == getattr(self, pk))).all()
+            # Now getting data from many2any field that belongs to the current
+            # object
+            result = model_cls.query.filter(
+                and_(query_expression1, getattr(model_cls, fk) == getattr(self, pk))).all()
 
             for item in result:
                 dikt = item.as_dict(resolve_refs=False)

@@ -83,6 +83,11 @@ class Message(db.Model, BaseModel):
         db.ForeignKey("events.id")
     )
 
+    links = db.relationship(
+        "Link",
+        backref="message"
+    )
+
     def __str__(self):
         return self.title
 

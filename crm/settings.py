@@ -29,7 +29,7 @@ STATIC_DIR = os.path.abspath(
 STATIC_URL_PATH = "/" + os.path.relpath(STATIC_DIR)
 
 IMAGES_DIR = os.path.join(STATIC_DIR, "uploads", "images")
-
+ATTACHMENTS_DIR = os.path.join(STATIC_DIR, "uploads", "attachments")
 ######################
 # Leave as the last line
 ########################
@@ -47,9 +47,9 @@ if not globals()['CACHE_BACKEND_URI']:
     print('MISSING Environment variable CACHE_BACKEND_URI')
     exit(1)
 
+if globals()['SENDGRID_API_KEY'] is None:
+    print('MISSING Environment variable SENDGRID_API_KEY')
+    exit(1)
 # Redundant but helpful to prevent syntax errors when importing this from
 # settings
 CACHE_BACKEND_URI = globals()['CACHE_BACKEND_URI']
-
-SENDGRID_API_KEY = None
-SUPPORT_EMAIL = None

@@ -42,3 +42,4 @@
 - [Implementation](specs/Implementation.md)
 - [Redis](specs/Redis.md)
 - [Beta2 Test](specs/Beta2Test.md)
+- [Mailin/Mailout] (specs/MailinMailout.md)

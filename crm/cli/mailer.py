@@ -1,109 +1,138 @@
-# from re import match
-# import smtplib
-# import email.utils
-# import email
-# from email.mime.text import MIMEText
-# from inbox import Inbox
-# import sendgrid
-# from sendgrid.helpers.mail import Email, Content, Mail
-#
-# from crm import app
-# from crm.db import RootModel, db
-# from crm.apps.user.models import User
-# from crm.apps.contact.models import Contact
-# from crm.apps.message.models import Message
-#
-#
-# SENDGRID_API_KEY = app.config['SENDGRID_API_KEY']
-# if SENDGRID_API_KEY is None:
-#     raise KeyError('SENDGRID_API_KEY is not set.')
-#
-# SUPPORT_EMAIL = app.config['SUPPORT_EMAIL']
-# if SUPPORT_EMAIL is None:
-#     raise KeyError("SUPPORT_EMAIL is not set.")
-#
-# PATTERN_TO_ROOTOBJ = r'(?P<objid>\w{5})_(?P<rootobjtype>\w+)@(?P<domain>.+)'
-# PATTERN_SUPPORT_EMAIL = r'support@(?P<domain>.+)'
-#
-#
-# def sendemail(to='', from_="support@localhost", subject="User not recognized", body="Please email support at support@localhost"):
-#     sg = sendgrid.SendGridAPIClient(apikey=SENDGRID_API_KEY)
-#     from_email = Email(from_)
-#     to_email = Email(to)
-#     content = Content("text/plain", body)
-#     mail = Mail(from_email, subject, to_email, content)
-#     response = sg.client.mail.send.post(request_body=mail.get())
-#     print("Email sent..")
-#     print(response.status_code)
-#     print(response.body)
-#
-#
-# _contacts_emails = ",".join(
-#     [c.emails for c in db.session.query(Contact).all()])
-# _users_emails = ",".join(
-#     [u.emails for u in db.session.query(User).all()])
-#
-# RECOGNIZED_SENDERS = _contacts_emails + _users_emails
-# rootclasses = RootModel.__subclasses__()
-#
-#
-# inbox = Inbox()
-#
-#
-# @inbox.collate
-# def handle_mail(to, sender, subject, body):
-#     # $uid_$objtype@$maildomain e.g. 4jd3_contact@main.threefoldtoken.com
-#     # print("Locals: ", locals())
-#     # if sender not in RECOGNIZED_SENDERS:
-#     #     sendemail(to=sender)
-#     for x in to:
-#         msupport = match(PATTERN_SUPPORT_EMAIL, x)
-#         mrootobj = match(PATTERN_TO_ROOTOBJ, x)
-#         if msupport is not None:
-#             d = msupport.groupdict()
-#             domain = d['domain']
-#             sendemail(from_=sender, to=SUPPORT_EMAIL, body=body)
-#         if mrootobj is not None:
-#             d = mrootobj.groupdict()
-#             objid = d['objid']
-#             rootobjtype = d['rootobjtype']
-#             cls = [x.__name__ for x in rootclasses if x.__name__ == rootobjtype][0]
-#             obj = cls.filter(id == objid)
-#             obj.messages.append(Message(title=subject, content=body))
-#             db.session.add(obj)
-#             # mail = email.message_from_string(body)
-#             # for part in mail:
-#             #     if part.get_content_maintype() == "multipart":
-#             #         continue
-#             # if part.get('Content-Disposition') is None:
-#             #     continue
-#
-#             # attachement
-#             # filename = part.get_filename()
-#             # counter = 1
-#
-#             # # if there is no filename, we create one with a counter to avoid duplicates
-#             # if not filename:
-#             #     filename = '../webdir/files/part-%03d%s' % (counter, 'bin')
-#             #     counter += 1
-#
-#             # att_path = os.path.join(detach_dir, filename)
-#
-#             # #Check if its already there
-#             # if not os.path.isfile(att_path) :
-#             #     # finally write the stuff
-#             #     fp = open(att_path, 'wb')
-#             #     fp.write(part.get_payload(decode=True))
-#             #     fp.close()
-#
-#             domain = d['domain']
-#             db.commit()
-#
-#
-# @app.cli.command()
-# def mailer():
-#     """
-#     Start mailin/out services.
-#     """
-#     print("Starting mail-in/out..")
-#     inbox.serve(address='0.0.0.0', port=4466)
+import os
+from re import match
+import smtplib
+import email.utils
+import email
+from email.mime.text import MIMEText
+from pyblake2 import blake2b
+from inbox import Inbox
+import sendgrid
+from crm import app
+from crm.utils import sendemail
+from crm.db import RootModel, db
+from crm.apps.user.models import User
+from crm.apps.contact.models import Contact
+from crm.apps.message.models import Message
+from crm.apps.link.models import Link
+
+from crm.settings import ATTACHMENTS_DIR, STATIC_URL_PATH
+
+
+PATTERN_TO_ROOTOBJ = r'(?P<objid>\w{5})_(?P<rootobjtype>\w+)@(?P<domain>.+)'
+PATTERN_SUPPORT_EMAIL = r'support@(?P<domain>.+)'
+
+
+inbox = Inbox()
+
+
+@inbox.collate
+def handle_mail(to, sender, subject, body):
+    """
+    Fired on every new email received 
+
+    @param to [str]: receivers list. [should be in format $uid_roottypeobj@$domain].
+    @param sender str: sender email. [should be in CRM database users/contacts emails] 
+    @param subject str: subject
+    @param body email.Message: email message object.
+
+    If sender is not in recognized senders (contacts/users emails) an email will be sent back to him to contact support. 
+    If sender is in recognized senders: we get the correct object receiving the message and attach the email text body to its messages.
+    If receiever is SUPPORT_EMAIL: an email will be sent to it using sendgrid.
+    """
+    SUPPORT_EMAIL = app.config['SUPPORT_EMAIL']
+    _contacts_emails = ",".join(
+        [c.emails for c in db.session.query(Contact).all()])
+    _users_emails = ",".join(
+        [u.emails for u in db.session.query(User).all()])
+
+    RECOGNIZED_SENDERS = _contacts_emails + _users_emails
+    rootclasses = RootModel.__subclasses__()
+
+    if sender not in RECOGNIZED_SENDERS:
+        print("CANT RECOGNIZE SENDER ", sender)
+        sendemail(to=sender, from_=SUPPORT_EMAIL)
+    else:
+        message = email.message_from_string(body)
+        body = ""
+        attachments = []  # list of tuples (filename, filepath)
+        if message.is_multipart():
+            g = message.walk()
+            next(g)  # SKIP THE ROOT ONE.
+            for part in g:
+                part_content_type = part.get_content_type()
+                part_body = part.get_payload()
+                part_filename = part.get_param(
+                    "filename", None, "content-disposition")
+                # make sure to check if gmail sends 2 versions always
+                if part_content_type == "text/plain":
+                    body += part_body
+
+                elif part_content_type == "application/octet-stream":
+                    bhash = blake2b()
+                    part_binary_content = part.get_payload(decode=True)
+                    bhash.update(part_binary_content)
+                    part_extension = os.path.splitext(part_filename)[1]
+                    hashedfilename = bhash.hexdigest() + part_extension
+                    hashedfilepath = os.path.join(
+                        ATTACHMENTS_DIR, hashedfilename)
+                    hashedfileurl = os.path.join(
+                        STATIC_URL_PATH, "uploads", "attachments", hashedfilename)
+
+                    attachments.append(
+                        (hashedfilename, hashedfileurl, part_filename))
+                    if not os.path.exists(hashedfilepath):
+                        with open(hashedfilepath, "wb") as hf:
+                            hf.write(part_binary_content)
+        else:
+            body = message.get_payload(decode=True).decode()
+        for x in to:
+            msupport = match(PATTERN_SUPPORT_EMAIL, x)
+            mrootobj = match(PATTERN_TO_ROOTOBJ, x)
+            if msupport is not None:
+                d = msupport.groupdict()
+                domain = d['domain']
+                sendemail(from_=SUPPORT_EMAIL, to=sender, body=body)
+            if mrootobj is not None:
+                d = mrootobj.groupdict()
+                objid = d['objid']
+                rootobjtype = d['rootobjtype']
+                cls = None
+                q = [x for x in rootclasses if x.__name__.lower() ==
+                     rootobjtype]
+                if q:
+                    cls = q[0]
+                else:
+                    continue
+
+                obj = cls.query.filter(cls.id == objid).first()
+
+                if obj:
+                    obj.notify()
+                    msgobj = Message(title=subject, content=body)
+                    for hashedfilename, hashedfileurl, part_filename in attachments:
+                        msgobj.links.append(
+                            Link(url=hashedfileurl, labels=hashedfilename + "," + part_filename))
+                    obj.messages.append(msgobj)
+                    db.session.add(obj)
+
+                domain = d['domain']
+                db.session.commit()
+
+
+@app.cli.command()
+def mailer():
+    """
+    Start mailin/out services.
+    """
+    SENDGRID_API_KEY = app.config['SENDGRID_API_KEY']
+    if not SENDGRID_API_KEY:
+        print('SENDGRID_API_KEY is not set.')
+        exit(1)
+
+    SUPPORT_EMAIL = app.config['SUPPORT_EMAIL']
+    if SUPPORT_EMAIL is None:
+        print("SUPPORT_EMAIL is not set.")
+        exit(1)
+
+    print("Starting mail-in/out..")
+    inbox.serve(address='0.0.0.0', port=6700)
