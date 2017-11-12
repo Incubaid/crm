@@ -27,6 +27,7 @@
 - [Intro](docs/GraphqlOverview.md)
 - [CRM API General overview](docs/GraphqlQueriesAndMutations.md)
 - [Graphql API Docs](http://htmlpreview.github.io/?https://github.com/Incubaid/crm/blob/master/docs/graphqlapi/index.html)
+- [GraphQl API Query language](docs/GraphqlQueryLanguage.md)
 - [Using HTTP client to access CRM Graphql API](docs/GraphqlHTTPClient.md)
 - [Define new Types, Queries, and Mutations](docs/GraphqlAdvanced.md)
 
@@ -42,4 +43,4 @@
 - [Implementation](specs/Implementation.md)
 - [Redis](specs/Redis.md)
 - [Beta2 Test](specs/Beta2Test.md)
-- [Mailin/Mailout] (specs/MailinMailout.md)
+- [Mailin/Mailout](specs/MailinMailout.md)

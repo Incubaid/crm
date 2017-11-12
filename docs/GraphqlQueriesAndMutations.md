@@ -157,7 +157,58 @@
                   }
                 }
             ```
+    - **Filteration**
+        - We use [Special Query syntax](GraphqlQueryLanguage.md) for querying data as
+        - You can nest your queries as indicated in this example
+
+        - Example
+        ```
+        {
+          contacts(firstname: "hamdy", tasks: {title: "contains(hamdy_task)"}){
+            edges{
+              node{
+                firstname
+                tasks{
+                  edges{
+                    node{
+                      title
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        ```
+        - Result
+        ```
+        {
+          "data": {
+            "contacts": {
+              "edges": [
+                {
+                  "node": {
+                    "firstname": "hamdy",
+                    "tasks": {
+                      "edges": [
+                        {
+                          "node": {
+                            "title": "hamdy_task_1"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+
+        ```
+
     - You can use queries like ```contacts(last:10)```, also u could use ```contacts(first:1, before: "YXJyYXljb25uZWN0aW9uOjA=")```
+
 
 #### Mutations API
 

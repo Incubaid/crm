@@ -15,7 +15,7 @@
 
 ### CRM Graphql API General Overview
 
-- In [Graphql](http://graphql.org/learn/) API is divided into 2 categories:
+- [Graphql](http://graphql.org/learn/) API is divided into 2 categories:
     - Queries (To Query Data)
     - Mutations (Manipulate Data) / (CRUD operations)
 
