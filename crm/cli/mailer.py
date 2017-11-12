@@ -7,37 +7,17 @@ from email.mime.text import MIMEText
 from pyblake2 import blake2b
 from inbox import Inbox
 import sendgrid
-from sendgrid.helpers.mail import Email, Content, Mail
 from crm import app
+from crm.utils import sendemail
 from crm.db import RootModel, db
 from crm.apps.user.models import User
 from crm.apps.contact.models import Contact
 from crm.apps.message.models import Message
 from crm.settings import ATTACHMENTS_DIR
 
+
 PATTERN_TO_ROOTOBJ = r'(?P<objid>\w{5})_(?P<rootobjtype>\w+)@(?P<domain>.+)'
 PATTERN_SUPPORT_EMAIL = r'support@(?P<domain>.+)'
-
-
-def sendemail(to='', from_="support@localhost", subject="User not recognized", body="Please email support at support@localhost"):
-    """
-    Sends email using sendgrid API.
-
-    @param to str: receiver email.
-    @param from_ str: sender email. [defaults to support_email]
-    @param subject str: email subject.
-    @param body str: email message content.
-
-    """
-    sg = sendgrid.SendGridAPIClient(apikey=app.config['SENDGRID_API_KEY'])
-    from_email = Email(from_)
-    to_email = Email(to)
-    content = Content("text/plain", body)
-    mail = Mail(from_email, subject, to_email, content)
-    response = sg.client.mail.send.post(request_body=mail.get())
-    print("Email sent..")
-    print(response.status_code)
-    print(response.body)
 
 
 inbox = Inbox()
@@ -117,6 +97,7 @@ def handle_mail(to, sender, subject, body):
                     continue
 
                 obj = cls.query.filter(cls.id == objid).first()
+                obj.notify()
                 msgobj = Message(title=subject, content=body)
                 obj.messages.append(msgobj)
                 db.session.add(obj)
