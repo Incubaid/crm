@@ -9,7 +9,8 @@ from crm.apps.project.models import Project
 from crm.apps.sprint.models import Sprint
 from crm.apps.task.models import Task
 from crm.apps.user.models import User
-from crm.apps.passport.models import Passport, CountriesEnum
+from crm.apps.passport.models import Passport
+from crm.countries import CountriesEnum
 from faker import Faker
 from random import choice
 

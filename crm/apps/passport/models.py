@@ -1,12 +1,7 @@
 import datetime
 import enum
-from crm.countries import countries
+from crm.countries import CountriesEnum
 from crm.db import db, BaseModel
-
-
-CountriesEnum = enum.Enum('Countries', {v: v for k, v in countries.items()})
-
-CountriesEnum.__str__ = lambda self: self.value
 
 
 class Passport(db.Model, BaseModel):

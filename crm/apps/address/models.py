@@ -1,10 +1,6 @@
 import enum
 from crm.db import db, BaseModel
-from crm.countries import countries
-
-CountriesEnum = enum.Enum('Countries', {v: v for k, v in countries.items()})
-
-CountriesEnum.__str__ = lambda self: self.value
+from crm.countries import CountriesEnum
 
 
 class Address(db.Model, BaseModel):
