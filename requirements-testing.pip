@@ -44,6 +44,7 @@ promise==2.1
 prompt-toolkit==1.0.15
 psycopg2==2.7.3.1
 ptyprocess==0.5.2
+pyblake2==0.9.3
 pycparser==2.18
 pycrypto==2.6.1
 Pygments==2.2.0
