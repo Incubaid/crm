@@ -11,8 +11,7 @@ import random
 import string
 from collections import OrderedDict
 import sendgrid
-from sendgrid.helpers.mail import Email, Content, Mail
-from crm import app
+from sendgrid.helpers.mail import Email, Content, Mail, Personalization
 from crm.settings import ATTACHMENTS_DIR, STATIC_URL_PATH
 
 Attachment = namedtuple('Attachment', [
@@ -68,8 +67,11 @@ def sendemail(to='', from_="support@localhost", subject="User not recognized", b
     @param body str: email message content.
 
     """
-    sg = sendgrid.SendGridAPIClient(apikey=app.config['SENDGRID_API_KEY'])
+    sg = sendgrid.SendGridAPIClient(apikey=settings.SENDGRID_API_KEY)
     from_email = Email(from_)
+    if isinstance(to, str):
+        to = [to]
+
     to_email = Email(to)
     content = Content("text/plain", body)
     mail = Mail(from_email, subject, to_email, content)

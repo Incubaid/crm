@@ -18,6 +18,7 @@ from crm.apps.link.models import Link
 from crm.settings import ATTACHMENTS_DIR, STATIC_URL_PATH
 
 
+
 PATTERN_TO_ROOTOBJ = r'(?P<objid>\w{5})_(?P<rootobjtype>\w+)@(?P<domain>.+)'
 PATTERN_SUPPORT_EMAIL = r'support@(?P<domain>.+)'
 
@@ -85,6 +86,7 @@ def handle_mail(to, sender, subject, body):
                             Link(url=attachment.hashedfileurl, labels=attachment.hashedfilename + "," + attachment.originalfilename))
                     obj.messages.append(msgobj)
                     db.session.add(obj)
+                    obj.notify(msgobj)
 
                 domain = d['domain']
                 db.session.commit()

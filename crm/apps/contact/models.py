@@ -1,7 +1,7 @@
 import datetime
 from enum import Enum
 from crm.db import db, BaseModel, RootModel, ManyToManyBaseModel
-
+from crm.utils import sendemail
 
 class SubgroupName(Enum):
     AMBASSADOR, INVESTOR, HOSTER, MEMBER, PUBLIC = range(5)
@@ -168,6 +168,16 @@ class Contact(db.Model, BaseModel, RootModel):
         "Passport",
         backref="contact"
     )
+
+    def notify(self, msgobj=None):
+        emails = []
+
+        if self.emails:
+            emails.extend(self.emails.split(","))
+            if self.owner is not None:  
+                owneremails = self.owner.emails.split(",")
+                emails.extend(owneremails)
+            sendemail(to=emails, subject=msgobj.title, body=msg.content)
 
     @property
     def address(self):

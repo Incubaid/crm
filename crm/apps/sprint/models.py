@@ -1,4 +1,5 @@
 from crm.db import db, BaseModel, RootModel
+from crm.utils import sendemail
 
 
 class Sprint(db.Model, BaseModel, RootModel):
@@ -63,6 +64,15 @@ class Sprint(db.Model, BaseModel, RootModel):
         db.String(5),
         db.ForeignKey('projects.id')
     )
+
+    def notify(self, msgobj):
+        emails = []
+        for c in self.contacts:
+            if c.emails:
+                emails.extend(c.emails.split(","))
+
+        sendemail(to=emails, subject=msgobj.title, body=msgobj.content)
+
 
     @property
     def percentage_done(self):

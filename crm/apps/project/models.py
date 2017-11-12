@@ -1,4 +1,5 @@
 from crm.db import db, BaseModel, RootModel
+from crm.utils import sendemail
 
 
 class Project(db.Model, BaseModel, RootModel):
@@ -74,6 +75,14 @@ class Project(db.Model, BaseModel, RootModel):
         db.String(5),
         db.ForeignKey('users.id')
     )
+
+    def notify(self, msgobj):
+        emails = []
+        for objects in [self.users, self.contacts]:
+            for obj in objects:
+                emails.extend(obj.emails.split(","))
+        if emails:
+            sendemail(to=emails, subject=msgobj.title, body=msgobj.body)
 
     @property
     def percentage_done(self):
