@@ -29,9 +29,9 @@ class CreateDeals(graphene.Mutation):
         objs = []
 
         for data in kwargs.get('records', []):
-            c = Deal.get_object_from_graphql_input(data)
-            db.session.add(c)
-            objs.append(c)
+            d = Deal.get_object_from_graphql_input(data)
+            db.session.add(d)
+            objs.append(d)
         try:
             db.session.commit()
             return cls(ok=True, ids=[obj.id for obj in objs])
