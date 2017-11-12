@@ -43,7 +43,7 @@ class ContactSubgroup(db.Model, ManyToManyBaseModel):
 
 
 class Gender(Enum):
-    MALE, FEMALE = range(2)
+    MALE, FEMALE = "MALE", "FEMALE"
 
 Gender.__str__ = lambda self: self.name
 

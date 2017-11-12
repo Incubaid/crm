@@ -16,7 +16,8 @@ class Passport(db.Model, BaseModel):
 
     passport_number = db.Column(
         db.Text(),
-        index=True
+        index=True,
+        nullable=False
     )
 
     issuance_date = db.Column(

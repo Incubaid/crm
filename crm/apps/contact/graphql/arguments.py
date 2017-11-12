@@ -3,8 +3,10 @@ from graphene.types.inputobjecttype import InputObjectType
 
 from crm.apps.address.graphql.arguments import AddressArguments
 from crm.apps.comment.graphql.arguments import CommentArguments
+from crm.apps.contact.models import Gender
 from crm.apps.link.graphql.arguments import LinkArguments
 from crm.apps.message.graphql.arguments import MessageArguments
+from crm.apps.passport.graphql.arguments import PassportArguments
 from crm.apps.task.graphql.arguments import TaskArguments
 from crm.graphql import BaseArgument
 
@@ -17,6 +19,7 @@ class ContactArguments(InputObjectType, BaseArgument):
     uid = graphene.String()
     firstname = graphene.String()
     lastname = graphene.String()
+    gender = graphene.Enum.from_enum(Gender)()
     description = graphene.String()
     bio = graphene.String()
     belief_statement = graphene.String()
@@ -38,6 +41,7 @@ class ContactArguments(InputObjectType, BaseArgument):
 
     subgroups = graphene.List(ContactSubgroupArguments)
     addresses = graphene.List(AddressArguments)
+    passports = graphene.List(PassportArguments)
 
 
 class CreateContactArguments(ContactArguments):
