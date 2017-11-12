@@ -22,8 +22,8 @@ class CompanyArguments(InputObjectType):
     website = graphene.String()
     emails = graphene.String()
     telephones = graphene.String()
-    owner_id = graphene.String()
-    ownerbackup_id = graphene.String()
+    owner = graphene.Argument('crm.apps.user.graphql.arguments.UserArguments')
+    ownerbackup = graphene.Argument('crm.apps.user.graphql.arguments.UserArguments')
 
     deals = graphene.List(DealArguments)
     comments = graphene.List(CommentArguments)

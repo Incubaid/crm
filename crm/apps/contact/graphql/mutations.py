@@ -1,9 +1,9 @@
 import graphene
 from graphql.error.base import GraphQLError
+from sqlalchemy.inspection import inspect
 
 from crm import db
-from crm.apps.address.models import Address
-from crm.apps.contact.models import Contact, Subgroup
+from crm.apps.contact.models import Contact
 from crm.graphql import BaseMutation
 from .arguments import CreateContactArguments, UpdateContactArguments
 
@@ -58,27 +58,26 @@ class UpdateContacts(graphene.Mutation):
         # 'before_insert' hooks won't work with db.session.bulk_save_objects
         # we need to find a way to get hooks to work with bulk_save_objects @todo
 
-        records = kwargs.get('records', [])
-        for data in records:
-            data['id'] = data.pop('uid')
-            addresses = data.pop('addresses') if 'addresses' in data else []
-            subgroups = data.pop('sub_groups') if 'sub_groups' in data else []
-            c = Contact.query.filter_by(id=data['id']).first()
+        records = []
+        for data in kwargs.get('records', []):
+            actual = Contact.query.get(data['uid'])
 
-            if not c:
+            if not actual:
                 raise GraphQLError('Invalid id (%s)' % data['id'])
 
-            for k, v in data.items():
-                setattr(c, k, v)
+            c = Contact.get_object_from_graphql_input(data)
 
-            if addresses:
-                c.addresses = [Address(**address) for address in addresses]
-            if subgroups:
-                c.subgroups = [Subgroup(groupname=subgroup) for subgroup in subgroups]
-            db.session.add(c)
+            for column_name, _ in inspect(Contact).attrs.items():
+                if column_name == 'id':
+                    continue
+                if column_name not in data:
+                    continue
+                setattr(actual, column_name, getattr(c, column_name))
+            db.session.add(actual)
+            records.append(actual.id)
         try:
             db.session.commit()
-            return cls(ok=True, ids=[record['id'] for record in records])
+            return cls(ok=True, ids=records)
         except Exception as e:
             raise GraphQLError(e.args)
 
