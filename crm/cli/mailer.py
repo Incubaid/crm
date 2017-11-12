@@ -8,7 +8,7 @@ from pyblake2 import blake2b
 from inbox import Inbox
 import sendgrid
 from crm import app
-from crm.utils import sendemail
+from crm.utils import sendemail, parse_email_body
 from crm.db import RootModel, db
 from crm.apps.user.models import User
 from crm.apps.contact.models import Contact
@@ -52,39 +52,6 @@ def handle_mail(to, sender, subject, body):
         print("CANT RECOGNIZE SENDER ", sender)
         sendemail(to=sender, from_=SUPPORT_EMAIL)
     else:
-        message = email.message_from_string(body)
-        body = ""
-        attachments = []  # list of tuples (filename, filepath)
-        if message.is_multipart():
-            g = message.walk()
-            next(g)  # SKIP THE ROOT ONE.
-            for part in g:
-                part_content_type = part.get_content_type()
-                part_body = part.get_payload()
-                part_filename = part.get_param(
-                    "filename", None, "content-disposition")
-                # make sure to check if gmail sends 2 versions always
-                if part_content_type == "text/plain":
-                    body += part_body
-
-                elif part_content_type == "application/octet-stream":
-                    bhash = blake2b()
-                    part_binary_content = part.get_payload(decode=True)
-                    bhash.update(part_binary_content)
-                    part_extension = os.path.splitext(part_filename)[1]
-                    hashedfilename = bhash.hexdigest() + part_extension
-                    hashedfilepath = os.path.join(
-                        ATTACHMENTS_DIR, hashedfilename)
-                    hashedfileurl = os.path.join(
-                        STATIC_URL_PATH, "uploads", "attachments", hashedfilename)
-
-                    attachments.append(
-                        (hashedfilename, hashedfileurl, part_filename))
-                    if not os.path.exists(hashedfilepath):
-                        with open(hashedfilepath, "wb") as hf:
-                            hf.write(part_binary_content)
-        else:
-            body = message.get_payload(decode=True).decode()
         for x in to:
             msupport = match(PATTERN_SUPPORT_EMAIL, x)
             mrootobj = match(PATTERN_TO_ROOTOBJ, x)
@@ -107,11 +74,15 @@ def handle_mail(to, sender, subject, body):
                 obj = cls.query.filter(cls.id == objid).first()
 
                 if obj:
-                    obj.notify()
+                    body, attachments = parse_email_body(body)
+                    # body, attachments [hashedfilename, hashedfilpath, hashedfileurl, originalfilename, binarycontent]
                     msgobj = Message(title=subject, content=body)
-                    for hashedfilename, hashedfileurl, part_filename in attachments:
+                    for attachment in attachments:
+                        if not os.path.exists(attachment.hashedfilepath):
+                            with open(attachment.hashedfilepath, "wb") as hf:
+                                hf.write(attachment.binarycontent)
                         msgobj.links.append(
-                            Link(url=hashedfileurl, labels=hashedfilename + "," + part_filename))
+                            Link(url=attachment.hashedfileurl, labels=attachment.hashedfilename + "," + attachment.originalfilename))
                     obj.messages.append(msgobj)
                     db.session.add(obj)
 
