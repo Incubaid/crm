@@ -1,7 +1,7 @@
 import datetime
 from enum import Enum
 from crm.db import db, BaseModel, RootModel, ManyToManyBaseModel
-from crm.utils import sendemail
+from crm.mailer import sendemail
 
 
 class SubgroupName(Enum):
@@ -52,7 +52,6 @@ class ContactSubgroup(db.Model, ManyToManyBaseModel):
         db.String(5),
         db.ForeignKey("contacts.id")
     )
-
 
 
 class Contact(db.Model, BaseModel, RootModel):
