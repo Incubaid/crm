@@ -144,7 +144,7 @@ class BaseQuery(graphene.ObjectType):
             return or_(*[args])
 
         if query_str.startswith('~'):
-            return attr == query_str.replace('~', '', 1)
+            return attr != query_str.replace('~', '', 1)
 
         return attr == query_str
 
@@ -159,6 +159,11 @@ class BaseQuery(graphene.ObjectType):
         final_query = None
 
         for k, v in flat_query.items():
+
+            # If query field is uid or contains uid, replace with (id)
+            if 'uid' in k:
+                k = k.replace('uid', 'id')
+
             # normal fields, not relation fields
             if '.' not in k:
                 filter = BaseQuery.parse_query(model_cls, k, v)
@@ -171,9 +176,8 @@ class BaseQuery(graphene.ObjectType):
                 if getattr(model_cls, attr).prop.backref:
                     filter = getattr(model_cls, attr).any(BaseQuery.parse_query(sub_model, sub_attr, v))
                 else:
-                    #F.K relation
+                    # Foreign keys
                     filter = getattr(model_cls, attr).has(BaseQuery.parse_query(sub_model, sub_attr, v))
-
             if not final_query:
                 final_query = model_cls.query.filter(filter)
             else:
@@ -183,13 +187,11 @@ class BaseQuery(graphene.ObjectType):
     @staticmethod
     def resolve_query(model_cls, *args, **kwargs):
         """
-        
         :param model: 
         :param args: 
         :param kwargs: 
         :return: 
         """
-
         flat_query = BaseQuery.flatten_query(None, {} , kwargs)
         return BaseQuery.compile_query(model_cls, flat_query).all()
 
