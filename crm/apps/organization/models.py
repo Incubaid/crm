@@ -1,5 +1,5 @@
 from crm.db import db, BaseModel, RootModel
-from crm.utils import sendemail
+from crm.mailer import sendemail
 
 
 class Organization(db.Model, BaseModel, RootModel):
@@ -71,7 +71,6 @@ class Organization(db.Model, BaseModel, RootModel):
                 emails.extend(obj.emails.split(","))
         if emails:
             sendemail(to=emails, subject=msgobj.title, body=msgobj.content)
-    
 
     def __str__(self):
         return self.name

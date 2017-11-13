@@ -1,14 +1,9 @@
 import os
 from re import match
-import smtplib
-import email.utils
-import email
-from email.mime.text import MIMEText
 from pyblake2 import blake2b
 from inbox import Inbox
-import sendgrid
 from crm import app
-from crm.utils import sendemail, parse_email_body
+from crm.mailer import sendemail, parse_email_body
 from crm.db import RootModel, db
 from crm.apps.user.models import User
 from crm.apps.contact.models import Contact

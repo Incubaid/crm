@@ -11,6 +11,7 @@ from crm.apps.message.models import Message as MessageModel
 from crm.apps.project.models import Project as ProjectModel
 from crm.apps.sprint.models import Sprint as SprintModel
 from crm.apps.task.models import Task as TaskModel
+from crm.apps.tag.models import Tag as TagModel
 from flask import request
 from flask import session
 from flask_admin import AdminIndexView
@@ -360,11 +361,6 @@ class ImagePreviewField(StringField):
 
 class InlineEventModelForm(InlineFormAdmin):
     form_columns = ('id', 'title', 'contact_event_status', 'event_datetime')
-    # form_widget_args = {
-    #     'title': {
-    #         'readonly': True
-    #     }
-    # }
 
     def __init__(self,):
         return super(InlineEventModelForm, self).__init__(EventModel)
@@ -495,8 +491,8 @@ class CompanyModelView(EnhancedModelView):
         (DealModel, {'form_columns': [
             'id', 'name', 'value', 'currency', 'deal_type', 'description', ]}),
         (CommentModel, {'form_columns': ['id', 'content']}),
-        (LinkModel, {'form_columns': [
-            'id', 'url', ]}), ]
+        (LinkModel, {'form_columns': ['id', 'url', ]}),
+    ]
     form_args = {
         'vatnumber': {'label': 'VAT Number'},
 

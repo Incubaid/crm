@@ -20,8 +20,9 @@ Attachment = namedtuple('Attachment', [
 
 def parse_email_body(body):
     """
-    returns body, attachments [hashedfilename, hashedfielpath, hashedfileurl, originalfilename, binarycontent]
+    Parses email body and searches for the attachements
 
+    returns body, attachments List[Attachment] : Attachment is namedtuple with fields [hashedfilename, hashedfielpath, hashedfileurl, originalfilename, binarycontent]
     """
 
     message = email.message_from_string(body)
@@ -67,7 +68,6 @@ def sendemail(to='', from_=None, subject="User not recognized", body="Please ema
     @param body str: email message content.
 
     """
-    print("SENDING EMAIL TO: ", to)
     if from_ is None:
         from_ = SUPPORT_EMAIL
     sg = sendgrid.SendGridAPIClient(apikey=SENDGRID_API_KEY)

@@ -1,5 +1,5 @@
 from crm.db import db, BaseModel, RootModel
-from crm.utils import sendemail
+from crm.mailer import sendemail
 
 
 class Project(db.Model, BaseModel, RootModel):

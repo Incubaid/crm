@@ -1,7 +1,9 @@
 from crm.apps.comment.models import Comment
 from crm.apps.company.models import Company
-from crm.apps.contact.models import Contact, Gender
+from crm.apps.contact.models import Contact, Gender, SubgroupName, Subgroup
 from crm.apps.country.countries import CountriesEnum
+from crm.apps.country.models import Country
+from crm.apps.currency.models import Currency
 from crm.apps.deal.models import Deal
 from crm.apps.event.models import Event
 from crm.apps.message.models import Message
@@ -37,12 +39,22 @@ def generate_fixtures():
 
         return l
 
+    def newcountry():
+        name = choice([c for c in CountriesEnum])
+        country = Country.query.filter_by(name=name).first()
+
+        if country:
+            return country
+        Country(name=name)
+        db.session.add(country)
+        return country
+
     def newpassport():
 
         passport = Passport(passport_fullname="{} {}".format(fake.first_name(), fake.last_name()),
                             passport_number="{}{}".format(
                                 fake.numerify(), fake.numerify()),
-                            country=choice([CountriesEnum.BE, CountriesEnum.EG]))
+                            country=newcountry())
         db.session.add(passport)
         return passport
 
@@ -51,12 +63,14 @@ def generate_fixtures():
         lastname = fake.last_name()
 
         u = Contact(firstname=firstname, lastname=lastname)
+        u.subgroups = [newsubgroup(), newsubgroup()]
         u.telephones = newphones()
         u.emails = newemails()
         u.owner = newuser()
         u.ownerbackup = newuser()
         u.gender = choice([Gender.MALE, Gender.FEMALE])
         u.passports = [newpassport(), newpassport()]
+        u.countries = [newcountry(), newcountry()]
         u.comments = [newcomment() for i in range(2)]
         u.tasks = [newtask() for i in range(2)]
         u.messages = [newmsg() for i in range(2)]
@@ -152,7 +166,9 @@ def generate_fixtures():
 
         dealname = fake.name() + "deal"
         dealvalue = 3000
+
         deal = Deal(name=dealname, value=dealvalue)
+        deal.currency = newcurrency()
         deal.comments = [newcomment() for i in range(3)]
         deal.tasks = [newtask() for i in range(3)]
         deal.messages = [newmsg() for i in range(3)]
@@ -186,15 +202,34 @@ def generate_fixtures():
         db.session.add(e)
         return e
 
+    def newcurrency():
+        name = choice(['USD', 'EUR', 'AED', 'GBP', 'BTC'])
+        c = Currency.query.filter_by(name=name).first()
+        if c:
+            return c
+        c  = Currency(name=c)
+        db.session.add(c)
+        return c
+
+    def newsubgroup():
+        name = choice([s for s in SubgroupName])
+        s = Subgroup.query.filter_by(groupname=name).first()
+        if s:
+            return s
+        s = Currency(groupname=s)
+        db.session.add(s)
+        return s
+
+
     for i in range(3):
-        u = newuser()
-        tu = newcontact()
-        com = newcompany()
-        proj = newproj()
-        org = neworg()
-        deal = newdeal()
-        sprint = newsprint()
-        event = newevent()
+        newuser()
+        newcontact()
+        newcompany()
+        newproj()
+        neworg()
+        newdeal()
+        newsprint()
+        newevent()
 
         db.session.commit()
 

@@ -2,7 +2,7 @@ import datetime
 from enum import Enum
 
 from crm.db import db, BaseModel, RootModel, ManyToManyBaseModel
-from crm.utils import sendemail
+from crm.mailer import sendemail
 
 
 class SubgroupName(Enum):

@@ -10,7 +10,8 @@ class Tag(db.Model, BaseModel):
 
     tag = db.Column(
         db.String(),
-        default="",
+        nullable=False,
+        unique=True,
         index=True
     )
 

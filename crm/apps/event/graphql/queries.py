@@ -4,9 +4,9 @@ from .types import EventType
 from crm.graphql import BaseQuery
 
 
-class ImageQuery(BaseQuery):
-    images = graphene.List(EventType)
+class EventQuery(BaseQuery):
+    events = graphene.List(EventType)
 
-    def resolve_images(self, args, context, info):
+    def resolve_events(self, args, context, info):
         query = EventType.get_query(context)
         return query.all()
