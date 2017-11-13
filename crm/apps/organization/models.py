@@ -1,4 +1,5 @@
 from crm.db import db, BaseModel, RootModel
+from crm.utils import sendemail
 
 
 class Organization(db.Model, BaseModel, RootModel):
@@ -60,6 +61,17 @@ class Organization(db.Model, BaseModel, RootModel):
         db.String(5),
         db.ForeignKey("organizations.id")
     )
+
+    def notify(self, msgobj):
+        emails = []
+        if self.emails:
+            emails.extend(self.emails.split(","))
+        for obj in [self.users]:
+            if obj is not None:
+                emails.extend(obj.emails.split(","))
+        if emails:
+            sendemail(to=emails, subject=msgobj.title, body=msgobj.content)
+    
 
     def __str__(self):
         return self.name

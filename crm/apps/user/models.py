@@ -1,4 +1,5 @@
 from crm.db import db, BaseModel, RootModel, ManyToManyBaseModel
+from crm.utils import sendemail
 
 
 class User(db.Model, BaseModel, RootModel):
@@ -140,6 +141,12 @@ class User(db.Model, BaseModel, RootModel):
         primaryjoin="User.id==KnowledgeBase.author_id"
     )
 
+    def notify(self, msgobj=None):
+        if self.emails:
+            emails = self.emails.split(",")
+            if emails:
+                sendemail(to=emails, subject=msgobj.title, body=msgobj.content)
+
     def __str__(self):
         return self.username or '%s %s'.strip() % (self.firstname or '', self.lastname or '')
 
@@ -161,6 +168,3 @@ class UsersOrganizations(db.Model, ManyToManyBaseModel):
         db.String(5),
         db.ForeignKey('organizations.id')
     )
-
-
-

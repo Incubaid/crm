@@ -85,6 +85,7 @@ def handle_mail(to, sender, subject, body):
                             Link(url=attachment.hashedfileurl, labels=attachment.hashedfilename + "," + attachment.originalfilename))
                     obj.messages.append(msgobj)
                     db.session.add(obj)
+                    obj.notify(msgobj)
 
                 domain = d['domain']
                 db.session.commit()

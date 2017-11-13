@@ -1,4 +1,5 @@
 from crm.db import db, BaseModel, RootModel, ManyToManyBaseModel
+from crm.utils import sendemail
 
 
 class CompanyTags(db.Model, ManyToManyBaseModel):
@@ -102,3 +103,16 @@ class Company(db.Model, BaseModel, RootModel):
 
     def __str__(self):
         return self.name
+
+    def notify(self, msgobj=None):
+        emails = []
+        if self.emails:
+            emails = self.emails.split(",")
+            if self.contacts:
+                for c in self.contacts:
+                    emails.extend(c.emails.split(","))
+            if self.owner:
+                emails.extend(self.owner.emails.split(","))
+
+        if emails:
+            sendemail(to=emails, subject=msgobj.title, body=msgobj.content)

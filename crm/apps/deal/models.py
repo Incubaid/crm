@@ -2,6 +2,7 @@ from enum import Enum
 from decimal import Decimal
 
 from crm.db import db, BaseModel, RootModel
+from crm.utils import sendemail
 
 
 class DealState(Enum):
@@ -55,7 +56,6 @@ class CurrencyExchangeRate(db.Model, BaseModel, RootModel):
 
 
 class Deal(db.Model, BaseModel, RootModel):
-
     __tablename__ = "deals"
 
     name = db.Column(
@@ -120,7 +120,6 @@ class Deal(db.Model, BaseModel, RootModel):
         db.ForeignKey("contacts.id")
     )
 
-
     referrer1 = db.relationship(
         "Contact",
         backref="referrer1_deals",
@@ -131,7 +130,7 @@ class Deal(db.Model, BaseModel, RootModel):
         "Contact",
         backref="referrer2_deals",
         foreign_keys=[referrer2_id]
-    ) 
+    )
     tasks = db.relationship(
         "Task",
         backref="deal"
@@ -166,6 +165,14 @@ class Deal(db.Model, BaseModel, RootModel):
         backref="deal"
     )
 
+    def notify(self, msgobj):
+        emails = []
+
+        for obj in [self.contact, self.company]:
+            if obj and obj.emails:
+                emails.extend(obj.emails.split(","))
+        sendemail(to=emails, subject=msgobj.title, body=msgobj.content)
+
     @property
     def value_usd(self):
 
@@ -177,7 +184,7 @@ class Deal(db.Model, BaseModel, RootModel):
         ).first()
 
         if rate:
-            return '$%s' % str(round(Decimal(self.value ) * Decimal(rate.value_usd), 2)) if self.value else None
+            return '$%s' % str(round(Decimal(self.value) * Decimal(rate.value_usd), 2)) if self.value else None
 
     def __str__(self):
         return self.name
