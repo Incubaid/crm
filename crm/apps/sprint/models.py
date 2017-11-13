@@ -70,9 +70,9 @@ class Sprint(db.Model, BaseModel, RootModel):
         for c in self.contacts:
             if c.emails:
                 emails.extend(c.emails.split(","))
-
+        if self.owner and self.owner.emails:
+            emails.extend(self.owner.emails.split(","))
         sendemail(to=emails, subject=msgobj.title, body=msgobj.content)
-
 
     @property
     def percentage_done(self):

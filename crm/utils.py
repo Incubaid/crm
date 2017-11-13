@@ -12,7 +12,7 @@ import string
 from collections import OrderedDict
 import sendgrid
 from sendgrid.helpers.mail import Email, Content, Mail, Personalization
-from crm.settings import ATTACHMENTS_DIR, STATIC_URL_PATH
+from crm.settings import ATTACHMENTS_DIR, STATIC_URL_PATH, SENDGRID_API_KEY, SUPPORT_EMAIL
 
 Attachment = namedtuple('Attachment', [
                         'hashedfilename', 'hashedfilepath', 'hashedfileurl', 'originalfilename', 'binarycontent'])
@@ -57,7 +57,7 @@ def parse_email_body(body):
     return body, attachments
 
 
-def sendemail(to='', from_="support@localhost", subject="User not recognized", body="Please email support at support@localhost"):
+def sendemail(to='', from_=None, subject="User not recognized", body="Please email support at support@localhost"):
     """
     Sends email using sendgrid API.
 
@@ -67,15 +67,22 @@ def sendemail(to='', from_="support@localhost", subject="User not recognized", b
     @param body str: email message content.
 
     """
-    sg = sendgrid.SendGridAPIClient(apikey=settings.SENDGRID_API_KEY)
+    print("SENDING EMAIL TO: ", to)
+    if from_ is None:
+        from_ = SUPPORT_EMAIL
+    sg = sendgrid.SendGridAPIClient(apikey=SENDGRID_API_KEY)
     from_email = Email(from_)
     if isinstance(to, str):
         to = [to]
 
-    to_email = Email(to)
+    to_email = Email(to[0])
     content = Content("text/plain", body)
     mail = Mail(from_email, subject, to_email, content)
+    if len(to) > 1:
+        to = list(set(to))  # no duplicates.
+        for receiver in to[1:]:
+            mail.personalizations[0].add_to(Email(receiver))
     response = sg.client.mail.send.post(request_body=mail.get())
     print("Email sent..")
-    print(response.status_code)
-    print(response.body)
+    print(response.status_code, response.body)
+    return response.status_code, response.body

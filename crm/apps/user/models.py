@@ -145,7 +145,7 @@ class User(db.Model, BaseModel, RootModel):
         if self.emails:
             emails = self.emails.split(",")
             if emails:
-                sendemail(to=emails, subject=msgobj.title, body=msg.content)
+                sendemail(to=emails, subject=msgobj.title, body=msgobj.content)
 
     def __str__(self):
         return self.username or '%s %s'.strip() % (self.firstname or '', self.lastname or '')

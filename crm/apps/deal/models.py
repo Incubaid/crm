@@ -154,10 +154,10 @@ class Deal(db.Model, BaseModel, RootModel):
 
     def notify(self, msgobj):
         emails = []
-            
+
         for obj in [self.contact, self.company]:
-            if obj is not None:
-                emails.extend(self.contact.emails.split(","))
+            if obj and obj.emails:
+                emails.extend(obj.emails.split(","))
         sendemail(to=emails, subject=msgobj.title, body=msgobj.content)
 
     @property
