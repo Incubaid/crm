@@ -31,9 +31,10 @@ Commands:
   generate_graphql_docs  Generates schema.graphql IDL file and the...
   loaddata               Load tables with data from filesystem.
   loadfixtures           populate DB with Test/Random Data
+  mailer                 Start mailin/out services.
   run                    Runs a development server.
   shell                  Runs a shell in the app context.
-  mailer                 Start mailin/out services.
+  syncdata               Sync Cached DB changes in Redis to file...
 
 ```
 
@@ -71,6 +72,7 @@ Commands:
     - Inside your module, put a function with the command logic you want
     - surround your command function with a docorator ```@app.cli.command()```
     - The command will get exposes automatically by `flask {function_name}`
+    - Don't forget to add doc strings to document your command, they are gonna be exposed in `flask --help` automatically
 - Example `crm.cli.loadfixtures.py` which exposes a command called `loadfixtures`
     ```python
     @app.cli.command()

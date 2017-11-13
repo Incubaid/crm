@@ -27,10 +27,12 @@ def cache_db_updates_after_transaction(db_session, transaction):
 
     cur_user = session.get('user') or {} if session else {}
     username = cur_user.get('username') or 'guest'
+    email = cur_user.get('email') or 'guest@incubaid.com'
     now = str(datetime.now())
 
     cache = {
         'username': username,
+        'email': email,
         'created': [],
         'updated': [],
         'deleted': []

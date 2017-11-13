@@ -8,7 +8,7 @@ from crm.db import RootModel
 from crm import app
 
 
-def _add_to_git(data_dir, file_paths, username):
+def _add_to_git(data_dir, file_paths, username, email):
     """
     Given Data_DIR / Repo, some absolute paths in that Repo and a username
     Add these files to repo and commit changes
@@ -46,7 +46,7 @@ def _add_to_git(data_dir, file_paths, username):
             '-m',
             'Updated DB',
             '--author',
-            '%s <%s@incubaid.com>' % (username, username)
+            '%s <%s>' % (username, email)
         ]
     )
 
@@ -165,13 +165,7 @@ def _update_fs(items, data_dir, delete=False):
     return paths
 
 
-@app.cli.command()
-def dumpcache():
-    """
-    Dump root objects in Cache
-    We support only redis from now
-    """
-
+def _dump():
     data_dir = app.config["DATA_DIR"]
     _ensure_dirs(data_dir)
     cache_client = _get_cache_client()
@@ -187,12 +181,22 @@ def dumpcache():
         updated = cached['updated']
         deleted = cached['deleted']
         username = cached['username']
+        email = cached['email']
 
         file_paths = []
 
         file_paths.extend(_update_fs(created, data_dir))
         file_paths.extend(_update_fs(updated, data_dir))
         file_paths.extend(_update_fs(deleted, data_dir, delete=True))
-        _add_to_git(data_dir, set([path for path in file_paths if path]), username)
+        _add_to_git(data_dir, set([path for path in file_paths if path]), username, email)
 
         app.cache.delete(key)
+    return len(current_kyes)
+
+@app.cli.command()
+def dumpcache():
+    """
+    Dump root objects in Cache
+    We support only redis from now
+    """
+    _dump()
