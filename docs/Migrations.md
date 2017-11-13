@@ -14,7 +14,7 @@ running and doesn't affect existing data
 **How migrations work**
 - We use [Flask migrate](https://flask-migrate.readthedocs.io/en/latest/)
 - Use these commands if you don't have previously created migration scripts:
-    - ```flask createdb``` Create database  *ONLY IF YOUR ARE NOT USING [SQLITE](https://www.sqlite.org/)*
+    - ```flask createdb``` Create database
     - ```flask db init``` Create *migrations* directory.
     - ```flask db migrate``` Create initial migration script (revision 1) under *migrations/versions* dir
     - ```flask db upgrade``` Create tables physically in DB
@@ -69,10 +69,12 @@ We have used ```migrations``` dir, so we now sure that we used all previous migr
 and we created a new one that depends on them
 - Edit your newly migration file under ```migrations/revisions``` if needed
 - commit in ```production``` after merging ```master``` into priduction
-- **Check code in [migrations files](https:https://github.com/Incubaid/crm/blob/production/migrations/versions/88bd97fd024f_.py) to see how you can query and alter data during migrations
+- **Check code** in [migrations files](https:https://github.com/Incubaid/crm/blob/production/migrations/versions/88bd97fd024f_.py) to see how you can query and alter data during migrations
 
 ### Deal with Enum changes**
-We had this issue once before
+
+###### Issue (1)
+
 - Old ENum
     ```python
     class DealCurrency(Enum):
@@ -85,7 +87,7 @@ We had this issue once before
         USD, EUR, AED, GBP, BTC = range(5)
     ```
 
-- Now after creating new migration file, these changes was not detected
+- Now after creating new migration file, these changes were not detected
 - How to do the migrarion?
     - since old and new enum names are same, and you can't just create enum with same name as old one
        We create temporary type with different enum name but holding new data
@@ -119,3 +121,32 @@ We had this issue once before
             ...
             update_deal_enums()
         ```
+
+###### Issue (2)
+
+- You have an existing enum
+    ```python
+    class ContactEventStatus(enum.Enum):
+        INVITED, WONTSHOW, ATTENDED, DENIED, COULDNTMAKEIT = range(5)
+
+    ```
+- You tried to use it by another newly created DB table, but when generating migrations, you get something like
+    ```python
+        sa.Column('contact_event_status', sa.Enum('INVITED', 'WONTSHOW', 'ATTENDED', 'DENIED', 'COULDNTMAKEIT', name='contacteventstatus'), nullable=True)
+    ```
+
+- Now running migrations, you find it fails since it tries to create existing enum again
+
+- **Solution**
+
+    Change the previous line from
+    ```python
+        sa.Column('contact_event_status', sa.Enum('INVITED', 'WONTSHOW', 'ATTENDED', 'DENIED', 'COULDNTMAKEIT', name='contacteventstatus'), nullable=True)
+    ```
+
+    to
+    ```python
+        sa.Column('contact_event_status', postgresql.ENUM('INVITED', 'WONTSHOW', 'ATTENDED', 'DENIED', 'COULDNTMAKEIT', name='contacteventstatus', create_type=False), nullable=True)
+    ```
+
+    to avoid trying to create an already created enum type in DB

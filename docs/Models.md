@@ -1,32 +1,70 @@
 ## Models
 
-To define a model follow the following conventions
+- All models **Must** be defined under `crm.apps.{my_sub_app}.models` an example is `crm.apps.user.models`
+- ِAll models inherit from `db.Model`
 
-- Every subpackage under ```crm``` represents a sub application i.e ```contact```
-- By default if you want to add a model a sub application, add them in a file called ```models.py```; i.e ```crm./contact/models.py```
-- model files ```models.py``` along all sub applications are registered automatically
-- Each model Object **(That is not many to many )** inherit from ```(crm.db.Model & crm.db.BaseModel)```
+> There's difference between (Many To Many) models and non (Many To Many) models
+And we need a way to differentiate between both especially when we export/import DB data
+So each category has different Parent class.That says `flask dumpdata` & `flask loaddata` commands
+will not work correctly if you're not inheriting from proper parent while defining your model
 
-- Each **(Many To Many)** model inherits from ```(crm.db.Model & crm.db.ManyToManyBaseModel)```
-    ```python
-    class ContactSubgroup(db.Model, ManyToManyBaseModel):
-        __tablename__ = "contacts_subgroups"
+- **Many To Many**
 
-        subgroup_id = db.Column(
-            db.String(5),
-            db.ForeignKey('subgroups.id')
-        )
+    - Must inherit from `crm.db.ManyToManyBaseModel)`
+    - Primary Key (id) field is integer and auto incremental
+    - Usually records in these tables are auto created by Flask ORM [SqlAlchemy](https://www.sqlalchemy.org/)
+      That's why we don't want to alter their creation mechanism.
 
-        contact_id = db.Column(
-            db.String(5),
-            db.ForeignKey("contacts.id")
-        )
+     ```python
+        class ContactSubgroup(db.Model, ManyToManyBaseModel):
+            __tablename__ = "contacts_subgroups"
+
+            subgroup_id = db.Column(
+                db.String(5),
+                db.ForeignKey('subgroups.id')
+            )
+
+            contact_id = db.Column(
+                db.String(5),
+                db.ForeignKey("contacts.id")
+            )
+     ```
+
+
+- **(Non Many to Many)**
+
+    - Must inherit from `crm.db.BaseModel`
+    - Primary Key (id) is string of unique 5 characters and assigned by an ORM [SqlAlchemy Event](http://docs.sqlalchemy.org/en/latest/orm/events.html)
+        > `crm.events.update_auto_fields` registers a `before_flush` event to update id field with a unique ID string
+           This event finds newly created records and alter their IDS with random ones.
+
+        > Note that newly created tables list in a DB `session.new` doesn't contain any many to many field
+           so we're sure that only non Many to Many fields are affected
+
+    ```
+    class Contact(db.Model, BaseModel, RootModel):
+
+    __tablename__ = "contacts"
+
+    firstname = db.Column(
+        db.String(255),
+        nullable=False,
+        index=True
+    )
+
+    lastname = db.Column(
+        db.String(255),
+        default="",
+        index=True
+    )
+    description = db.Column(
+        db.Text()
+    )
     ```
 
-- Root models are basically basic (main) models in our CRM system and they can contain other non main models and we export them only
-and include non main models data in them; i.e ```User```
-an examle of non main model is a ```Task``` since ```User can hold tasks```
-    - we have 6 Root models
+
+- **Root models**
+    > We've 7 Root models,
         - Company
         - Contact
         - Deal
@@ -34,34 +72,8 @@ an examle of non main model is a ```Task``` since ```User can hold tasks```
         - Project
         - Organization
         - User
-    - To make a model, a main model, you need to inherit from  ```(crm.db.MainModel)```
-    - Exmaple:
-        ```python
-                from crm.db import db, BaseModel, RootModel
 
-
-                class Company(db.Model, BaseModel, RootModel):
-
-                    __tablename__ = "companies"
-
-                    name = db.Column(
-                        db.String(255),
-                        nullable=False
-                    )
-
-                    # should be markdown.
-                    description = db.Column(
-                        db.Text()
-                    )
-        ```
-
-
-#### WHy the hell did we differentiate between normal models and many2many models
-
-- Many2Many models cause problems if they use the same ID generation mechanism
-we are using i.e ```random 5 chars ID``` in flask admin
-so we need to keep them using the normal auto incremental integer IDs
-
-- Many2Many fields contain ```IS_MANY_TO_MANY``` property to differentiate them
-
-- Many2Many fields are separate objects (non-roots) that need to have special treatment during ```loaddata``` & ```dumpdata```
+    - Root models are these that is exported during `flask dumpdata` command
+    - A Root model must inherit from `crm.db.RootModel`
+    - Since only Root models are exported during `flask dumpdata`, all info related to a record from any other non Root
+    model is contained inside Root model data, that says exported data has duplications but more readable

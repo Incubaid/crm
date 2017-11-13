@@ -6,7 +6,5 @@ from crm.middlewares import *
 
 
 if 'loaddata' not in sys.argv:
-    from crm.hooks import *
+    from crm.events import *
 
-if __name__ == '__main__':
-    app.run(debug=app.debug)

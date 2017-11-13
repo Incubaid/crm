@@ -1,32 +1,33 @@
+import base64
 import random
 import string
-import base64
-
-from enum import Enum
-from datetime import datetime, date
 from collections import OrderedDict
+from datetime import datetime, date
+from enum import Enum
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import and_
 from sqlalchemy import inspect
+from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm.collections import InstrumentedList
 from sqlalchemy.sql.sqltypes import TIMESTAMP
-from crm.admin.mixins import AdminLinksMixin
-from sqlalchemy.ext.declarative import declared_attr
+
+from crm.apps.admin.mixins import AdminLinksMixin
 
 db = SQLAlchemy()
 db.session.autocommit = True
 
 
 class RootModel(object):
-    pass
+
+    def notify(self, msgobj=None):
+        pass
 
 
 class ParentModel(AdminLinksMixin):
     """
     Base Class for all models
     """
-
 
     created_at = db.Column(
         db.TIMESTAMP,
@@ -54,7 +55,6 @@ class ParentModel(AdminLinksMixin):
             nullable=True,
         )
 
-
     @declared_attr
     def author_original_id(cls):
         """
@@ -70,12 +70,12 @@ class ParentModel(AdminLinksMixin):
 
     @property
     def author_last(self):
-        from crm.user.models import User
+        from crm.apps.user.models import User
         return User.query.filter_by(id=self.author_last_id).first()
 
     @property
     def author_original(self):
-        from crm.user.models import User
+        from crm.apps.user.models import User
         return User.query.filter_by(id=self.author_original_id).first()
 
     @property
@@ -93,9 +93,9 @@ class ParentModel(AdminLinksMixin):
                     5
                 )
             )
-
-            if not self.query.filter_by(id=uid).count():
-                return uid
+            with db.session.no_autoflush:
+                if not self.query.filter_by(id=uid).count():
+                    return uid
 
     @property
     def short_description(self):
@@ -136,6 +136,23 @@ class ParentModel(AdminLinksMixin):
                 dt_fields.append(c.name)
         return dt_fields
 
+    def update_auto_fields(self, update=False):
+        """
+        Update self.id with self.uid
+        Uodate author_original
+        Update author_last
+        """
+
+        from flask import session
+        cur_user = session.get('user') or {} if session else {}
+
+        if not update:
+            # Add UID to newly created objects
+            self.id = self.uid
+            self.author_original_id = cur_user.get('id')
+        else:
+            self.author_last_id = cur_user.get('id')
+
     @classmethod
     def encode_graphene_id(cls, id):
         """
@@ -151,6 +168,44 @@ class ParentModel(AdminLinksMixin):
                 id=id
             )
         )
+
+    @classmethod
+    def get_object_from_graphql_input(cls, graphql_input_dict):
+        """
+        Given a dictionary of graphql mutation input
+        return an object of the current model classe
+        with data populated with the input dictionary
+        replacing `uid` fields with `id`
+        :param graphql_input_dict: {'forstname': 'blah', 'tasks': [{'nam':'task1'}]}
+        :return: Model object from cls
+        """
+
+        d = dict(graphql_input_dict)
+
+        if 'uid' in d:
+            d['id'] = d.pop('uid')
+
+        for k, v in d.items():
+            if isinstance(v, dict):
+                m = cls()._get_model_from_table_name(getattr(cls, k).prop.table.name)
+                if 'uid' in v:
+                    id = v.pop('uid')
+                    d[k] = m.query.filter_by(id=id).first()
+                    if not d[k]:
+                        raise Exception('Invalid uid %s' % id)
+                else:
+                    d[k] = m(**dict(v))
+            elif isinstance(v, list):
+                m = cls()._get_model_from_table_name(getattr(cls, k).prop.table.name)
+                for i, item in enumerate(v):
+                    if 'uid' in item:
+                        id = item.pop('uid')
+                        v[i] = m.query.filter_by(id=id).first()
+                        if not v[i]:
+                            raise Exception('Invalid uid %s' % id)
+                    else:
+                        v[i] = m(**dict(item))
+        return cls(**d)
 
     @classmethod
     def decode_graphene_id(cls, id):
@@ -206,7 +261,7 @@ class ParentModel(AdminLinksMixin):
         """
         data = {}
 
-        m2m = [] # manytomany fields
+        m2m = []  # manytomany fields
 
         for column, sqlalchemy_prop in inspect(self.__class__).attrs.items():
             value = getattr(self, column)
@@ -221,9 +276,11 @@ class ParentModel(AdminLinksMixin):
                     for item in sorted(value, key=lambda obj: str(obj)):
                         data[column].append(item.as_dict(resolve_refs=False))
                     # If The current field actually has a secondary many2many field
-                    # append the data to m2m list for further parsing after this loop
+                    # append the data to m2m list for further parsing after
+                    # this loop
                     if hasattr(sqlalchemy_prop, 'secondary') and len(value) > 0:
-                        m2m.append({'property': sqlalchemy_prop, 'records': value})
+                        m2m.append(
+                            {'property': sqlalchemy_prop, 'records': value})
 
             # Enums are represented as {'name': 'PENDING', 'value': 0}
             # Enum -- We care only about name field.
@@ -232,7 +289,8 @@ class ParentModel(AdminLinksMixin):
 
         # backrefs that have secondary relationships (manytomany)
         # They pass the previous test  ```elif isinstance(value, InstrumentedList)``` as well
-        # but now we are going to get the related data from the manytomany field
+        # but now we are going to get the related data from the manytomany
+        # field
 
         for item in m2m:
             prop = item['property']
@@ -244,17 +302,23 @@ class ParentModel(AdminLinksMixin):
 
             model_cls = self._get_model_from_table_name(table.name)
             data[model_cls.__name__] = []
-            join_expression = str(prop.secondaryjoin.expression) # i.e 'subgroups.id = contacts_subgroups.subgroup_id'
+            # i.e 'subgroups.id = contacts_subgroups.subgroup_id'
+            join_expression = str(prop.secondaryjoin.expression)
 
-            # Get field name in the m2m model that refers to data in (records) i.e subgroup_id
+            # Get field name in the m2m model that refers to data in (records)
+            # i.e subgroup_id
             field = join_expression.split('%s.' % model_cls.__table__.name)[-1]
-            query_expression1 = getattr(model_cls, field).in_([item.id for item in records])
+            query_expression1 = getattr(model_cls, field).in_(
+                [item.id for item in records])
 
-            # Get F.K in the many2many model that is referencing current object and also the referenced pk
+            # Get F.K in the many2many model that is referencing current object
+            # and also the referenced pk
             fk, pk = self._get_fk_pk_for(model_cls)
 
-            # Now getting data from many2any field that belongs to the current object
-            result = model_cls.query.filter(and_(query_expression1, getattr(model_cls, fk) == getattr(self, pk))).all()
+            # Now getting data from many2any field that belongs to the current
+            # object
+            result = model_cls.query.filter(
+                and_(query_expression1, getattr(model_cls, fk) == getattr(self, pk))).all()
 
             for item in result:
                 dikt = item.as_dict(resolve_refs=False)
@@ -267,8 +331,7 @@ class ParentModel(AdminLinksMixin):
             data[model_cls.__name__].sort(key=lambda d: d['created_at'])
 
         data['model'] = self.__class__.__name__
-
-        return OrderedDict(data.items(), key=lambda t: t[0])
+        return OrderedDict(sorted(data.items(), key=lambda t: t[0]))
 
     @staticmethod
     def from_dict(data):
@@ -309,11 +372,17 @@ class ParentModel(AdminLinksMixin):
                     continue
                 # Make datetime from epoch -- If field type is TIMESTAMP
                 # Remember that when serializing, ujson converts datetime
-                # objects to epoch
+                # objects to epoch which is float
+                # in the main time we support also datetime objects because in some cases
+                # we want to deserialize some objects that was serialized into dictionaries
+                # using as_dict()
                 prop = getattr(all_models[model_name], field).property
                 if hasattr(prop, 'columns') and isinstance(prop.columns[0].type, TIMESTAMP):
                     if value:
-                        setattr(model, field, datetime.fromtimestamp(value))
+                        if isinstance(value, (datetime, date)):
+                            setattr(model, field, value)
+                        else:
+                            setattr(model, field, datetime.fromtimestamp(value))
                 # defer F.Ks to later
                 elif isinstance(value, dict):
                     not_serialized.append(value)

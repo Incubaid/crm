@@ -7,56 +7,151 @@
 
 ### Defining Types, Queries and Mutations
 
-- [Graphql](http://graphql.org/learn/) APIs are exposed in module called ```graphql.py``` that
-lives inside your sub appliction i.e ```crm.contact.graphql.py```
-If your sub application contains this module, it will be loaded automatically and your API will
-get public instantly
+- For any sub application i.e `crm.apps.contact`, you can define [Graphql](http://graphql.org/learn/) APIs
+in a package called `crm.apps.{app_name}.graphql` and your queries and mutations will be exposed automatically
 
-- There's another module called ```crm.graphql``` this only defines common types that
-your API definitions must use.
-Don't touch that file
-
-- In order to expose a [Graphql](http://graphql.org/learn/) API to a model in a sub application
-you need to do the following
-    - create ```graphql.py``` module in your sub application
-    - Expose a [Graphene](http://docs.graphene-python.org) SQLALCHEMY type out of your model. This will be used by your queries and mutations
-        - A type is what is returned in results and you can add extra fields to a [Graphene](http://docs.graphene-python.org) SQLALCHEMY type
-         that was not originally in your models
-    - define your queries in a class that inherits from ```crm.graphql.BaseQuery```
-    - define your mutations in a class that inherits from ```crm.graphql.BaseMutation```
+- Each  `crm.apps.{app_name}.graphql` package must contain 3 modules:
+    - `types.py`
+        - where you define `graphql` types from certain [SqlAlchemy](https://www.sqlalchemy.org/) model in the
+          same manner you define [Django model forms](https://docs.djangoproject.com/en/1.11/topics/forms/modelforms/)
+    - `arguments.py`
+        - These are the arguments for mutations and queries and they're simply defined by defining some/all fields
+        from certain model
+    - `mutations.py`
+        - Where you define your mutations
+    - `queries.py`
+        - Where you define queries
 
 
 #### Types definitions
-- Use the following example, just replace your model with the actual model in your sub application and change the class name of course
+- Add your type in `crm.apps.{app_name}.graphql.types` module
     - Inherit from ```SQLAlchemyObjectType```
     - In your Meta class, define ```model = your-model```
     - Add extra fields if needed
 
+
     ```python
+    import graphene
+    from graphene import relay
+    from graphene_sqlalchemy import SQLAlchemyObjectType
+
+    from crm.apps.contact.models import Contact
+
     class ContactType(SQLAlchemyObjectType):
         uid = graphene.String()
 
         class Meta:
-            model = Contact # only change this
+            model = Contact
             interfaces = (relay.Node,)
             name = model.__name__
     ```
 
-- we add a ```(uid)``` field here because [Graphene](http://docs.graphene-python.org) replaces our records ID with internal representation
-of that ID. so we add an extra ```(uid)``` field that contains the actual value of the ```(id)``` field
-- we then automatically manipulate all records coming from a query and fill that ```uid``` field with the original
-value of ```object.id```
+**Important**
+[Graphene](http://docs.graphene-python.org) replaces record `id` with internal representation of that `id`
+so we use `uid` in all our [Graphene](http://docs.graphene-python.org) types to represent original `id`
+that is why it's important to add `uid = graphene.String()` in each type you define which will be mapped automatically
+to `object.uid` which returns `object.id` value
+
+#### Arguments definitions
+- Add your arguments in `crm.apps.{app_name}.graphql.arguments` module
+- we have usually 3 types of arguments
+    - `Base Arguments`
+        - Inherits from `graphene.types.inputobjecttype.InputObjectType` & `crm.graphql.BaseArgument`
+        - Parent for all arguments, each field in it is defined as (not required)
+        - We basically define same fields in a certain model
+    - `Create mutation arguments`
+        - Inherits from `Base Arguments`.
+        - Override required fields by redefining them with `required=True` param
+    - `Update mutation arguments`
+        - Inherits from `Base Arguments`.
+        - Add `uid = graphene.String(required=True)` because while updating a record `uid` is definitely required
+- Example: `crm.apps.contact.graphql.arguments`
+```python
+        import graphene
+        from graphene.types.inputobjecttype import InputObjectType
+
+        from crm.apps.address.graphql.arguments import AddressArguments
+        from crm.apps.comment.graphql.arguments import CommentArguments
+        from crm.apps.contact.models import Gender
+        from crm.apps.link.graphql.arguments import LinkArguments
+        from crm.apps.message.graphql.arguments import MessageArguments
+        from crm.apps.passport.graphql.arguments import PassportArguments
+        from crm.apps.task.graphql.arguments import TaskArguments
+        from crm.graphql import BaseArgument
 
 
-**Query definitions**
+        class ContactSubgroupArguments(InputObjectType):
+            groupname = graphene.String()
+
+
+        class ContactArguments(InputObjectType, BaseArgument):
+            uid = graphene.String()
+            firstname = graphene.String()
+            lastname = graphene.String()
+            gender = graphene.Enum.from_enum(Gender)()
+            description = graphene.String()
+            bio = graphene.String()
+            belief_statement = graphene.String()
+            message_channels = graphene.String()
+            owner = graphene.Argument('crm.apps.user.graphql.arguments.UserArguments')
+            ownerbackup = graphene.Argument('crm.apps.user.graphql.arguments.UserArguments')
+            parent = graphene.Argument('crm.apps.contact.graphql.arguments.ContactArguments')
+            emails = graphene.String()
+            telephones = graphene.String()
+            tf_app = graphene.Boolean()
+            tf_web = graphene.Boolean()
+            referral_code = graphene.String()
+
+            deals = graphene.List('crm.apps.deal.graphql.arguments.DealArguments')
+            comments = graphene.List(CommentArguments)
+            tasks = graphene.List(TaskArguments)
+            messages = graphene.List(MessageArguments)
+            links = graphene.List(LinkArguments)
+
+            subgroups = graphene.List(ContactSubgroupArguments)
+            addresses = graphene.List(AddressArguments)
+            passports = graphene.List(PassportArguments)
+
+
+        class CreateContactArguments(ContactArguments):
+            firstname = graphene.String(required=True)
+            lastname = graphene.String(required=True)
+
+
+        class UpdateContactArguments(ContactArguments):
+            uid = graphene.String(required=True)
+
+
+```
+
+
+#### Query definitions
+- Add your arguments in `crm.apps.{app_name}.graphql.queries` module
+- Inherit from `crm.graphql.BaseQuery`
+
 - Use the following example, rename necessary fields
     ```python
+    import graphene
+    from graphene import relay
+    from graphene_sqlalchemy.fields import SQLAlchemyConnectionField
+
+    from crm.apps.contact.graphql.arguments import ContactArguments
+    from crm.apps.contact.graphql.types import ContactType
+    from crm.apps.contact.models import Contact
+    from crm.graphql import BaseQuery
+
+
     class ContactQuery(BaseQuery):
         """
         we have 2 queries here contact and contacts
         """
 
-        contacts = SQLAlchemyConnectionField(ContactType)
+        contacts = SQLAlchemyConnectionField(
+            ContactType,
+            **ContactArguments.fields()
+
+        )
+
         # contact query to return one contact and takes (uid) argument
         # uid is the original object.id in db
         contact = graphene.Field(ContactType, uid=graphene.String())
@@ -64,104 +159,94 @@ value of ```object.id```
         def resolve_contact(self, context, uid):
             return ContactType.get_query(context).filter_by(id=uid).first()
 
+        def resolve_contacts(
+            self,
+            context,
+            *args,
+            **kwargs
+        ):
+
+            return BaseQuery.resolve_query(Contact, **kwargs)
+
         class Meta:
-            interfaces = (relay.Node,)
+            interfaces = (relay.Node, )
     ```
 - In previous example we define 2 queries:
-    - ```contacts``` returning all /subset of records.
-    - ```contact``` takes ```uid``` field and returns one record
-- For each query you define, usually you define the ```query_name```and a resolver function
-```resolve_{query_name}``` that is used when query executed
-- Sometimes a resolver function may not be needed for queries of type ```SQLAlchemyConnectionField```
-    - these queries return all/subset of data automatically from your model
-    - i.e ```contacts``` query, however we may need to add a resolver function later to ```contacts``` if we need
-    add more filtration options
+    - ```contacts```
+        - returning all/subset of records
+        - may take no arguments then return all records
+        - may take query arguments defined by `ContactArguments` then return subset of data based on the defined query
 
-**Mutations definitions**
-- Define your mutations in classes that extend ```graphene.Mutation```
-    - ```class CreateContact(graphene.Mutation):pass```
-    - ```class UpdateContact(graphene.Mutation):pass```
-- Define your Mutation class that holds all these related mutations in one place in a class that extends ```crm.graphql.BaseMutation```
-    -
-    ```python
-    class ContactMutation(BaseMutation):
-    """
-    Put all contact mutations here
-    """
-        create_contact = CreateContact.Field()
-        update_contact = UpdateContact.Field()
+    - ```contact``` takes ```uid``` field and returns one record
+- For each query you define, usually you define the ```query_name``` i.e `contacts` and a resolver function
+```resolve_{query_name}``` i.e `resolve_contacts` that is called to handle that query when executed
+
+
+
+#### Mutations definitions
+- Add your mutations in `crm.apps.{app_name}.graphql.mutations` module
+- For each mutation you have, you create a class that extends `graphene.Mutation` and override `mutate` function
+and may uses one of the `arguments` defined in `crm.apps.{app_name}.graphql.arguments`
+
+    ```
+    class CreateContacts(graphene.Mutation):
+        class Arguments:
+            """
+                Mutation Arguments
+            """
+            records = graphene.List(CreateContactArguments, required=True)
+
+        ok = graphene.Boolean()
+        ids = graphene.List(graphene.String)
+
+        @classmethod
+        def mutate(cls, root, context, **kwargs):
+            """
+            Mutation logic is handled here
+            """
+            ...
+
+    class UpdateContacts(graphene.Mutation):
+        class Arguments:
+            """
+                Mutation Arguments
+            """
+            records = graphene.List(UpdateContactArguments, required=True)
+
+        ok = graphene.Boolean()
+        ids = graphene.List(graphene.String)
+
+        @classmethod
+        def mutate(cls, root, context, **kwargs):
+            """
+            Mutation logic is handled here
+            """
+            ...
+
+    class DeleteContacts(graphene.Mutation):
+        class Arguments:
+            """
+                Mutation Arguments
+            """
+            uids = graphene.List(graphene.String, required=True)
+
+        ok = graphene.Boolean()
+
+        @classmethod
+        def mutate(cls, root, context, **kwargs):
+            """
+            Mutation logic is handled here
+            """
+            ...
     ```
 
-- What is the structure of your mutation classes like ```CreateContact```?
-    - You define fields in that class that will be returned when mutation is executed
-        - we return 2 fields:
-            - ok (boolean means success or failure)
-            - ids conatins the ids of created/updated/deleted objects
-    - You define inner class called Arguments containing the mutation arguments
-        - you can define arguments directly here or separate them in different class
-    - you override ```mutate(cls, root, context, **kwargs)``` function which contains logic to handle the
-    mutation
-
-    - Example:
-
-        ```python
-        class CreateContact(graphene.Mutation):
-            class Arguments:
-                """
-                    Mutation Arguments
-                """
-                firstname = graphene.String(required=True)
-                # Add more fields below
-                ...
-
-
-            # MUTATION RESULTS FIELDS
-            contact = graphene.Field(ContactType)
-            ok = graphene.Boolean()
-            ids = graphene.List(graphene.String)
-
-            @classmethod
-            def mutate(cls, root, context, **kwargs):
-                """
-                Mutation logic is handled here
-                """
-                contact = Contact(**kwargs)
-                db.session.add(contact)
-                db.session.commit()
-
-                return cls(ok=True, ids=[contact.id])
-        ```
-
-        - You may separate Arguments in separate class like
-        ```
-           class CreateContactArguments(InputObjectType):
-                firstname = graphene.String(required=True)
-                lastname = graphene.String()
-                description = graphene.String()
-                telegram = graphene.String()
-                bio = graphene.String()
-                emails = graphene.String(required=True)
-                telephones = graphene.String(required=True)
-                belief_statement = graphene.String()
-                owner_id = graphene.String()
-                ownerbackup_id = graphene.String()
-                parent_id = graphene.String()
-                tf_app = graphene.Boolean()
-                tf_web = graphene.Boolean()
-                country = graphene.String()
-                message_channels = graphene.String()
-                sub_groups = graphene.List(graphene.String)
-                addresses = graphene.List(AddressArguments)
-        ```
-
-        ```
-        class CreateContacts(graphene.Mutation):
-            class Arguments:
-                """
-                    Mutation Arguments
-                """
-                records = graphene.List(CreateContactArguments, required=True)
-
-        ```
-
-    - Take a look at [crm.contact.graphql.py](https://github.com/Incubaid/crm/blob/master/crm/contact/graphql.py) for explained example
+- Define Mutation parent class that holds all defined mutations and that extends ```crm.graphql.BaseMutation```
+    ```python
+    class ContactMutation(BaseMutation):
+        """
+        Put all contact mutations here
+        """
+        create_contacts = CreateContacts.Field()
+        delete_contacts = DeleteContacts.Field()
+        update_contacts = UpdateContacts.Field()
+    ```

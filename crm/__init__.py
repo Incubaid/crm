@@ -1,24 +1,22 @@
 import os
 import warnings
 from importlib import import_module
-
 from logging.config import dictConfig
 
-import jinja2
 import graphene
-
-from graphene_sqlalchemy import SQLAlchemyObjectType
-
+import jinja2
 from flask import Flask
+from flask_admin import Admin
 from flask_admin.helpers import get_url
+from flask_cache import Cache
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
-from flask_admin import Admin
+from graphene_sqlalchemy import SQLAlchemyObjectType
 
+from crm.apps.admin.config import NAV_BAR_ORDER
 from crm.graphql import BaseMutation, BaseQuery
-from .settings import LOGGING_CONF, STATIC_DIR, IMAGES_DIR, STATIC_URL_PATH
 from .db import BaseModel, db
-from crm.admin.config import NAV_BAR_ORDER
+from .settings import LOGGING_CONF, STATIC_DIR, IMAGES_DIR, STATIC_URL_PATH, CACHE_BACKEND_URI
 
 
 class CRM(object):
@@ -127,7 +125,7 @@ class CRM(object):
         Initialize admin app
         """
         admin_views = __import__(
-            'crm.admin.views',
+            'crm.apps.admin.views',
             globals(),
             locals(),
             ['object']
@@ -194,12 +192,14 @@ class CRM(object):
         defined in (graphql.py) and register them in one global schema
         """
 
-        # Import all (graphql.py) defined in all sub apps in system
+        # Import all (graphql) submodules defined in package 'graphql'
         # After importing we'll have
         # All Queries under ::  BaseQuery.__subclasses__()
         # All Types under :: SQLAlchemyObjectType.__subclasses__()
         # All Mutations under :: BaseMutation.__subclasses__()
-        CRM._load_modules(module_type='graphql')
+        CRM._load_modules(module_type='types')
+        CRM._load_modules(module_type='queries')
+        CRM._load_modules(module_type='mutations')
 
         schema = graphene.Schema(
 
@@ -226,9 +226,37 @@ class CRM(object):
     def app(self):
         return self._app
 
+    @property
+    def cache(self):
+        # Remove annoying depcration warning from flask-cache
+        from flask.exthook import ExtDeprecationWarning
+        warnings.simplefilter('ignore', ExtDeprecationWarning)
+
+        if hasattr(self, '_cache'):
+            return self._cache
+        if CACHE_BACKEND_URI == 'memory://':
+            cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+        elif CACHE_BACKEND_URI.startswith('redis://'):
+            try:
+                from redis import from_url as redis_from_url
+                redis_from_url(CACHE_BACKEND_URI)
+            except:
+                print('BAD REDIS URL PROVIDED BY (CACHE_BACKEND_URI)')
+                exit(1)
+
+            cache = Cache(app, config={
+                'CACHE_TYPE': 'redis',
+                'CACHE_REDIS_URL': CACHE_BACKEND_URI,
+                'CACHE_DEFAULT_TIMEOUT': 0 # NEVER EXPIRES
+            })
+
+        cache.init_app(self.app)
+        self._cache = cache
+        return self._cache
 
 crm = CRM()
 app = crm.app
+app.cache = crm.cache
 
 # Initialize app.graphql_schema with apps defined graphql Schema
 app.graphql_schema = crm.graphql_schema
