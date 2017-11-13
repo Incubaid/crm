@@ -4,9 +4,20 @@ from crm.db import db, BaseModel, RootModel, ManyToManyBaseModel
 
 
 class SubgroupName(Enum):
-    AMBASSADOR, INVESTOR, HOSTER, MEMBER, PUBLIC = range(5)
+    AMBASSADOR = 'AMBASSADOR'
+    INVESTOR = 'INVESTOR'
+    HOSTER = 'HOSTER'
+    MEMBER = 'MEMBER'
+    PUBLIC = 'PUBLIC'
 
 SubgroupName.__str__ = lambda self: self.name
+
+
+class Gender(Enum):
+    MALE = 'MALE'
+    FEMALE = 'FEMALE'
+
+Gender.__str__ = lambda self: self.name
 
 
 class Subgroup(db.Model, BaseModel):
@@ -41,11 +52,6 @@ class ContactSubgroup(db.Model, ManyToManyBaseModel):
         db.ForeignKey("contacts.id")
     )
 
-
-class Gender(Enum):
-    MALE, FEMALE = "MALE", "FEMALE"
-
-Gender.__str__ = lambda self: self.name
 
 
 class Contact(db.Model, BaseModel, RootModel):

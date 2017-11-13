@@ -4,7 +4,11 @@ from datetime import datetime
 
 
 class ContactEventStatus(enum.Enum):
-    INVITED, WONTSHOW, ATTENDED, DENIED, COULDNTMAKEIT = range(5)
+    INVITED = 'INVITED'
+    WONTSHOW = 'WONTSHOW'
+    ATTENDED = 'ATTENDED'
+    DENIED = 'DENIED'
+    COULDNTMAKEIT = 'COULDNTMAKEIT'
 
 ContactEventStatus.__str__ = lambda self: self.name
 
@@ -12,6 +16,7 @@ ContactEventStatus.__str__ = lambda self: self.name
 class Event(db.Model, BaseModel):
 
     __tablename__ = "events"
+
     __mapper_args__ = {'polymorphic_identity': 'messages'}
 
     title = db.Column(
@@ -67,6 +72,7 @@ class Event(db.Model, BaseModel):
 
 
 class ContactEvents(db.Model, ManyToManyBaseModel):
+
     __tablename__ = "contacts_events"
 
     event_id = db.Column(

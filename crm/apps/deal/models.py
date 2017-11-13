@@ -5,18 +5,32 @@ from crm.db import db, BaseModel, RootModel
 
 
 class DealState(Enum):
-    NEW, INTERESTED, CONFIRMED, PENDING, CLOSED = range(5)
+    NEW = 'NEW'
+    INTERESTED = 'INTERESTED'
+    CONFIRMED = 'CONFIRMED'
+    PENDING = 'PENDING'
+    CLOSED = 'CLOSED'
+
 
 DealState.__str__ = lambda self: self.name
 
+
 class DealType(Enum):
-    HOSTER, ITO, PTO, AMBASSADOR, ITFT = range(5)
+    HOSTER = 'HOSTER'
+    ITO = 'ITO'
+    PTO = 'PTO'
+    AMBASSADOR = 'AMBASSADOR'
+    ITFT = 'ITFT'
 
 DealType.__str__ = lambda self: self.name
 
 
 class DealCurrency(Enum):
-    USD, EUR, AED, GBP, BTC = range(5)
+    USD = 'USD'
+    EUR = 'EUR'
+    AED = 'AED'
+    GBP = 'GBP'
+    BTC = 'BTC'
 
 DealCurrency.__str__ = lambda self: self.name
 

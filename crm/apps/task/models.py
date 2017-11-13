@@ -4,19 +4,30 @@ from crm.db import db, BaseModel
 
 
 class TaskType(Enum):
-    TASK, FEATURE, QUESTION, STORY, CONTACT = range(5)
+    TASK = 'TASK'
+    FEATURE = 'FEATURE'
+    QUESTION = 'QUESTION'
+    STORY = 'STORY'
+    CONTACT = 'CONTACT'
 
 TaskType.__str__ = lambda self: self.name
 
 
 class TaskPriority(Enum):
-    MINOR, NORMAL, URGENT, CRITICAL = range(4)
+    MINOR = 'MINOR'
+    NORMAL = 'NORMAL'
+    URGENT = 'URGENT'
+    CRITICAL = 'CRITICAL'
 
 TaskPriority.__str__ = lambda self: self.name
 
 
 class TaskState(Enum):
-    NEW, PROGRESS, QUESTION, VERIFICATION, CLOSED = range(5)
+    NEW = 'NEW'
+    PROGRESS = 'PROGRESS'
+    QUESTION = 'QUESTION'
+    VERIFICATION = 'VERIFICATION'
+    CLOSED = 'CLOSED'
 
 TaskState.__str__ = lambda self: self.name
 
