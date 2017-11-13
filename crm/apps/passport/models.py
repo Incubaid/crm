@@ -1,5 +1,4 @@
 import datetime
-import enum
 from crm.countries import CountriesEnum
 from crm.db import db, BaseModel
 

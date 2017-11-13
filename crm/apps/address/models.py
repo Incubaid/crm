@@ -1,4 +1,3 @@
-import enum
 from crm.db import db, BaseModel
 from crm.countries import CountriesEnum
 

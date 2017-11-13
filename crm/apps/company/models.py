@@ -1,25 +1,6 @@
 from crm.db import db, BaseModel, RootModel, ManyToManyBaseModel
 
 
-class Tag(db.Model, BaseModel):
-    __tablename__ = "tags"
-
-    tag = db.Column(
-        db.String(),
-        default="",
-        index=True
-    )
-
-    companies = db.relationship(
-        "Company",
-        secondary="companies_tags",
-        backref="tags"
-    )
-
-    def __str__(self):
-        return self.tag
-
-
 class CompanyTags(db.Model, ManyToManyBaseModel):
     __tablename__ = "companies_tags"
 

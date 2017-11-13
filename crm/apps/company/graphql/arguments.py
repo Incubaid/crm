@@ -7,11 +7,8 @@ from crm.apps.contact.graphql.arguments import ContactArguments
 from crm.apps.deal.graphql.arguments import DealArguments
 from crm.apps.link.graphql.arguments import LinkArguments
 from crm.apps.message.graphql.arguments import MessageArguments
+from crm.apps.tag.graphql.arguments import TagArguments
 from crm.apps.task.graphql.arguments import TaskArguments
-
-
-class TagArguments(InputObjectType):
-    tag = graphene.String()
 
 
 class CompanyArguments(InputObjectType):
