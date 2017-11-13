@@ -13,7 +13,7 @@
 - [Caching](docs/Caching.md)
 - [How to define a new SQLALCHEMY model](docs/Models.md)
 - [How to add a new required dependency](docs/AddNewRequirement.md)
-
+- [How to develop a new typical application in the CRM](docs/HowToCreateAppplication.md)
 **Advanced**
 - [Admin Interface](docs/AdminInterface.md)
 - [DB Migrations](docs/Migrations.md)
@@ -21,7 +21,7 @@
 - [Add middleware](docs/Middlewares.md)
 - [Add new SqlAlchemy DB event](docs/DBEvents.md)
 - [Load & Dump Data Algorithms](docs/LoadDumpData.md)
-
+- [Mail in/out](docs/Mailin/Mailout)
 
 **Graphql**
 - [Intro](docs/GraphqlOverview.md)

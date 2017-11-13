@@ -360,11 +360,6 @@ class ImagePreviewField(StringField):
 
 class InlineEventModelForm(InlineFormAdmin):
     form_columns = ('id', 'title', 'contact_event_status', 'event_datetime')
-    # form_widget_args = {
-    #     'title': {
-    #         'readonly': True
-    #     }
-    # }
 
     def __init__(self,):
         return super(InlineEventModelForm, self).__init__(EventModel)
