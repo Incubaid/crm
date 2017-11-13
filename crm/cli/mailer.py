@@ -93,16 +93,14 @@ def handle_mail(to, sender, subject, body):
 @app.cli.command()
 def mailer():
     """
-    Start mailin/out services.
+    Start mail in/out services.
     """
-    SENDGRID_API_KEY = app.config['SENDGRID_API_KEY']
-    if not SENDGRID_API_KEY:
-        print('SENDGRID_API_KEY is not set.')
+    if not app.config['SENDGRID_API_KEY']:
+        print('MISSING Environment variable SENDGRID_API_KEY')
         exit(1)
 
-    SUPPORT_EMAIL = app.config['SUPPORT_EMAIL']
-    if SUPPORT_EMAIL is None:
-        print("SUPPORT_EMAIL is not set.")
+    if app.config['SUPPORT_EMAIL'] is None:
+        print("MISSING Environment variable SUPPORT_EMAIL")
         exit(1)
 
     print("Starting mail-in/out..")
