@@ -63,3 +63,34 @@ inet_protocols = all
 ### Mailer configuration
 - `EMAIL_SUPPORT` to send emails coming to support.
 - Environment variable `SENDGRID_API_KEY` to be able to send emails.
+
+
+### Mailout Feature
+Depending on the object we propagate the notification to the related models.
+- Contact -> owner
+- Company -> conatct, owner
+- Organization -> users, owner
+- Deal -> contact, company
+- Sprint -> contacts, owner
+- Project -> contacts, promoter, guardian
+
+
+
+#### Mailout notifications
+To control the mailout feature notification propagation you need to override `notify` method
+
+e.g for contact notification
+```python
+    def notify(self, msgobj=None):
+        emails = []
+        if self.emails:
+            emails.extend(self.emails.split(","))
+            if self.owner and self.owner.emails:
+                emails.extend(self.owner.emails.split(","))
+            sendemail(to=emails, subject=msgobj.title, body=msgobj.content)
+
+```
+
+### Mailer helper
+
+The CRM heavily depends on the mailer util for the mail in/out feature for parsing emails (extracting the attachments) and sending emails to the right recipients.
