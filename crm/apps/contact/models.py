@@ -1,5 +1,6 @@
 import datetime
 from enum import Enum
+
 from crm.db import db, BaseModel, RootModel, ManyToManyBaseModel
 from crm.utils import sendemail
 
@@ -53,6 +54,19 @@ class ContactSubgroup(db.Model, ManyToManyBaseModel):
         db.ForeignKey("contacts.id")
     )
 
+
+class ContactCountry(db.Model, ManyToManyBaseModel):
+    __tablename__ = "contacts_countries"
+
+    country_id = db.Column(
+        db.String(5),
+        db.ForeignKey('countries.id')
+    )
+
+    contact_id = db.Column(
+        db.String(5),
+        db.ForeignKey("contacts.id")
+    )
 
 
 class Contact(db.Model, BaseModel, RootModel):

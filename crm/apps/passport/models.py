@@ -1,5 +1,4 @@
 import datetime
-from crm.countries import CountriesEnum
 from crm.db import db, BaseModel
 
 
@@ -29,10 +28,9 @@ class Passport(db.Model, BaseModel):
         default=datetime.date(2020, 1, 1),
         nullable=False
     )
-    country = db.Column(
-        db.Enum(CountriesEnum),
-        default=CountriesEnum.Belgium,
-        index=True
+    country_id = db.Column(
+        db.String(5),
+        db.ForeignKey('countries.id')
     )
 
     contact_id = db.Column(

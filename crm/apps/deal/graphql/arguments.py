@@ -3,7 +3,8 @@ from graphene.types.inputobjecttype import InputObjectType
 
 from crm.apps.address.graphql.arguments import AddressArguments
 from crm.apps.comment.graphql.arguments import CommentArguments
-from crm.apps.deal.models import DealCurrency, DealType, DealState
+from crm.apps.currency.graphql.arguments import CurrencyArguments
+from crm.apps.deal.models import DealType, DealState
 from crm.apps.link.graphql.arguments import LinkArguments
 from crm.apps.message.graphql.arguments import MessageArguments
 from crm.apps.task.graphql.arguments import TaskArguments
@@ -15,7 +16,7 @@ class DealArguments(InputObjectType, BaseArgument):
     name = graphene.String()
     description = graphene.String()
     value = graphene.Float()
-    currency = graphene.Enum.from_enum(DealCurrency)()
+    currency = graphene.Argument(CurrencyArguments)
     deal_type = graphene.Enum.from_enum(DealType)()
     deal_state = graphene.Enum.from_enum(DealState)()
     closed_at = graphene.String()

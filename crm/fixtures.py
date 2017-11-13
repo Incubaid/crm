@@ -1,6 +1,7 @@
 from crm.apps.comment.models import Comment
 from crm.apps.company.models import Company
 from crm.apps.contact.models import Contact, Gender
+from crm.apps.country.countries import CountriesEnum
 from crm.apps.deal.models import Deal
 from crm.apps.event.models import Event
 from crm.apps.message.models import Message
@@ -10,7 +11,7 @@ from crm.apps.sprint.models import Sprint
 from crm.apps.task.models import Task
 from crm.apps.user.models import User
 from crm.apps.passport.models import Passport
-from crm.countries import CountriesEnum
+
 from faker import Faker
 from random import choice
 
@@ -41,7 +42,7 @@ def generate_fixtures():
         passport = Passport(passport_fullname="{} {}".format(fake.first_name(), fake.last_name()),
                             passport_number="{}{}".format(
                                 fake.numerify(), fake.numerify()),
-                            country=choice([CountriesEnum.Belgium, CountriesEnum.Egypt]))
+                            country=choice([CountriesEnum.BE, CountriesEnum.EG]))
         db.session.add(passport)
         return passport
 

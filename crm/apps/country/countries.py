@@ -243,6 +243,6 @@ countries = {
 }
 
 
-CountriesEnum = enum.Enum('Countries', {v: v for k, v in countries.items()})
+CountriesEnum = enum.Enum('CountriesEnum', countries)
 
 CountriesEnum.__str__ = lambda self: self.value

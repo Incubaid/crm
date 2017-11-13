@@ -1,5 +1,4 @@
 from crm.db import db, BaseModel
-from crm.countries import CountriesEnum
 
 
 class Address(db.Model, BaseModel):
@@ -40,10 +39,9 @@ class Address(db.Model, BaseModel):
         index=True
     )
 
-    country = db.Column(
-        db.Enum(CountriesEnum),
-        default=CountriesEnum.Belgium,
-        index=True
+    country_id = db.Column(
+        db.String(5),
+        db.ForeignKey('countries.id')
     )
 
     contact_id = db.Column(
@@ -75,7 +73,7 @@ class Address(db.Model, BaseModel):
         if self.city:
             address += '%s, ' % self.city
         if self.country:
-            address += str(self.country)
+            address += str(self.country.country.name)
 
         if self.zip_code:
             address += ' (zip code: %s)' % self.zip_code

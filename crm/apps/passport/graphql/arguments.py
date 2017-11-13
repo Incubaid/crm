@@ -1,7 +1,7 @@
 import graphene
 from graphene.types.inputobjecttype import InputObjectType
 
-from crm.countries import CountriesEnum
+from crm.apps.country.graphql.arguments import CountryArguments
 
 
 class PassportArguments(InputObjectType):
@@ -9,7 +9,7 @@ class PassportArguments(InputObjectType):
     passport_number = graphene.String()
     issuance_date = graphene.String()
     expiration_date = graphene.String()
-    country = graphene.Enum.from_enum(CountriesEnum)
+    country = graphene.Argument(CountryArguments)
     contact = graphene.Argument('crm.apps.contact.graphql.arguments.ContactArguments')
     contact_id = graphene.String()
 

@@ -26,35 +26,6 @@ class DealType(Enum):
 DealType.__str__ = lambda self: self.name
 
 
-class DealCurrency(Enum):
-    USD = 'USD'
-    EUR = 'EUR'
-    AED = 'AED'
-    GBP = 'GBP'
-    BTC = 'BTC'
-
-DealCurrency.__str__ = lambda self: self.name
-
-
-class CurrencyExchangeRate(db.Model, BaseModel, RootModel):
-    __tablename__ = "currency_exchange"
-
-    currency = db.Column(
-        db.Enum(DealCurrency),
-        default=DealCurrency.EUR,
-        index=True
-    )
-
-    value_usd = db.Column(
-        db.Float(),
-        nullable=False,
-        default=1.0
-    )
-
-    def __str__(self):
-        return str('%s = %s' % (self.currency, self.value_usd))
-
-
 class Deal(db.Model, BaseModel, RootModel):
     __tablename__ = "deals"
 
@@ -77,10 +48,9 @@ class Deal(db.Model, BaseModel, RootModel):
 
     )
 
-    currency = db.Column(
-        db.Enum(DealCurrency),
-        default=DealCurrency.EUR,
-        index=True
+    currency_id = db.Column(
+        db.String(5),
+        db.ForeignKey("currencies.id")
     )
 
     deal_type = db.Column(
@@ -175,16 +145,7 @@ class Deal(db.Model, BaseModel, RootModel):
 
     @property
     def value_usd(self):
-
-        if self.currency == DealCurrency.USD:
-            return self.value
-
-        rate = CurrencyExchangeRate.query.filter_by(
-            currency=self.currency
-        ).first()
-
-        if rate:
-            return '$%s' % str(round(Decimal(self.value) * Decimal(rate.value_usd), 2)) if self.value else None
+        return '%s' % str(round(Decimal(self.value) * Decimal(self.currency.value_usd), 2)) if self.value else None
 
     def __str__(self):
         return self.name

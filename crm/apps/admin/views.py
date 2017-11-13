@@ -98,7 +98,7 @@ class EnhancedModelView(ModelView):
         'short_description': 'Description',
         'short_content': 'Content',
         'vatnumber': 'VAT Number',
-        'value_usd': 'Value in USD ($)',
+        'value_usd': 'Value (USD)',
         'ownsTasks': 'Tasks assigned',
         'ownsContacts': 'Owns contacts',
         'ownsCompanies': 'Owns companies',
@@ -411,22 +411,22 @@ class TagModelView(EnhancedModelView):
 
 class ContactModelView(EnhancedModelView):
     column_list = ('firstname', 'lastname', 'emails',
-                   'telephones', 'short_description', 'gender', 'date_of_birth', *EnhancedModelView.columns_list_extra)
+                   'telephones', 'countries', 'short_description', 'gender', 'date_of_birth', *EnhancedModelView.columns_list_extra)
     column_searchable_list = ('firstname', 'lastname',
                               'emails', 'gender', 'date_of_birth')
     column_sortable_list = ('firstname', 'lastname', 'gender', 'date_of_birth')
     column_details_list = (
-        'firstname', 'lastname', 'description', 'images', 'bio', 'belief_statement',
+        'firstname', 'lastname', 'description', 'countries', 'images', 'bio', 'belief_statement',
         'addresses',
         'emails', 'telephones', 'gender', 'date_of_birth', 'passports', 'companies', 'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code',
         'deals', 'events', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup', 'author_last', 'author_original', 'updated_at')
 
-    column_filters = ('id', 'firstname', 'lastname', 'gender', 'passports', 'date_of_birth', 'description', 'emails', 'telephones', 'addresses.country', 'message_channels', 'referral_code',
+    column_filters = ('id', 'firstname', 'lastname', 'gender', 'countries', 'passports', 'date_of_birth', 'description', 'emails', 'telephones', 'addresses.country', 'message_channels', 'referral_code',
                       'deals', 'comments', 'tasks', 'projects', 'companies', 'messages', 'sprints', 'links', 'owner', 'events',
                       'ownerbackup')
 
     form_rules = (
-        'firstname', 'lastname', 'images', 'description', 'bio', 'belief_statement',
+        'firstname', 'lastname', 'images', 'description', 'bio', 'belief_statement','countries',
         'addresses', 'emails', 'telephones', 'passports', 'gender', 'date_of_birth', 'companies', 'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code',
         'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
 
@@ -535,30 +535,31 @@ class OrganizationModelView(EnhancedModelView):
     mainfilter = "Organizations / Id"
 
 
-class CurrencyExchangeRateModelView(EnhancedModelView):
-    column_list = ('currency', 'value_usd', *
-                   EnhancedModelView.columns_list_extra)
-    column_details_list = ('currency', 'value_usd', )
-    form_rules = ('currency', 'value_usd',)
-    form_edit_rules = ('currency', 'value_usd',)
+class CurrencyModelView(EnhancedModelView):
+    column_list = ('name', 'value_usd', *EnhancedModelView.columns_list_extra)
+    column_details_list = ('name', 'value_usd', )
+    form_rules = ('name', 'value_usd',)
+    form_edit_rules = ('name', 'value_usd',)
 
     form_args = {
-        'value_usd': {'label': 'Value in USD ($)'},
+        'value_usd': {'label': 'Value (USD)'},
 
     }
+
+    mainfilter = "Currencies / Id"
 
 
 class DealModelView(EnhancedModelView):
 
-    column_list = ('name', 'value', 'currency', 'value_usd',
+    column_list = ('name', 'currency.name', 'value', 'value_usd',
                    'deal_type', 'deal_state', *EnhancedModelView.columns_list_extra)
 
     column_searchable_list = (
-        'id', 'name', 'value', 'currency', 'deal_type', 'deal_state',)
+        'id', 'name', 'value', 'currency.name', 'deal_type', 'deal_state',)
 
-    column_sortable_list = ('name', 'value', 'currency',
+    column_sortable_list = ('name', 'value', 'currency.name',
                             'deal_type', 'deal_state', 'updated_at')
-    column_details_list = ('id', 'name', 'description', 'value', 'currency', 'value_usd', 'deal_type', 'deal_state', 'shipping_address', 'is_paid',
+    column_details_list = ('id', 'name', 'description', 'currency', 'value', 'value_usd', 'deal_type', 'deal_state', 'shipping_address', 'is_paid',
                            'contact', 'referrer1', 'referrer2', 'company', 'closed_at', 'referral_code', 'tasks', 'messages', 'links', 'comments', 'author_last', 'author_original', 'updated_at')
 
     column_filters = ('id', 'name', 'value', 'currency', 'deal_type', 'deal_state', 'closed_at', 'is_paid', 'referral_code', 'updated_at',

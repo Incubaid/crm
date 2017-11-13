@@ -4,6 +4,7 @@ from graphene.types.inputobjecttype import InputObjectType
 from crm.apps.address.graphql.arguments import AddressArguments
 from crm.apps.comment.graphql.arguments import CommentArguments
 from crm.apps.contact.models import Gender
+from crm.apps.country.graphql.arguments import CountryArguments
 from crm.apps.link.graphql.arguments import LinkArguments
 from crm.apps.message.graphql.arguments import MessageArguments
 from crm.apps.passport.graphql.arguments import PassportArguments
@@ -42,7 +43,7 @@ class ContactArguments(InputObjectType, BaseArgument):
     subgroups = graphene.List(ContactSubgroupArguments)
     addresses = graphene.List(AddressArguments)
     passports = graphene.List(PassportArguments)
-
+    countries = graphene.List(CountryArguments)
 
 class CreateContactArguments(ContactArguments):
     firstname = graphene.String(required=True)
