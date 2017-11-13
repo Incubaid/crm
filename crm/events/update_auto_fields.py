@@ -25,8 +25,24 @@ def update_auto_fields_before_flush(db_session, flush_context, instances):
     """
 
     # Update ID and original_author
+    # object.update_auto_fields() of course is aware of saved object ids but not newly created ids
+    # We keep track of all ids generated here and guarantee uniqueness for each model
+
+    ids = {}
+
     for created in db_session.new:
-        created.update_auto_fields()
+        cls_name = created.__class__.__name__
+        ids[cls_name] = ids.get(cls_name, [])
+
+        while True:
+            created.update_auto_fields()
+            if created.id not in ids[cls_name]:
+                ids[cls_name].append(created.id)
+                break
+            else:
+                # Forcing created.id = None makes created.update_auto_fields() generates new id
+                # sinc obj.uid returns id if set, but if None it generates another uid
+                created.id = None
 
     # Update last modifier
     for updated in db_session.dirty:
