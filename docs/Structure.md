@@ -22,14 +22,20 @@
 - Main modules for any sub app (except the [Admin app](AdminInterface.md)) are:
     - `models.py` for models definitions. Please follow [These conventions](Models.md) when defining your own models
     - `views.py` for HTTP end points definitions. . Please follow [These conventions](Views.md) when defining your own models
-    - `graphql.py` for [graphql](graphql.org/learn/) API endpoints
-- To add an HTTP end point, you put your code in a function inside `views.py` file in some app decorated by `@app.route`
-    ```
-    @app.route('/api', methods=["POST"])
-    def api():
-        pass
+        - To add an HTTP end point, you put your code in a function inside `views.py` file in some app decorated by `@app.route`
+            ```
+            @app.route('/api', methods=["POST"])
+            def api():
+                pass
 
-    ```
+            ```
+    - `graphql` package for [graphql](graphql.org/learn/) To expose `graphql` mutations & queries for this sub app.
+        Please follow [These conventions](GraphqlAdvanced.md)
+        - Put types in module `types.py`
+        - Put arguments in module `arguments.py`
+        - Put queries in module `queries.py`
+        - Put mutations in module `mutations.py`
+
 
 **Main app**
 - [Flask](flask.pocoo.org/) Main entry point is ```app.py``` in the root directory
