@@ -154,6 +154,8 @@ and add it to the ContactModelView inline_models
 ```
 
 ### GraphQL package 
+
+For updated docs on creating graphql package please check [Define new Types, Queries, and Mutations](docs/GraphqlAdvanced.md)
 #### New type
 define a new type for the event in `event/graphql/types.py`
 
@@ -187,7 +189,7 @@ from crm.graphql import BaseQuery
 class EventQuery(BaseQuery):
     events = graphene.List(EventType)
 
-    def resolve_images(self, args, context, info):
+    def resolve_events(self, args, context, info):
         query = EventType.get_query(context)
         return query.all()
 
