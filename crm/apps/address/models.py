@@ -73,7 +73,7 @@ class Address(db.Model, BaseModel):
         if self.city:
             address += '%s, ' % self.city
         if self.country:
-            address += str(self.country.country.name)
+            address += str(self.country.name)
 
         if self.zip_code:
             address += ' (zip code: %s)' % self.zip_code
