@@ -45,7 +45,7 @@ def generate_fixtures():
 
         if country:
             return country
-        Country(name=name)
+        country = Country(name=name)
         db.session.add(country)
         return country
 
@@ -207,7 +207,7 @@ def generate_fixtures():
         c = Currency.query.filter_by(name=name).first()
         if c:
             return c
-        c  = Currency(name=c)
+        c = Currency(name=name)
         db.session.add(c)
         return c
 
@@ -216,10 +216,9 @@ def generate_fixtures():
         s = Subgroup.query.filter_by(groupname=name).first()
         if s:
             return s
-        s = Currency(groupname=s)
+        s = Subgroup(groupname=name)
         db.session.add(s)
         return s
-
 
     for i in range(3):
         newuser()

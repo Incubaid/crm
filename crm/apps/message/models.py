@@ -1,4 +1,13 @@
+from enum import Enum
 from crm.db import db, BaseModel
+
+
+class MessageState(Enum):
+    TOSEND = 'TOSEND'
+    SENT = 'SENT'
+    FAILED = 'FAILED'
+
+MessageState.__str__ = lambda self: self.name
 
 
 class Message(db.Model, BaseModel):
@@ -86,6 +95,11 @@ class Message(db.Model, BaseModel):
     links = db.relationship(
         "Link",
         backref="message"
+    )
+    state = db.Column(
+        db.Enum(MessageState),
+        default=MessageState.TOSEND,
+        index=True
     )
 
     def __str__(self):
