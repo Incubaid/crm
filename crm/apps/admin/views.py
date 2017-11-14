@@ -427,7 +427,7 @@ class ContactModelView(EnhancedModelView):
         'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
 
     form_edit_rules = (
-        'firstname', 'lastname', 'images', 'description', 'bio', 'belief_statement',
+        'firstname', 'lastname', 'images', 'description', 'bio', 'belief_statement', 'countries',
         'addresses', 'emails', 'telephones', 'passports', 'gender', 'date_of_birth',
         'companies', 'tasks', 'deals', 'messages',
         'comments', 'links', 'events',
