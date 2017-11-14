@@ -7,7 +7,7 @@ from crm.mailer import sendemail, parse_email_body
 from crm.db import RootModel, db
 from crm.apps.user.models import User
 from crm.apps.contact.models import Contact
-from crm.apps.message.models import Message
+from crm.apps.message.models import Message, MessageState
 from crm.apps.link.models import Link
 
 from crm.settings import ATTACHMENTS_DIR, STATIC_URL_PATH
@@ -78,9 +78,15 @@ def handle_mail(to, sender, subject, body):
                                 hf.write(attachment.binarycontent)
                         msgobj.links.append(
                             Link(url=attachment.hashedfileurl, labels=attachment.hashedfilename + "," + attachment.originalfilename))
+                        msgobj.state = MessageState.TOSEND
                     obj.messages.append(msgobj)
                     db.session.add(obj)
-                    obj.notify(msgobj)
+                    try:
+                        obj.notify(msgobj)
+                        msgobj.state = MessageState.SENT
+                    except:
+                        msgobj.state = MessageState.FAILED
+                    db.session.add(obj)
 
                 domain = d['domain']
                 db.session.commit()
