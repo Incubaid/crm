@@ -25,7 +25,6 @@ def _push(number_commits):
     if not p.returncode == 0:
         print('Error committing files to git')
         print(out1, out2)
-        exit(1)
     print('\n\t\t\033[92mPUSH SUCCESSFUL\033[0m\n')
 
 
