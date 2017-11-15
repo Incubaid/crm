@@ -9,7 +9,7 @@ from crm.apps.user.models import User
 from crm.apps.contact.models import Contact
 from crm.apps.message.models import Message, MessageState
 from crm.apps.link.models import Link
-
+import click
 from crm.settings import ATTACHMENTS_DIR, STATIC_URL_PATH
 
 
@@ -93,7 +93,9 @@ def handle_mail(to, sender, subject, body):
 
 
 @app.cli.command()
-def mailer():
+@click.option("--host", '-h', default="0.0.0.0", help="SMTP Inbox server host.")
+@click.option("--port", '-p', default=25, help="SMTP Inbox server port.", type=int)
+def mailer(host, port):
     """
     Start mail in/out services.
     """
@@ -105,5 +107,5 @@ def mailer():
         print("MISSING Environment variable SUPPORT_EMAIL")
         exit(1)
 
-    print("Starting mail-in/out..")
-    inbox.serve(address='0.0.0.0', port=6700)
+    print("Starting mail-in/out on {}:{}".format(host, port))
+    inbox.serve(address=host, port=port)
