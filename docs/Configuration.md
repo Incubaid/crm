@@ -4,13 +4,13 @@
 
 ###### Shared settings between all environments
 
-goes inside `crm.sesstings.py`
+goes inside `crm.settings.py`
 
 - `STATIC_DIR` static files directory
 - `STATIC_URL_PATH` static files URL prefix
 - `IMAGES_DIR` where images uploads goes
 - `LOGGING_CONF` logging configuration
-
+- `ATTACHMENTS_DIR` Attachments directory for the [Mailin Feature](MailinMailout.md)
 ###### Development mode settings
 
 goes inside ```crm.settings_dev.py```
@@ -59,5 +59,4 @@ goes inside ```crm.settings_prod.py```
 
     > In **development mode** is set by default to `data` dir under the root directory
 
-
-
+- export `SENDGRID_API_KEY` for [Mail In/Out](MailinMailOut.md). 

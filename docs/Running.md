@@ -34,6 +34,7 @@
 - `export FLASK_APP=app.py` Set flask main app module
 - `export CACHE_BACKEND_URI=redis://172.17.0.3:6379/0` set redis cache backend
 - `export SQLALCHEMY_DATABASE_URI=postgresql://postgres:new_password@172.17.0.2:5432/crm` set Database URI
+- `export SENDGRID_API_KEY=SENDGRID_KEY_GOES_HERE` for the mailer service. 
 - `uwsgi --ini uwsgi.ini` To run in [Uwsgi](https://uwsgi-docs.readthedocs.io/en/latest/)
 
 **Note**
