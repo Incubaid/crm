@@ -94,3 +94,18 @@ e.g for contact notification
 ### Mailer helper
 
 The CRM heavily depends on the mailer util for the mail in/out feature for parsing emails (extracting the attachments) and sending emails to the right recipients.
+
+
+### Starting mailer service
+Mailer service requires starting an SMTP server to act as inbox 
+```
+Usage: flask mailer [OPTIONS]
+
+  Start mail in/out services.
+
+Options:
+  -h, --host TEXT     SMTP Inbox server host.
+  -p, --port INTEGER  SMTP Inbox server port.
+  --help              Show this message and exit.
+
+```
