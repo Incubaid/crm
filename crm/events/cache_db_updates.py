@@ -69,7 +69,7 @@ def cache_db_updates_after_transaction(db_session, transaction):
 
         cache['deleted'].append({
             'obj_as_str': str(obj),
-            'data': obj
+            'data': {'model': obj.__class__.__name__, 'id': obj.id}
         })
 
     app.cache.set(now, cache)

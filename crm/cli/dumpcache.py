@@ -35,7 +35,6 @@ def _add_to_git(data_dir, file_paths, username, email):
         if not p.returncode == 0:
             print('Error adding files to git')
             print( out1, out2)
-            exit(1)
 
     p = subprocess.Popen(
         [
@@ -55,7 +54,6 @@ def _add_to_git(data_dir, file_paths, username, email):
     if not p.returncode == 0:
         print('Error committing files to git')
         print( out1, out2)
-        exit(1)
 
 
 def _get_cache_client():
@@ -109,9 +107,37 @@ def _create_json_file(data_dir, data, model_str):
 
     record_path = os.path.abspath(os.path.join(
         model_dir, '%s_%s.json' % (data['id'], model_str)))
+
     with open(record_path, 'w') as f:
         json.dump(data, f, indent=4, sort_keys=True)
-    return record_path
+    return [record_path]
+
+
+def _update_json_file(data_dir, data, model_str):
+    if len(model_str) > 100:
+        model_str = model_str[:100]
+
+    model_dir = os.path.abspath(os.path.join(data_dir, data['model']))
+    _ensure_dirs(model_dir)
+
+    record_path = os.path.abspath(os.path.join(
+        model_dir, '%s_%s.json' % (data['id'], model_str)))
+
+    updated_paths = [record_path]
+
+    # Name changed
+    if not os.path.exists(record_path):
+        for root, dirs, files in os.walk(model_dir):
+            for file in files:
+                if file.startswith(data['id']):
+                    print(file)
+                    old = os.path.abspath(os.path.join(root, file))
+                    os.rename(old, record_path)
+                    updated_paths.append(old)
+
+    with open(record_path, 'w') as f:
+        json.dump(data, f, indent=4, sort_keys=True)
+    return updated_paths
 
 
 def _delete_json_file(data_dir, data, model_str):
@@ -119,7 +145,7 @@ def _delete_json_file(data_dir, data, model_str):
     if len(model_str) > 100:
         model_str = model_str[:100]
 
-        model_dir = os.path.abspath(os.path.join(data_dir, data['model']))
+    model_dir = os.path.abspath(os.path.join(data_dir, data['model']))
 
     record_path = os.path.abspath(os.path.join(
         model_dir, '%s_%s.json' % (data['id'], model_str)))
@@ -128,10 +154,10 @@ def _delete_json_file(data_dir, data, model_str):
     except:
         print('Error deleting file %s' % record_path)
 
-    return record_path
+    return [record_path]
 
 
-def _update_fs(items, data_dir, delete=False):
+def _update_fs(items, data_dir, create=False, update=False, delete=False):
     """
     CREATE OPERATION HANDLING IS CONCERNED ONLY ABOUT ROOT models
     NON ROOT MODEL ITEMS ARE IGNORED
@@ -152,17 +178,19 @@ def _update_fs(items, data_dir, delete=False):
     :rtype: list
     """
 
-    paths = []
+    all_paths = []
     for item in items:
         data = item['data']
         if not _is_root_model(data['model']):
             continue
-        if not delete:
-            path = _create_json_file(data_dir, data, item['obj_as_str'])
-        else:
-            path = _delete_json_file(data_dir, data, item['obj_as_str'])
-        paths.append(path)
-    return paths
+        if create:
+            paths = _create_json_file(data_dir, data, item['obj_as_str'])
+        elif update:
+            paths = _update_json_file(data_dir, data, item['obj_as_str'])
+        elif delete:
+            paths = _delete_json_file(data_dir, data, item['obj_as_str'])
+        all_paths.extend(paths)
+    return all_paths
 
 
 def _dump():
@@ -185,8 +213,8 @@ def _dump():
 
         file_paths = []
 
-        file_paths.extend(_update_fs(created, data_dir))
-        file_paths.extend(_update_fs(updated, data_dir))
+        file_paths.extend(_update_fs(created, data_dir, create=True))
+        file_paths.extend(_update_fs(updated, data_dir, update=True))
         file_paths.extend(_update_fs(deleted, data_dir, delete=True))
         _add_to_git(data_dir, set([path for path in file_paths if path]), username, email)
 
