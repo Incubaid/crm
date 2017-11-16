@@ -16,7 +16,7 @@ from graphene_sqlalchemy import SQLAlchemyObjectType
 from crm.apps.admin.config import NAV_BAR_ORDER
 from crm.graphql import BaseMutation, BaseQuery
 from .db import BaseModel, db
-from .settings import LOGGING_CONF, STATIC_DIR, IMAGES_DIR, STATIC_URL_PATH, CACHE_BACKEND_URI
+from .settings import LOGGING_CONF, STATIC_DIR, IMAGES_DIR, ATTACHMENTS_DIR, STATIC_URL_PATH, CACHE_BACKEND_URI
 
 
 class CRM(object):
@@ -50,6 +50,8 @@ class CRM(object):
         """
         if not os.path.exists(IMAGES_DIR):
             os.makedirs(IMAGES_DIR)
+        if not os.path.exists(ATTACHMENTS_DIR):
+            os.makedirs(ATTACHMENTS_DIR)
 
     def register_template_dirs(self):
         """
@@ -91,7 +93,6 @@ class CRM(object):
         # New secret key each time app starts, to clear old sessions
         self._app.secret_key = os.urandom(32)
 
-
     @staticmethod
     def _load_modules(module_type):
         """
@@ -99,14 +100,13 @@ class CRM(object):
 
         @param module_type: type of the module, e.g: models, views, graphql...
         """
-        base_dir= '{}/'.format(os.path.dirname(os.path.dirname(__file__)))
-        for root, _ , files in os.walk(os.path.dirname(__file__)):
+        base_dir = '{}/'.format(os.path.dirname(os.path.dirname(__file__)))
+        for root, _, files in os.walk(os.path.dirname(__file__)):
             for file_ in files:
                 if file_ != '{}.py'.format(module_type):
                     continue
                 package = root.replace(base_dir, '').replace('/', '.')
                 import_module('{}.{}'.format(package, module_type))
-
 
     @staticmethod
     def init_db():
@@ -118,7 +118,6 @@ class CRM(object):
         Then we can get all models and register before_insert hook
         """
         CRM._load_modules(module_type='models')
-        
 
     def inti_admin_app(self):
         """
@@ -175,7 +174,6 @@ class CRM(object):
         routes are initialized
         """
         CRM._load_modules(module_type='views')
-
 
     @property
     def graphql_schema(self):
@@ -247,7 +245,7 @@ class CRM(object):
             cache = Cache(app, config={
                 'CACHE_TYPE': 'redis',
                 'CACHE_REDIS_URL': CACHE_BACKEND_URI,
-                'CACHE_DEFAULT_TIMEOUT': 0 # NEVER EXPIRES
+                'CACHE_DEFAULT_TIMEOUT': 0  # NEVER EXPIRES
             })
 
         cache.init_app(self.app)
