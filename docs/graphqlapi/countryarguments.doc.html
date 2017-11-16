@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="./styles/graphdoc.css" />
-    <title>DealCurrency</title>
+    <title>CountryArguments</title>
     <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700" rel="stylesheet"><link type="text/css" rel="stylesheet" href="./assets/code.css" /><link type="text/css" rel="stylesheet" href="./assets/require-by.css" />
 </head>
 <body class="slds-scrollable--y">
@@ -75,9 +75,9 @@
 <div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
     <h4 class="slds-text-title--caps slds-p-around--medium">Enums</h4>
     <ul>
-        <li class="slds-is-active" title="DealCurrency">
-            <a href="dealcurrency.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                DealCurrency
+        <li  title="CountriesEnum">
+            <a href="countriesenum.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                CountriesEnum
             </a>
         </li>
         <li  title="DealState">
@@ -400,6 +400,11 @@
                 ContactSubgroupArguments
             </a>
         </li>
+        <li class="slds-is-active" title="CountryArguments">
+            <a href="countryarguments.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                CountryArguments
+            </a>
+        </li>
         <li  title="CreateContactArguments">
             <a href="createcontactarguments.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 CreateContactArguments
@@ -408,6 +413,11 @@
         <li  title="CreateDealArguments">
             <a href="createdealarguments.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 CreateDealArguments
+            </a>
+        </li>
+        <li  title="CurrencyArguments">
+            <a href="currencyarguments.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                CurrencyArguments
             </a>
         </li>
         <li  title="DealArguments">
@@ -510,8 +520,8 @@
         </div>
     </div>
     <div class="container">
-        <p class="slds-text-title--caps slds-text-color--weak">ENUM</p>
-        <h1 class="slds-text-heading--large">DealCurrency</h1>
+        <p class="slds-text-title--caps slds-text-color--weak">INPUT_OBJECT</p>
+        <h1 class="slds-text-heading--large">CountryArguments</h1>
         <div class="slds-text-body--regular"></div>
     </div>
 </section>
@@ -523,7 +533,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:42px"><li><span class="keyword operator ts">enum</span> <span class="identifier">DealCurrency</span> {</li><li><span class="tab"></span></li><li><span class="tab"><span class="meta">USD</span></span></li><li><span class="tab"></span></li><li><span class="tab"><span class="meta">EUR</span></span></li><li><span class="tab"></span></li><li><span class="tab"><span class="meta">AED</span></span></li><li><span class="tab"></span></li><li><span class="tab"><span class="meta">GBP</span></span></li><li><span class="tab"></span></li><li><span class="tab"><span class="meta">BTC</span></span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">input</span> <span class="identifier">CountryArguments</span> {</li><li><span class="tab"><li><span class="tab"><span class="meta">name</span>: <a class="support type" href="countriesenum.doc.html">CountriesEnum</a></span></li></span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>
@@ -534,7 +544,7 @@
             </a>
             Require by
         </h2>
-        <ul class="require-by"><li><a href="createdealarguments.doc.html" title="CreateDealArguments - ">CreateDealArguments<em></em></a><li><li><a href="dealarguments.doc.html" title="DealArguments - ">DealArguments<em></em></a><li><li><a href="query.doc.html" title="Query - ">Query<em></em></a><li><li><a href="updatedealarguments.doc.html" title="UpdateDealArguments - ">UpdateDealArguments<em></em></a><li></ul>
+        <ul class="require-by"><li><a href="addressarguments.doc.html" title="AddressArguments - ">AddressArguments<em></em></a><li><li><a href="contactarguments.doc.html" title="ContactArguments - ">ContactArguments<em></em></a><li><li><a href="createcontactarguments.doc.html" title="CreateContactArguments - ">CreateContactArguments<em></em></a><li><li><a href="passportarguments.doc.html" title="PassportArguments - ">PassportArguments<em></em></a><li><li><a href="query.doc.html" title="Query - ">Query<em></em></a><li><li><a href="updatecontactarguments.doc.html" title="UpdateContactArguments - ">UpdateContactArguments<em></em></a><li></ul>
     </div>
 </section>
 <footer>
