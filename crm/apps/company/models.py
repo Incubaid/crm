@@ -104,7 +104,7 @@ class Company(db.Model, BaseModel, RootModel):
     def __str__(self):
         return self.name
 
-    def notify(self, msgobj=None):
+    def notify(self, msgobj=None, attachments=[]):
         emails = []
         if self.emails:
             emails = self.emails.split(",")
@@ -115,4 +115,5 @@ class Company(db.Model, BaseModel, RootModel):
                 emails.extend(self.owner.emails.split(","))
 
         if emails:
-            sendemail(to=emails, subject=msgobj.title, body=msgobj.content)
+            sendemail(to=emails, subject=msgobj.title,
+                      body=msgobj.content, attachments=attachments)

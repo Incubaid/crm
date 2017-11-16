@@ -44,25 +44,29 @@ class Deal(db.Model, BaseModel, RootModel):
 
     value = db.Column(
         db.Float(),
-        index=True
+        index=True,
+        nullable=False
 
     )
 
     currency_id = db.Column(
         db.String(5),
-        db.ForeignKey("currencies.id")
+        db.ForeignKey("currencies.id"),
+        nullable=False,
     )
 
     deal_type = db.Column(
         db.Enum(DealType),
         default=DealType.HOSTER,
-        index=True
+        index=True,
+        nullable=False
     )
 
     deal_state = db.Column(
         db.Enum(DealState),
         default=DealState.NEW,
-        index=True
+        index=True,
+        nullable=False
     )
 
     closed_at = db.Column(
@@ -135,13 +139,14 @@ class Deal(db.Model, BaseModel, RootModel):
         backref="deal"
     )
 
-    def notify(self, msgobj):
+    def notify(self, msgobj, attachments=[]):
         emails = []
 
         for obj in [self.contact, self.company]:
             if obj and obj.emails:
                 emails.extend(obj.emails.split(","))
-        sendemail(to=emails, subject=msgobj.title, body=msgobj.content)
+        sendemail(to=emails, subject=msgobj.title,
+                  body=msgobj.content, attachments=attachments)
 
     @property
     def value_usd(self):

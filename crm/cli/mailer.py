@@ -70,8 +70,9 @@ def handle_mail(to, sender, subject, body):
 
                 if obj:
                     body, attachments = parse_email_body(body)
-                    # body, attachments [hashedfilename, hashedfilpath, hashedfileurl, originalfilename, binarycontent]
+                    # body, attachments [hashedfilename, hashedfilpath, hashedfileurl, originalfilename, binarycontent, type]
                     msgobj = Message(title=subject, content=body)
+
                     for attachment in attachments:
                         if not os.path.exists(attachment.hashedfilepath):
                             with open(attachment.hashedfilepath, "wb") as hf:
@@ -82,7 +83,7 @@ def handle_mail(to, sender, subject, body):
                     obj.messages.append(msgobj)
                     db.session.add(obj)
                     try:
-                        obj.notify(msgobj)
+                        obj.notify(msgobj, attachments)
                         msgobj.state = MessageState.SENT
                     except:
                         msgobj.state = MessageState.FAILED
