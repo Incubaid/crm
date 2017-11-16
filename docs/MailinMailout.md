@@ -83,7 +83,7 @@ To control the mailout feature notification propagation you need to override `no
 
 e.g for contact notification
 ```python
-    def notify(self, msgobj=None, attachments):
+    def notify(self, msgobj=None, attachments=[]):
         emails = []
         if self.emails:
             emails.extend(self.emails.split(","))
