@@ -10,6 +10,7 @@ import sendgrid
 
 from sendgrid.helpers.mail import Email, Content, Mail, Attachment as SendGridAttachment
 
+import app
 
 
 Attachment = namedtuple(
@@ -47,7 +48,6 @@ def parse_email_body(body):
     :return: (body, attachments)
     :rtype: tuple
     """
-    from crm import app
     message = email.message_from_string(body)
 
     if not message.is_multipart():
