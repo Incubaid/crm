@@ -45,7 +45,7 @@ def handle_mail(to, sender, subject, body):
 
     if sender not in RECOGNIZED_SENDERS:
         print("CANT RECOGNIZE SENDER ", sender)
-        sendemail(to=sender, from_=SUPPORT_EMAIL)
+        sendemail(to=[sender], from_=SUPPORT_EMAIL)
     else:
         for x in to:
             msupport = match(PATTERN_SUPPORT_EMAIL, x)
@@ -53,7 +53,7 @@ def handle_mail(to, sender, subject, body):
             if msupport is not None:
                 d = msupport.groupdict()
                 domain = d['domain']
-                sendemail(from_=SUPPORT_EMAIL, to=sender, body=body)
+                sendemail(from_=SUPPORT_EMAIL, to=[sender], body=body)
             if mrootobj is not None:
                 d = mrootobj.groupdict()
                 objid = d['objid']

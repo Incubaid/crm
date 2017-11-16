@@ -87,11 +87,11 @@ def parse_email_body(body):
     return body, attachments
 
 
-def sendemail(to='', from_=None, subject="User not recognized", body="Please email support at support@localhost", attachments=[]):
+def sendemail(to=[], from_=None, subject="User not recognized", body="Please email support at support@localhost", attachments=[]):
     """
     Sends email using sendgrid API.
 
-    @param to str: receiver email.
+    @param to List[str] : receivers emails.
     @param from_ str: sender email. [defaults to support_email]
     @param subject str: email subject.
     @param body str: email message content.
@@ -104,14 +104,13 @@ def sendemail(to='', from_=None, subject="User not recognized", body="Please ema
         from_ = SUPPORT_EMAIL
     sg = sendgrid.SendGridAPIClient(apikey=SENDGRID_API_KEY)
     from_email = Email(from_)
-    if isinstance(to, str):
-        to = [to]
 
     to_email = Email(to[0])
     content = Content("text/plain", body)
     mail = Mail(from_email, subject, to_email, content)
+
+    to = list(set(to))  # no duplicates.
     if len(to) > 1:
-        to = list(set(to))  # no duplicates.
         for receiver in to[1:]:
             mail.personalizations[0].add_to(Email(receiver))
 
