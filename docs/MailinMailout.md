@@ -59,6 +59,8 @@ inet_protocols = all
 ```
 > The relayhost is docker ip followed by the port u want to forward mail to which in this case is 172.17.0.3:6700
 
+## Production setup
+Make sure to forward port 25 on machine's public IP to the port inbox running on.
 
 ### Mailer configuration
 - `EMAIL_SUPPORT` to send emails coming to support.
@@ -81,13 +83,13 @@ To control the mailout feature notification propagation you need to override `no
 
 e.g for contact notification
 ```python
-    def notify(self, msgobj=None):
+    def notify(self, msgobj=None, attachments=[]):
         emails = []
         if self.emails:
             emails.extend(self.emails.split(","))
             if self.owner and self.owner.emails:
                 emails.extend(self.owner.emails.split(","))
-            sendemail(to=emails, subject=msgobj.title, body=msgobj.content)
+            sendemail(to=emails, subject=msgobj.title, body=msgobj.content, attachments=attachments)
 
 ```
 

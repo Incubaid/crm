@@ -15,6 +15,7 @@ from graphene_sqlalchemy import SQLAlchemyObjectType
 
 from crm.apps.admin.config import NAV_BAR_ORDER
 from crm.graphql import BaseMutation, BaseQuery
+from crm.settings import DATA_DIR
 from .db import BaseModel, db
 from .settings import LOGGING_CONF, STATIC_DIR, IMAGES_DIR, ATTACHMENTS_DIR, STATIC_URL_PATH, CACHE_BACKEND_URI
 
@@ -36,7 +37,7 @@ class CRM(object):
             static_url_path=STATIC_URL_PATH
         )
 
-        self.ensure_static_dir()
+        self.ensure_static_dirs()
         self.register_template_dirs()
         self.update_jinja_env()
         self.load_settings()
@@ -44,7 +45,7 @@ class CRM(object):
         self.inti_admin_app()
         self._graphql_schema = self.init_graphql_schema()
 
-    def ensure_static_dir(self):
+    def ensure_static_dirs(self):
         """
         Ensure the existence of static directory (one level above crm dir)
         """
@@ -92,6 +93,30 @@ class CRM(object):
         self._app.config.from_pyfile("./settings.py")
         # New secret key each time app starts, to clear old sessions
         self._app.secret_key = os.urandom(32)
+
+        errors = []
+        if not self._app.config['SQLALCHEMY_DATABASE_URI']:
+            errors.append('MISSING ENVIRONMENT VARIABLE SQLALCHEMY_DATABASE_URI')
+
+        if not self._app.config['CACHE_BACKEND_URI']:
+            errors.append('MISSING ENVIRONMENT VARIABLE CACHE_BACKEND_URI')
+
+        if self._app.config['CACHE_BACKEND_URI'] == 'memory://' and os.getenv('ENV') == 'prod':
+            errors.append('CACHE_BACKEND_URI CAN NOT BE SET TO (memory://) IN PRODUCTION ENVIRONMENT')
+
+        if not self._app.config['DATA_DIR']:
+            errors.append('MISSING ENVIRONMENT VARIABLE DATA_DIR')
+
+        if not self._app.config['SENDGRID_API_KEY']:
+            errors.append('MISSING ENVIRONMENT VARIABLE SENDGRID_API_KEY')
+
+        if not self._app.config['SUPPORT_EMAIL']:
+            errors.append('MISSING ENVIRONMENT VARIABLE SUPPORT_EMAIL')
+
+        if errors:
+            for e in errors:
+                print(e)
+            exit(1)
 
     @staticmethod
     def _load_modules(module_type):
