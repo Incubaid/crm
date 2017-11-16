@@ -16,7 +16,7 @@ def custom_401(error):
     # API CALL
     if 'Content-Type' in request.headers and request.headers['Content-Type'].lower() == 'application/json':
         return jsonify(errors=['Not authorized']), 401
-    return render_template('home/401.html'), 401
+    return render_template('home/401.html', message=error.description['message']), 401
 
 
 @app.before_request
@@ -36,13 +36,13 @@ def authenticate():
     if jwt is None:
         authheader = request.headers.get("Authorization", None)
         if authheader is None or 'bearer ' not in authheader.lower():
-            abort(401)
+            abort(401, {'message': 'Are you coming from <a href="https://itsyou.online/">IYO</a> If not, please do!'})
         jwt = authheader.split(" ", 1)[1]  # Bearer JWT
 
     try:
         claims = get_unverified_claims(jwt)
     except jose.exceptions.JWTError:
-        abort(401)
+        abort(401, {'message': 'Are you coming from <a href="https://itsyou.online/">IYO</a> If not, please do!'})
 
     globalid = claims.get("globalid", None)
 
@@ -62,7 +62,7 @@ def authenticate():
         username = claims.get("username", None)
 
         if username is None:
-            abort(401)
+            abort(401, {'message': 'Missing username from <a href="https://itsyou.online/">IYO</a>!'})
 
         url = "https://itsyou.online/api/users/{}/info".format(
             username
@@ -76,8 +76,15 @@ def authenticate():
         )
 
         info = response.json()
-        email = info['emailaddresses'][0]['emailaddress']
-        phone = info['phonenumbers'][0]['phonenumber']
+        emails = info['emailaddresses']
+        email = emails[0]['emailaddress'] if emails else ''
+        phones = info['phonenumbers']
+        phone = phones[0]['phonenumber'] if phones else ''
+
+        if not email:
+            abort(401, {'message': 'Missing Email addresses from <a href="https://itsyou.online/">IYO</a>'})
+        if not phone:
+            abort(401, {'message': 'Missing Phone numbers from <a href="https://itsyou.online/">IYO</a>'})
 
         users = User.query.filter(
             (User.username == username) | (User.telephones.contains(
