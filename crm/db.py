@@ -20,7 +20,7 @@ db.session.autocommit = True
 
 class RootModel(object):
 
-    def notify(self, msgobj=None):
+    def notify(self, msgobj=None, attachments=[]):
         pass
 
 

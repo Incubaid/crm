@@ -190,13 +190,14 @@ class Contact(db.Model, BaseModel, RootModel):
         backref="contact"
     )
 
-    def notify(self, msgobj=None):
+    def notify(self, msgobj=None, attachments=[]):
         emails = []
         if self.emails:
             emails.extend(self.emails.split(","))
             if self.owner and self.owner.emails:
                 emails.extend(self.owner.emails.split(","))
-            sendemail(to=emails, subject=msgobj.title, body=msgobj.content)
+            sendemail(to=emails, subject=msgobj.title,
+                      body=msgobj.content, attachments=attachments)
 
     @property
     def address(self):

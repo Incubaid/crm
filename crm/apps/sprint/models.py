@@ -65,14 +65,15 @@ class Sprint(db.Model, BaseModel, RootModel):
         db.ForeignKey('projects.id')
     )
 
-    def notify(self, msgobj):
+    def notify(self, msgobj, attachments=[]):
         emails = []
         for c in self.contacts:
             if c.emails:
                 emails.extend(c.emails.split(","))
         if self.owner and self.owner.emails:
             emails.extend(self.owner.emails.split(","))
-        sendemail(to=emails, subject=msgobj.title, body=msgobj.content)
+        sendemail(to=emails, subject=msgobj.title,
+                  body=msgobj.content, attachments=attachments)
 
     @property
     def percentage_done(self):

@@ -76,7 +76,7 @@ class Project(db.Model, BaseModel, RootModel):
         db.ForeignKey('users.id')
     )
 
-    def notify(self, msgobj):
+    def notify(self, msgobj, attachments=[]):
         emails = []
         for c in self.contacts:
             emails.extend(c.emails.split(","))
@@ -85,7 +85,8 @@ class Project(db.Model, BaseModel, RootModel):
         if self.guardian and self.guardian.emails:
             emails.extend(self.guardian.emails.split(","))
         if emails:
-            sendemail(to=emails, subject=msgobj.title, body=msgobj.content)
+            sendemail(to=emails, subject=msgobj.title,
+                      body=msgobj.content, attachments=attachments)
 
     @property
     def percentage_done(self):

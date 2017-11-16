@@ -139,13 +139,14 @@ class Deal(db.Model, BaseModel, RootModel):
         backref="deal"
     )
 
-    def notify(self, msgobj):
+    def notify(self, msgobj, attachments=[]):
         emails = []
 
         for obj in [self.contact, self.company]:
             if obj and obj.emails:
                 emails.extend(obj.emails.split(","))
-        sendemail(to=emails, subject=msgobj.title, body=msgobj.content)
+        sendemail(to=emails, subject=msgobj.title,
+                  body=msgobj.content, attachments=attachments)
 
     @property
     def value_usd(self):

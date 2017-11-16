@@ -62,7 +62,7 @@ class Organization(db.Model, BaseModel, RootModel):
         db.ForeignKey("organizations.id")
     )
 
-    def notify(self, msgobj):
+    def notify(self, msgobj, attachments=[]):
         emails = []
         if self.emails:
             emails.extend(self.emails.split(","))
@@ -70,7 +70,8 @@ class Organization(db.Model, BaseModel, RootModel):
             if obj is not None:
                 emails.extend(obj.emails.split(","))
         if emails:
-            sendemail(to=emails, subject=msgobj.title, body=msgobj.content)
+            sendemail(to=emails, subject=msgobj.title,
+                      body=msgobj.content, attachments=attachments)
 
     def __str__(self):
         return self.name

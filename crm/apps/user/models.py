@@ -141,11 +141,12 @@ class User(db.Model, BaseModel, RootModel):
         primaryjoin="User.id==KnowledgeBase.author_id"
     )
 
-    def notify(self, msgobj=None):
+    def notify(self, msgobj=None, attachments=[]):
         if self.emails:
             emails = self.emails.split(",")
             if emails:
-                sendemail(to=emails, subject=msgobj.title, body=msgobj.content)
+                sendemail(to=emails, subject=msgobj.title,
+                          body=msgobj.content, attachments=attachments)
 
     def __str__(self):
         return self.username or '%s %s'.strip() % (self.firstname or '', self.lastname or '')
