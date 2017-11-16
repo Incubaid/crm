@@ -10,6 +10,9 @@ from crm.apps.message.graphql.arguments import MessageArguments
 from crm.apps.task.graphql.arguments import TaskArguments
 from crm.graphql import BaseArgument
 
+DealType = graphene.Enum.from_enum(DealType)
+DealState = graphene.Enum.from_enum(DealState)
+
 
 class DealArguments(InputObjectType, BaseArgument):
     uid = graphene.String()
@@ -17,8 +20,8 @@ class DealArguments(InputObjectType, BaseArgument):
     description = graphene.String()
     value = graphene.Float()
     currency = graphene.Argument(CurrencyArguments)
-    deal_type = graphene.Enum.from_enum(DealType)()
-    deal_state = graphene.Enum.from_enum(DealState)()
+    deal_type = DealType()
+    deal_state = DealState()
     closed_at = graphene.String()
 
     company_id = graphene.String()
@@ -43,7 +46,11 @@ class DealArguments(InputObjectType, BaseArgument):
 
 class CreateDealArguments(DealArguments):
     name = graphene.String(required=True)
+    value = graphene.Float(required=True)
+    currency = graphene.Argument(CurrencyArguments, required=True)
+    deal_type = DealType(required=True)
+    deal_state = DealState(required=True)
 
 
 class UpdateDealArguments(CreateDealArguments):
-    uid = graphene.String(required=False)
+    uid = graphene.String(required=True)

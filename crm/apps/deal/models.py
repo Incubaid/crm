@@ -44,25 +44,29 @@ class Deal(db.Model, BaseModel, RootModel):
 
     value = db.Column(
         db.Float(),
-        index=True
+        index=True,
+        nullable=False
 
     )
 
     currency_id = db.Column(
         db.String(5),
-        db.ForeignKey("currencies.id")
+        db.ForeignKey("currencies.id"),
+        nullable=False,
     )
 
     deal_type = db.Column(
         db.Enum(DealType),
         default=DealType.HOSTER,
-        index=True
+        index=True,
+        nullable=False
     )
 
     deal_state = db.Column(
         db.Enum(DealState),
         default=DealState.NEW,
-        index=True
+        index=True,
+        nullable=False
     )
 
     closed_at = db.Column(
