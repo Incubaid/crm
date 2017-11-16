@@ -307,7 +307,7 @@ def update_currencies():
                 {'id': id, 'created_at': datetime.datetime.now(), 'updated_at': datetime.datetime.now(), 'name': record[0], 'value_usd': record[1]},
             ]
         )
-    op.add_column('deals', sa.Column('currency_id', sa.String(length=5), nullable=True))
+    op.add_column('deals', sa.Column('currency_id', sa.String(length=5), nullable=False))
     op.create_foreign_key(None, 'deals', 'currencies', ['currency_id'], ['id'])
 
     # new migration don't add any data
@@ -325,7 +325,16 @@ def update_currencies():
             currency_id = inserted_currencies[item[1]]
             op.get_bind().execute("update deals set currency_id='%s' where id='%s'" % (currency_id, id))
 
-
+    op.alter_column('deals', 'deal_state',
+                    existing_type=postgresql.ENUM('NEW', 'INTERESTED', 'CONFIRMED', 'PENDING', 'CLOSED',
+                                                  name='dealstate'),
+                    nullable=False)
+    op.alter_column('deals', 'deal_type',
+                    existing_type=postgresql.ENUM('HOSTER', 'ITO', 'PTO', 'AMBASSADOR', 'ITFT', name='dealtype'),
+                    nullable=False)
+    op.alter_column('deals', 'value',
+                    existing_type=postgresql.DOUBLE_PRECISION(precision=53),
+                    nullable=False)
 
     op.drop_index('ix_deals_currency', table_name='deals')
     op.drop_column('deals', 'currency')
