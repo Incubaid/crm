@@ -29,7 +29,19 @@ STATIC_DIR = os.path.abspath(
 STATIC_URL_PATH = "/" + os.path.relpath(STATIC_DIR)
 
 IMAGES_DIR = os.path.join(STATIC_DIR, "uploads", "images")
+
 ATTACHMENTS_DIR = os.path.join(STATIC_DIR, "uploads", "attachments")
+
+DATA_DIR = os.getenv('DATA_DIR')
+
+CACHE_BACKEND_URI = os.getenv('CACHE_BACKEND_URI')
+
+SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
+
+SUPPORT_EMAIL = os.getenv('SUPPORT_EMAIL')
+
+SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
+
 ######################
 # Leave as the last line
 ########################
@@ -38,18 +50,3 @@ ATTACHMENTS_DIR = os.path.join(STATIC_DIR, "uploads", "attachments")
 settings_module = 'crm.settings_%s' % os.getenv("ENV", 'dev')
 env_settings = import_module(settings_module).__dict__
 globals().update(env_settings)
-
-if not globals()['SQLALCHEMY_DATABASE_URI']:
-    print('Missing Environment variable SQLALCHEMY_DATABASE_URI')
-    exit(1)
-
-if not globals()['CACHE_BACKEND_URI']:
-    print('MISSING Environment variable CACHE_BACKEND_URI')
-    exit(1)
-
-if globals()['SENDGRID_API_KEY'] is None:
-    print('MISSING Environment variable SENDGRID_API_KEY')
-    exit(1)
-# Redundant but helpful to prevent syntax errors when importing this from
-# settings
-CACHE_BACKEND_URI = globals()['CACHE_BACKEND_URI']

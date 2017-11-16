@@ -1,6 +1,5 @@
 import os
 from re import match
-from pyblake2 import blake2b
 from inbox import Inbox
 from crm import app
 from crm.mailer import sendemail, parse_email_body
@@ -10,8 +9,6 @@ from crm.apps.contact.models import Contact
 from crm.apps.message.models import Message, MessageState
 from crm.apps.link.models import Link
 import click
-from crm.settings import ATTACHMENTS_DIR, STATIC_URL_PATH
-
 
 PATTERN_TO_ROOTOBJ = r'(?P<objid>\w{5})_(?P<rootobjtype>\w+)@(?P<domain>.+)'
 PATTERN_SUPPORT_EMAIL = r'support@(?P<domain>.+)'
@@ -35,12 +32,17 @@ def handle_mail(to, sender, subject, body):
     If receiever is SUPPORT_EMAIL: an email will be sent to it using sendgrid.
     """
     SUPPORT_EMAIL = app.config['SUPPORT_EMAIL']
+
     _contacts_emails = ",".join(
-        [c.emails for c in db.session.query(Contact).all()])
+        [c.emails for c in db.session.query(Contact).all()]
+    )
+
     _users_emails = ",".join(
-        [u.emails for u in db.session.query(User).all()])
+        [u.emails for u in db.session.query(User).all()]
+    )
 
     RECOGNIZED_SENDERS = _contacts_emails + _users_emails
+
     rootclasses = RootModel.__subclasses__()
 
     if sender not in RECOGNIZED_SENDERS:
@@ -99,14 +101,8 @@ def handle_mail(to, sender, subject, body):
 def mailer(host, port):
     """
     Start mail in/out services.
+    :param host: Host
+    :param port: Port
     """
-    if not app.config['SENDGRID_API_KEY']:
-        print('MISSING Environment variable SENDGRID_API_KEY')
-        exit(1)
-
-    if app.config['SUPPORT_EMAIL'] is None:
-        print("MISSING Environment variable SUPPORT_EMAIL")
-        exit(1)
-
     print("Starting mail-in/out on {}:{}".format(host, port))
     inbox.serve(address=host, port=port)
