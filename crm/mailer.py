@@ -56,7 +56,6 @@ def parse_email_body(body):
     body = ''
     attachments = []
 
-
     g = message.walk()
 
     next(g)  # SKIP THE ROOT ONE.
@@ -106,14 +105,7 @@ def parse_email_body(body):
     return body, attachments
 
 
-def sendemail(
-        to=[],
-        from_=None,
-        subject=None,
-        body=None,
-        attachments=[]
-    ):
-
+def sendemail(to=None, from_=None, subject=None, body=None, attachments=None):
     """
     Send email
 
@@ -124,6 +116,11 @@ def sendemail(
     :param attachments: Attachments
     """
 
+    if to is None:
+        to = []
+    if attachments is None:
+        attachments = []
+
     if not subject:
         subject = "User not recognized"
 
@@ -131,15 +128,10 @@ def sendemail(
         body = "Please email support at support@localhost"
 
     to = list(set(to))  # no duplicates.
-
     sg = sendgrid.SendGridAPIClient(apikey=app.config['SENDGRID_API_KEY'])
-
     from_email = Email(from_ or app.config['SUPPORT_EMAIL'])
-
     to_email = Email(to[0])
-
     content = Content("text/plain", body)
-
     mail = Mail(from_email, subject, to_email, content)
 
     if len(to) > 1:
