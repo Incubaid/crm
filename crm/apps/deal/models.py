@@ -44,7 +44,7 @@ class Deal(db.Model, BaseModel, RootModel):
 
     value = db.Column(
         db.Float(),
-        defautl=0.0,
+        default=0.0,
         index=True,
         nullable=False
 
