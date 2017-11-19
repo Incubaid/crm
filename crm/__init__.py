@@ -42,7 +42,7 @@ class CRM(object):
         self.update_jinja_env()
         self.load_settings()
         self.init_db()
-        self.inti_admin_app()
+        self.init_admin_app()
         self._graphql_schema = self.init_graphql_schema()
 
     def ensure_static_dirs(self):
@@ -146,7 +146,7 @@ class CRM(object):
         """
         CRM._load_modules(module_type='models')
 
-    def inti_admin_app(self):
+    def init_admin_app(self):
         """
         Initialize admin app
         """
