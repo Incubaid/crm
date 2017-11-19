@@ -44,6 +44,7 @@ class Deal(db.Model, BaseModel, RootModel):
 
     value = db.Column(
         db.Float(),
+        defautl=0.0,
         index=True,
         nullable=False
 
@@ -150,7 +151,7 @@ class Deal(db.Model, BaseModel, RootModel):
 
     @property
     def value_usd(self):
-        return '%s' % str(round(Decimal(self.value) * Decimal(self.currency.value_usd), 2)) if self.value else None
+        return '%s' % str(round(Decimal(self.value) * Decimal(self.currency.value_usd), 2)) if self.value else 0.0
 
     def __str__(self):
         return self.name
