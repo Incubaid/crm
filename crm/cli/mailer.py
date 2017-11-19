@@ -1,9 +1,10 @@
 import os
 from re import match
 from inbox import Inbox
-from crm import app
+from crm.settings import ATTACHMENTS_DIR, STATIC_URL_PATH, SENDGRID_API_KEY, SUPPORT_EMAIL
 from crm.mailer import sendemail, parse_email_body
 from crm.db import RootModel, db
+from crm import app
 from crm.apps.user.models import User
 from crm.apps.contact.models import Contact
 from crm.apps.message.models import Message, MessageState
@@ -31,8 +32,6 @@ def handle_mail(to, sender, subject, body):
     If sender is in recognized senders: we get the correct object receiving the message and attach the email text body to its messages.
     If receiever is SUPPORT_EMAIL: an email will be sent to it using sendgrid.
     """
-    SUPPORT_EMAIL = app.config['SUPPORT_EMAIL']
-
     _contacts_emails = ",".join(
         [c.emails for c in db.session.query(Contact).all()]
     )

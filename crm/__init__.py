@@ -96,13 +96,15 @@ class CRM(object):
 
         errors = []
         if not self._app.config['SQLALCHEMY_DATABASE_URI']:
-            errors.append('MISSING ENVIRONMENT VARIABLE SQLALCHEMY_DATABASE_URI')
+            errors.append(
+                'MISSING ENVIRONMENT VARIABLE SQLALCHEMY_DATABASE_URI')
 
         if not self._app.config['CACHE_BACKEND_URI']:
             errors.append('MISSING ENVIRONMENT VARIABLE CACHE_BACKEND_URI')
 
         if self._app.config['CACHE_BACKEND_URI'] == 'memory://' and os.getenv('ENV') == 'prod':
-            errors.append('CACHE_BACKEND_URI CAN NOT BE SET TO (memory://) IN PRODUCTION ENVIRONMENT')
+            errors.append(
+                'CACHE_BACKEND_URI CAN NOT BE SET TO (memory://) IN PRODUCTION ENVIRONMENT')
 
         if not self._app.config['DATA_DIR']:
             errors.append('MISSING ENVIRONMENT VARIABLE DATA_DIR')
