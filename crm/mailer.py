@@ -7,11 +7,8 @@ import email.utils
 import email
 from pyblake2 import blake2b
 import sendgrid
-
 from sendgrid.helpers.mail import Email, Content, Mail, Attachment as SendGridAttachment
-
-import app
-
+from crm.settings import ATTACHMENTS_DIR, STATIC_URL_PATH, SENDGRID_API_KEY, SUPPORT_EMAIL
 
 Attachment = namedtuple(
     'Attachment', [
@@ -48,6 +45,7 @@ def parse_email_body(body):
     :return: (body, attachments)
     :rtype: tuple
     """
+
     message = email.message_from_string(body)
 
     if not message.is_multipart():
@@ -81,12 +79,12 @@ def parse_email_body(body):
             hashedfilename = bhash.hexdigest() + part_extension
 
             hashedfilepath = os.path.join(
-                app.config['ATTACHMENTS_DIR'],
+                ATTACHMENTS_DIR,
                 hashedfilename
             )
 
             hashedfileurl = os.path.join(
-                app.config['STATIC_URL_PATH'],
+                STATIC_URL_PATH,
                 "uploads",
                 "attachments",
                 hashedfilename
@@ -128,8 +126,8 @@ def sendemail(to=None, from_=None, subject=None, body=None, attachments=None):
         body = "Please email support at support@localhost"
 
     to = list(set(to))  # no duplicates.
-    sg = sendgrid.SendGridAPIClient(apikey=app.config['SENDGRID_API_KEY'])
-    from_email = Email(from_ or app.config['SUPPORT_EMAIL'])
+    sg = sendgrid.SendGridAPIClient(apikey=SENDGRID_API_KEY)
+    from_email = Email(from_ or SUPPORT_EMAIL)
     to_email = Email(to[0])
     content = Content("text/plain", body)
     mail = Mail(from_email, subject, to_email, content)
