@@ -182,6 +182,8 @@ class BaseQuery(graphene.ObjectType):
                 final_query = model_cls.query.filter(filter)
             else:
                 final_query = final_query.filter(filter)
+        if not final_query:
+            return model_cls.query
         return final_query
 
     @staticmethod
