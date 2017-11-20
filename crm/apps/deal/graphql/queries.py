@@ -1,11 +1,9 @@
 import graphene
 from graphene import relay
-from graphene_sqlalchemy.fields import SQLAlchemyConnectionField
 
 from crm.apps.deal.graphql.arguments import DealArguments
-from crm.apps.deal.models import Deal
 from .types import DealType
-from crm.graphql import BaseQuery
+from crm.graphql import BaseQuery, CRMConnectionField
 
 
 class DealQuery(BaseQuery):
@@ -14,7 +12,7 @@ class DealQuery(BaseQuery):
     """
 
     # no need for resplve_Deals function here
-    deals = SQLAlchemyConnectionField(
+    deals = CRMConnectionField(
         DealType,
         DealArguments.fields()
 
@@ -26,15 +24,6 @@ class DealQuery(BaseQuery):
 
     def resolve_deal(self, context, uid):
         return DealType.get_query(context).filter_by(id=uid).first()
-
-    def resolve_deals(
-        self,
-        context,
-        *args,
-        **kwargs
-    ):
-
-        return BaseQuery.resolve_query(Deal, **kwargs)
 
     class Meta:
         interfaces = (relay.Node,)

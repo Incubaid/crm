@@ -1,4 +1,5 @@
 import graphene
+from graphene_sqlalchemy.fields import SQLAlchemyConnectionField
 
 from sqlalchemy import and_, or_
 
@@ -10,13 +11,9 @@ class BaseMutation(graphene.ObjectType):
     pass
 
 
-class BaseQuery(graphene.ObjectType):
-    """
-    Base class for all Queries
-    """
-
-    @staticmethod
-    def flatten_query(prefix=None, flat_query={}, query={}):
+class CRMConnectionField(SQLAlchemyConnectionField):
+    @classmethod
+    def flatten_query(cls, prefix=None, flat_query={}, query={}):
         """
         input like :
         {
@@ -36,22 +33,22 @@ class BaseQuery(graphene.ObjectType):
         """
         for k, v in query.items():
             if isinstance(v, list):
-                flat_query.update(BaseQuery.flatten_query(k, flat_query, v[0]))
+                flat_query.update(cls.flatten_query(k, flat_query, v[0]))
             elif isinstance(v, dict):
-                flat_query.update(BaseQuery.flatten_query(k, flat_query, v))
+                flat_query.update(cls.flatten_query(k, flat_query, v))
             else:
                 field_name = k if not prefix else '%s.%s' % (prefix, k)
                 flat_query[field_name] = v
         return flat_query
 
-    @staticmethod
-    def parse_query(model_cls, field_name, query_str):
+    @classmethod
+    def parse_query(cls, model_cls, field_name, query_str):
         """
         Given a model class field name, and query string like '~sss'
         return SqlAlchemy query for this field
-        
+
         query_str examples:
-        
+
         'or(ali,toto)' 
         'and(contains(ali), ~alii)' 
         'contains(ali)'
@@ -68,8 +65,8 @@ class BaseQuery(graphene.ObjectType):
             ']4, 10[' => >4 & < 10
             '[4, 10[ => >=4 & <10'
             ']4, 10]' => > 4 & < 10 
-        
-    
+
+
         :param model_cls: Model class
         :param query: 
         :type query: str
@@ -134,13 +131,13 @@ class BaseQuery(graphene.ObjectType):
         if query_str.startswith('and('):
             query_str = query_str.replace('and(', '', 1)
             args = [a.strip() for a in query_str.split(',')]
-            args = [BaseQuery.parse_query(model_cls, field_name, arg) for arg in args]
+            args = [cls.parse_query(model_cls, field_name, arg) for arg in args]
             return and_(*[args])
 
         if query_str.startswith('or('):
             query_str = query_str.replace('or(', '', 1)
             args = [a.strip() for a in query_str.split(',')]
-            args = [BaseQuery.parse_query(model_cls, field_name, arg) for arg in args]
+            args = [cls.parse_query(model_cls, field_name, arg) for arg in args]
             return or_(*[args])
 
         if query_str.startswith('~'):
@@ -148,15 +145,16 @@ class BaseQuery(graphene.ObjectType):
 
         return attr == query_str
 
-    @staticmethod
-    def compile_query(model_cls, flat_query):
+    @classmethod
+    def compile_query(cls, model_cls, flat_query, info):
         """
         Given a flat query, return SqlAlchemy query
         :param model_cls: Model class.
         :param flat_query: flat dict to be returned at the end after processing
         :return: SqlAlchemy query
         """
-        final_query = None
+        from graphene_sqlalchemy.utils import get_query
+        final_query = get_query(model_cls, info.context)
 
         for k, v in flat_query.items():
 
@@ -164,9 +162,14 @@ class BaseQuery(graphene.ObjectType):
             if 'uid' in k:
                 k = k.replace('uid', 'id')
 
+            # these parameters will be already parsed at this point by get_query()
+            # they don't exist in models any way
+            if k in ['before', 'last', 'after', 'first']:
+                continue
+
             # normal fields, not relation fields
             if '.' not in k:
-                filter = BaseQuery.parse_query(model_cls, k, v)
+                filter = cls.parse_query(model_cls, k, v)
             else:
                 attrs = k.split('.')
                 attr, sub_attr = attrs[0], attrs[1]
@@ -174,26 +177,27 @@ class BaseQuery(graphene.ObjectType):
 
                 # backeref relation
                 if getattr(model_cls, attr).prop.backref:
-                    filter = getattr(model_cls, attr).any(BaseQuery.parse_query(sub_model, sub_attr, v))
+                    filter = getattr(model_cls, attr).any(cls.parse_query(sub_model, sub_attr, v))
                 else:
                     # Foreign keys
-                    filter = getattr(model_cls, attr).has(BaseQuery.parse_query(sub_model, sub_attr, v))
+                    filter = getattr(model_cls, attr).has(cls.parse_query(sub_model, sub_attr, v))
             if not final_query:
                 final_query = model_cls.query.filter(filter)
             else:
                 final_query = final_query.filter(filter)
         return final_query
 
-    @staticmethod
-    def resolve_query(model_cls, *args, **kwargs):
-        """
-        :param model: 
-        :param args: 
-        :param kwargs: 
-        :return: 
-        """
-        flat_query = BaseQuery.flatten_query(None, {} , kwargs)
-        return BaseQuery.compile_query(model_cls, flat_query).all()
+    @classmethod
+    def get_query(cls, model, info, **args):
+        flat_query = cls.flatten_query(None, {}, args)
+        return cls.compile_query(model, flat_query, info,).all()
+
+
+class BaseQuery(graphene.ObjectType):
+    """
+    Base class for all Queries
+    """
+    pass
 
 
 class BaseArgument(object):
