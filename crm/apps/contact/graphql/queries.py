@@ -1,11 +1,9 @@
 import graphene
 from graphene import relay
-from graphene_sqlalchemy.fields import SQLAlchemyConnectionField
 
 from crm.apps.contact.graphql.arguments import ContactArguments
 from crm.apps.contact.graphql.types import ContactType
-from crm.apps.contact.models import Contact
-from crm.graphql import BaseQuery
+from crm.graphql import BaseQuery, CRMConnectionField
 
 
 class ContactQuery(BaseQuery):
@@ -14,7 +12,7 @@ class ContactQuery(BaseQuery):
     """
 
     # no need for resplve_contacts function here
-    contacts = SQLAlchemyConnectionField(
+    contacts = CRMConnectionField(
         ContactType,
         **ContactArguments.fields()
 
@@ -26,14 +24,6 @@ class ContactQuery(BaseQuery):
     def resolve_contact(self, context, uid):
         return ContactType.get_query(context).filter_by(id=uid).first()
 
-    def resolve_contacts(
-        self,
-        context,
-        *args,
-        **kwargs
-    ):
-
-        return BaseQuery.resolve_query(Contact, **kwargs)
 
     class Meta:
         interfaces = (relay.Node, )
