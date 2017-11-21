@@ -131,49 +131,39 @@ to `object.uid` which returns `object.id` value
 
 - Use the following example, rename necessary fields
     ```python
-    import graphene
-    from graphene import relay
-    from graphene_sqlalchemy.fields import SQLAlchemyConnectionField
+        import graphene
+        from graphene import relay
 
-    from crm.apps.contact.graphql.arguments import ContactArguments
-    from crm.apps.contact.graphql.types import ContactType
-    from crm.apps.contact.models import Contact
-    from crm.graphql import BaseQuery
+        from crm.apps.contact.graphql.arguments import ContactArguments
+        from crm.apps.contact.graphql.types import ContactType
+        from crm.graphql import BaseQuery, CRMConnectionField
 
 
-    class ContactQuery(BaseQuery):
-        """
-        we have 2 queries here contact and contacts
-        """
+        class ContactQuery(BaseQuery):
+            """
+            we have 2 queries here contact and contacts
+            """
 
-        contacts = SQLAlchemyConnectionField(
-            ContactType,
-            **ContactArguments.fields()
+            # no need for resplve_contacts function here
+            contacts = CRMConnectionField(
+                ContactType,
+                **ContactArguments.fields()
 
-        )
+            )
+            # contact query to return one contact and takes (uid) argument
+            # uid is the original object.id in db
+            contact = graphene.Field(ContactType, uid=graphene.String())
 
-        # contact query to return one contact and takes (uid) argument
-        # uid is the original object.id in db
-        contact = graphene.Field(ContactType, uid=graphene.String())
+            def resolve_contact(self, context, uid):
+                return ContactType.get_query(context).filter_by(id=uid).first()
 
-        def resolve_contact(self, context, uid):
-            return ContactType.get_query(context).filter_by(id=uid).first()
 
-        def resolve_contacts(
-            self,
-            context,
-            *args,
-            **kwargs
-        ):
-
-            return BaseQuery.resolve_query(Contact, **kwargs)
-
-        class Meta:
-            interfaces = (relay.Node, )
+            class Meta:
+                interfaces = (relay.Node, )
     ```
 - In previous example we define 2 queries:
     - ```contacts```
-        - returning all/subset of records
+        - returning all/subset of records. Please refer to [CRM API General overview](GraphqlQueriesAndMutations.md) & [GraphQl API Query language](GraphqlQueryLanguage.md) for examples on how to query data
         - may take no arguments then return all records
         - may take query arguments defined by `ContactArguments` then return subset of data based on the defined query
 
