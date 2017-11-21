@@ -21,8 +21,9 @@ In any query, you define a field name and its value as a query string i.e `conta
 - not in
     - `contacts({'lastname': '~in(ali, fathy)'}){..}`
 - `>,<,>=,<=`
-    - `deals({'value': '>=(10)'}){..}`
-    - `deals({'value': '>=(1999-02-02)'}){..}`
+    - `deals({'value': '>=(10)'}){..}` or `deals({'value': '>=10'}){..}`
+    - `deals({'created_at': '>=(1999-02-02)'}){..}`
+    - `deals({'created_at': '<=1999-02-02'}){..}`
 - ranges
     - `deals({'value': '[4, 10]'}){..}` means `4 <= value <= 10`
     - `deals({'value': ']4, 10['}){..}` means `4 < value < 10`

@@ -117,15 +117,19 @@ class CRMConnectionField(SQLAlchemyConnectionField):
             return q
         if query_str.startswith('>='):
             query_str = query_str.replace('>=(', '', 1)
+            query_str = query_str.replace('>=', '', 1)
             return attr >= query_str
         if query_str.startswith('<='):
             query_str = query_str.replace('<=(', '', 1)
+            query_str = query_str.replace('<=', '', 1)
             return attr >= query_str
         if query_str.startswith('>'):
             query_str = query_str.replace('>(', '', 1)
+            query_str = query_str.replace('>', '', 1) # ">0.5" without () is supported too
             return attr >= query_str
         if query_str.startswith('<'):
             query_str = query_str.replace('<(', '', 1)
+            query_str = query_str.replace('<', '', 1)
             return attr >= query_str
 
         if query_str.startswith('and('):
