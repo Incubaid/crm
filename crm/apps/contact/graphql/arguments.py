@@ -45,6 +45,7 @@ class ContactArguments(InputObjectType, BaseArgument):
     passports = graphene.List(PassportArguments)
     countries = graphene.List(CountryArguments)
 
+
 class CreateContactArguments(ContactArguments):
     firstname = graphene.String(required=True)
     lastname = graphene.String(required=True)

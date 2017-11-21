@@ -18,7 +18,7 @@ class DealArguments(InputObjectType, BaseArgument):
     uid = graphene.String()
     name = graphene.String()
     description = graphene.String()
-    value = graphene.Float()
+    value = graphene.String()
     currency = graphene.Argument(CurrencyArguments)
     deal_type = DealType()
     deal_state = DealState()
@@ -54,3 +54,4 @@ class CreateDealArguments(DealArguments):
 
 class UpdateDealArguments(CreateDealArguments):
     uid = graphene.String(required=True)
+    value = graphene.Float()
