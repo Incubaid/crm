@@ -157,56 +157,106 @@
                   }
                 }
             ```
-    - **Filteration**
+    - **Filtration**
         - We use [Special Query syntax](GraphqlQueryLanguage.md) for querying data as
         - You can nest your queries as indicated in this example
 
         - Example
-        ```
-        {
-          contacts(firstname: "hamdy", tasks: {title: "contains(hamdy_task)"}){
-            edges{
-              node{
-                firstname
-                tasks{
-                  edges{
-                    node{
-                      title
+            ```
+            {
+              contacts(firstname: "hamdy", tasks: {title: "contains(hamdy_task)"}){
+                edges{
+                  node{
+                    firstname
+                    tasks{
+                      edges{
+                        node{
+                          title
+                        }
+                      }
                     }
                   }
                 }
               }
             }
-          }
-        }
-        ```
+            ```
         - Result
-        ```
-        {
-          "data": {
-            "contacts": {
-              "edges": [
-                {
-                  "node": {
-                    "firstname": "hamdy",
-                    "tasks": {
-                      "edges": [
-                        {
-                          "node": {
-                            "title": "hamdy_task_1"
-                          }
+            ```
+            {
+              "data": {
+                "contacts": {
+                  "edges": [
+                    {
+                      "node": {
+                        "firstname": "hamdy",
+                        "tasks": {
+                          "edges": [
+                            {
+                              "node": {
+                                "title": "hamdy_task_1"
+                              }
+                            }
+                          ]
                         }
-                      ]
+                      }
                     }
+                  ]
+                }
+              }
+            }
+
+            ```
+
+        - Example(2)
+            ```
+            {
+              deals(value: "600"){
+                edges{
+                  node{
+                    name
+                    value
                   }
                 }
-              ]
+              }
             }
-          }
-        }
-
-        ```
-
+            ```
+        - Result
+            ```
+            {
+              "data": {
+                "deals": {
+                  "edges": [
+                    {
+                      "node": {
+                        "name": "Ahmed Thabet",
+                        "value": 600
+                      }
+                    },
+                    {
+                      "node": {
+                        "name": "Hamdy Farag,
+                        "value": 600
+                      }
+                    },
+                    {
+                      "node": {
+                        "name": "Cutie boy",
+                        "value": 600
+                      }
+                    },
+                    {
+                      "node": {
+                        "name": "Pretty Girl",
+                        "value": 600
+                      }
+                    },
+                    ...
+                  ]
+                 }
+                }
+              }
+            ```
+    - You can query data using operators like `like()`, `contains()`, .. More info @[GraphQl API Query language](GraphqlQueryLanguage.md)
     - You can use queries like ```contacts(last:10)```, also u could use ```contacts(first:1, before: "YXJyYXljb25uZWN0aW9uOjA=")```
 
 
