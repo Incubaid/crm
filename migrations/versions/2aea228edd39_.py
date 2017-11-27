@@ -31,8 +31,7 @@ def upgrade():
 
     for record in op.get_bind().execute("select id from deals where deal_state='PENDING'").fetchall():
         deals_with_pending_states.append(record[0])
-    import ipdb;
-    ipdb.set_trace()
+    
     # UPDATE  all deals with PENDING states to NEW state sicne we're going to rename (PENDING)
     op.get_bind().execute("update deals set deal_state='NEW' where deal_state='PENDING'")
 
