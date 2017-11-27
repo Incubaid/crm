@@ -9,8 +9,11 @@ class DealState(Enum):
     NEW = 'NEW'
     INTERESTED = 'INTERESTED'
     CONFIRMED = 'CONFIRMED'
-    PENDING = 'PENDING'
+    CREATED = 'CREATED'
+    SIGNED = 'SIGNED'
+    PAID = 'PAID'
     CLOSED = 'CLOSED'
+    LOST = 'LOST'
 
 
 DealState.__str__ = lambda self: self.name
