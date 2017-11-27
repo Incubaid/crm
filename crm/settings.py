@@ -34,7 +34,7 @@ ATTACHMENTS_DIR = os.path.join(STATIC_DIR, "uploads", "attachments")
 
 DATA_DIR = os.getenv('DATA_DIR')
 
-CACHE_BACKEND_URI = os.getenv('CACHE_BACKEND_URI')
+CACHE_BACKEND_URI = os.getenv('CACHE_BACKEND_URI', "http://127.0.0.1:6379")
 
 SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
 
