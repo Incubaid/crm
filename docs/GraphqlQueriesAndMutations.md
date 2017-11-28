@@ -259,6 +259,9 @@
     - You can query data using operators like `like()`, `contains()`, .. More info @[GraphQl API Query language](GraphqlQueryLanguage.md)
     - You can use queries like ```contacts(last:10)```, also u could use ```contacts(first:1, before: "YXJyYXljb25uZWN0aW9uOjA=")```
 
+    **Issuing multiple Queries in one Graphql Query**
+
+    ![graphql interface](assets/graphql_many.png)
 
 #### Mutations API
 

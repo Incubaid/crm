@@ -9,8 +9,13 @@
 ### CRM Graphql API endpoints
 
 - You can test graphql queries through the UI interface at the end point url ```/graphql```
-![graphql interface](assets/graphql_query.png)
+
+  ![graphql interface](assets/graphql_query.png)
 - The web interface is amazing and supports autocompletion for arguments and query structure, even model field names
+- The web interface has a side menu called `Docs` where you can find API documentation on any operation you're issuing
+Note that most query arguments are strings and following our custom [Query Syntax](GraphqlQueryLanguage.md)
+
+  ![graphql interface](assets/graphiql_docs.png)
 - using any HTTP client you also send requests to the end point url ```/api```
 
 ### CRM Graphql API General Overview
