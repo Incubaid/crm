@@ -405,30 +405,37 @@ class TagModelView(EnhancedModelView):
     form_edit_rules = ('tag',)
 
 
+class ActivityModelView(EnhancedModelView):
+    column_list = ('type',)
+    column_details_list = ('type', 'contacts')
+    form_rules = ('type', )
+    form_edit_rules = ('type',)
+
 class ContactModelView(EnhancedModelView):
     column_list = ('firstname', 'lastname', 'emails',
                    'telephones', 'countries', 'short_description', 'gender', 'date_of_birth', *EnhancedModelView.columns_list_extra)
     column_searchable_list = ('firstname', 'lastname',
                               'emails', 'gender', 'date_of_birth')
+
     column_sortable_list = ('firstname', 'lastname', 'gender', 'date_of_birth')
     column_details_list = (
         'firstname', 'lastname', 'description', 'countries', 'images', 'bio', 'belief_statement',
         'addresses',
         'emails', 'telephones', 'gender', 'date_of_birth', 'passports', 'companies', 'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code',
-        'deals', 'events', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup', 'author_last', 'author_original', 'updated_at')
+        'deals', 'events', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'activities', 'owner', 'ownerbackup', 'author_last', 'author_original', 'updated_at')
 
-    column_filters = ('id', 'firstname', 'lastname', 'gender', 'countries', 'passports', 'date_of_birth', 'description', 'emails', 'telephones', 'addresses.country', 'message_channels', 'referral_code',
+    column_filters = ('id', 'firstname', 'lastname', 'gender', 'countries', 'passports', 'activities', 'date_of_birth', 'description', 'emails', 'telephones', 'addresses.country', 'message_channels', 'referral_code',
                       'deals', 'comments', 'tasks', 'projects', 'companies', 'messages', 'sprints', 'links', 'owner', 'events',
-                      'ownerbackup')
+                      'ownerbackup', 'activities', 'owner')
 
     form_rules = (
         'firstname', 'lastname', 'images', 'description', 'bio', 'belief_statement','countries',
-        'addresses', 'emails', 'telephones', 'passports', 'gender', 'date_of_birth', 'companies', 'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code',
+        'addresses', 'emails', 'telephones', 'passports', 'activities','gender', 'date_of_birth', 'companies', 'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code',
         'deals', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'owner', 'ownerbackup')
 
     form_edit_rules = (
         'firstname', 'lastname', 'images', 'description', 'bio', 'belief_statement', 'countries',
-        'addresses', 'emails', 'telephones', 'passports', 'gender', 'date_of_birth',
+        'addresses', 'emails', 'telephones', 'passports', 'activities', 'gender', 'date_of_birth',
         'companies', 'tasks', 'deals', 'messages',
         'comments', 'links', 'events',
         'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code', 'owner', 'ownerbackup')

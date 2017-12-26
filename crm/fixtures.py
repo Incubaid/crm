@@ -1,6 +1,6 @@
 from crm.apps.comment.models import Comment
 from crm.apps.company.models import Company
-from crm.apps.contact.models import Contact, Gender, SubgroupName, Subgroup
+from crm.apps.contact.models import Contact, Gender, SubgroupName, Subgroup, ActivityType, Activity
 from crm.apps.country.countries import CountriesEnum
 from crm.apps.country.models import Country
 from crm.apps.currency.models import Currency
@@ -64,6 +64,7 @@ def generate_fixtures():
 
         u = Contact(firstname=firstname, lastname=lastname)
         u.subgroups = [newsubgroup(), newsubgroup()]
+        u.activities = [newactivity(), newactivity()]
         u.telephones = newphones()
         u.emails = newemails()
         u.owner = newuser()
@@ -219,6 +220,16 @@ def generate_fixtures():
         s = Subgroup(groupname=name)
         db.session.add(s)
         return s
+
+    def newactivity():
+        type = choice([s for s in ActivityType])
+        a = Activity.query.filter_by(type=type).first()
+        if a:
+            return a
+        a = Activity(type=type)
+        db.session.add(a)
+        return a
+
 
     for i in range(3):
         newuser()
