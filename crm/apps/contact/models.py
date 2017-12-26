@@ -17,7 +17,7 @@ SubgroupName.__str__ = lambda self: self.name
 
 class ActivityType(Enum):
     ISSUE_TF_APP = 'ISSUE_TF_APP'
-    ISSUE_IYO = 'ISSUE_TF_APP'
+    ISSUE_IYO = 'ISSUE_IYO'
     ISSUE_EXTRANET = 'ISSUE_EXTRANET'
     INFO_WAITING = 'INFO_WAITING'
     KYC = 'KYC'
