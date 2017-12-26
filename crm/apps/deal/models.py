@@ -25,6 +25,8 @@ class DealType(Enum):
     PTO = 'PTO'
     AMBASSADOR = 'AMBASSADOR'
     ITFT = 'ITFT'
+    PREPTO = 'PREPTO'
+
 
 DealType.__str__ = lambda self: self.name
 

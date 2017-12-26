@@ -15,6 +15,24 @@ class SubgroupName(Enum):
 SubgroupName.__str__ = lambda self: self.name
 
 
+class ActivityType(Enum):
+    ISSUE_TF_APP = 'ISSUE_TF_APP'
+    ISSUE_IYO = 'ISSUE_TF_APP'
+    ISSUE_EXTRANET = 'ISSUE_EXTRANET'
+    INFO_WAITING = 'INFO_WAITING'
+    KYC = 'KYC'
+    QUESTION_LEGAL = 'QUESTION_LEGAL'
+    QUESTION_PROCESS = 'QUESTION_PROCESS'
+    QUESTION_FINANCE = 'QUESTION_FINANCE'
+    QUESTION = 'QUESTION'
+    MEETING_WAITING = 'MEETING_WAITING'
+    ZOOM_WAITING = 'ZOOM_WAITING'
+
+
+ActivityType.__str__ = lambda self: self.name
+
+
+
 class Gender(Enum):
     MALE = 'MALE'
     FEMALE = 'FEMALE'
@@ -67,6 +85,39 @@ class ContactCountry(db.Model, ManyToManyBaseModel):
         db.String(5),
         db.ForeignKey("contacts.id")
     )
+
+
+class ContactActivity(db.Model, ManyToManyBaseModel):
+    __tablename__ = "contacts_activities"
+
+    activity_id = db.Column(
+        db.String(5),
+        db.ForeignKey('activities.id')
+    )
+
+    contact_id = db.Column(
+        db.String(5),
+        db.ForeignKey("contacts.id")
+    )
+
+
+class Activity(db.Model, BaseModel):
+    __tablename__ = "activities"
+
+    type = db.Column(
+        db.Enum(ActivityType),
+        index=True,
+        unique=True,
+    )
+
+    contacts = db.relationship(
+        "Contact",
+        secondary="contacts_activities",
+        backref="activities"
+    )
+
+    def __str__(self):
+        return self.type.name
 
 
 class Contact(db.Model, BaseModel, RootModel):
