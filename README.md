@@ -1,6 +1,8 @@
 
 ## CRM
 
+product owner: @hamdy_farag
+
 **Philosophy**
 - [Why we need our own CRM](docs/Philosophy.md)
 
