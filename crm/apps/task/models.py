@@ -173,6 +173,49 @@ class Task(db.Model, BaseModel):
             return 100
         return (done / self.time_todo) * 100
 
+    @property
+    def notification_emails(self):
+        """
+        :return: list of all emails to send notifications to
+        :rtype: list
+        """
+        emails = ''
+
+        if self.assignee:
+            if self.assignee.notification_emails:
+                emails += self.assignee.notification_emails + ','
+
+        if self.contact:
+            if self.contact.notification_emails:
+                emails += self.contact.notification_emails + ','
+
+        elif self.users:
+            for user in self.users:
+                if user.notification_emails:
+                    emails += user.notification_emails + ','
+
+        elif self.deal:
+            if self.deal.notification_emails:
+                emails += self.deal.notification_emails + ','
+
+        elif self.company:
+            if self.company.notification_emails:
+                emails += self.company.notification_emails + ','
+
+        elif self.organization:
+            if self.organization.notification_emails:
+                emails += self.organization.notification_emails + ','
+
+        elif self.event:
+            if self.event.notification_emails:
+                emails += self.event.notification_emails + ','
+
+        elif self.sprint:
+            if self.sprint.notification_emails:
+                emails += self.sprint.notification_emails + ','
+
+        return emails
+
     def __str__(self):
         return self.title
 

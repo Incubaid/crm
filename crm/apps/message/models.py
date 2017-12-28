@@ -7,6 +7,7 @@ class MessageState(Enum):
     SENT = 'SENT'
     FAILED = 'FAILED'
 
+
 MessageState.__str__ = lambda self: self.name
 
 
@@ -22,6 +23,7 @@ class Message(db.Model, BaseModel):
 
     content = db.Column(
         db.Text(),
+        nullable=False,
         index=True
     )
 
@@ -29,13 +31,10 @@ class Message(db.Model, BaseModel):
         db.String(255)
     )
 
-    time_tosend = db.Column(
-        db.TIMESTAMP
-    )
-
     time_sent = db.Column(
         db.TIMESTAMP
     )
+
     message_author_id = db.Column(
         db.String,
         db.ForeignKey("users.id")
@@ -96,36 +95,72 @@ class Message(db.Model, BaseModel):
         "Link",
         backref="message"
     )
+
     state = db.Column(
         db.Enum(MessageState),
         default=MessageState.TOSEND,
         index=True
     )
 
+    parent_id = db.Column(
+        db.String(5),
+        db.ForeignKey('messages.id')
+    )
+
+    @property
+    def parent(self):
+        if self.parent_id:
+            return self.__class__.query.filter_by(id=self.parent_id).first()
+
+
+    replies = db.relationship(
+        "Message",
+        uselist=True,
+
+    )
+
+    # ',' separated string of emails
+    # Is used to force sending emails to certain destination
+    # If not set, `notification_emails` is used instead to calculate
+    # ALl email addresses
+    forced_destinations = db.Column(
+        db.String,
+    )
+
+    @property
+    def notification_emails(self):
+        """
+        :return: list of all emails to send notifications to
+        :rtype: list
+        """
+        if self.forced_destinations:
+            return [d.strip() for d in self.forced_destinations.split(',') if d]
+
+        obj = None
+
+        if self.user:
+            obj = self.user
+        elif self.contact:
+            obj = self.contact
+        elif self.company:
+            obj = self.company
+        elif self.organization:
+            obj = self.organization
+        elif self.deal: # contact emails or company emails
+            obj = self.deal
+        elif self.task: # assignee + one of these if found (contact, users, deal, company, organization, event, sprint)
+            obj = self.task
+        elif self.project: # promoter + guardian + contacts + one of (tasks, sprints)
+            obj = self.project
+        elif self.event: # All contacts emails + All tasks emails
+            obj = self.event
+        elif self.sprint: # contacts + owner + tasks
+            obj = self.sprint
+
+        if not obj:
+            return []
+
+        return list(set([d.strip().strip(',') for d in obj.notification_emails.split(',') if d]))
+
     def __str__(self):
         return self.title
-
-    @property
-    def destination(self):
-        emails = []
-        if self.user:
-            emails.extend(self.user.emails.split(','))
-
-        if self.contact:
-            emails.extend(self.contact.emails.split(','))
-
-        if self.company:
-            emails.extend(self.company.emails.split(','))
-
-        if self.organization:
-            emails.extend(self.organization.emails.split(','))
-
-        return emails
-
-    @property
-    def destination_emails(self):
-
-        emails = self.destination
-        if emails:
-            return ",".join([x.email for x in self.destination])
-        return "Not destination yet."

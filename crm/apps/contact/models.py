@@ -241,14 +241,13 @@ class Contact(db.Model, BaseModel, RootModel):
         backref="contact"
     )
 
-    def notify(self, msgobj=None, attachments=[]):
-        emails = []
-        if self.emails:
-            emails.extend(self.emails.split(","))
-            if self.owner and self.owner.emails:
-                emails.extend(self.owner.emails.split(","))
-            sendemail(to=emails, subject=msgobj.title,
-                      body=msgobj.content, attachments=attachments)
+    @property
+    def notification_emails(self):
+        """
+        :return: list of all emails to send notifications to
+        :rtype: list
+        """
+        return self.emails or ''
 
     @property
     def address(self):

@@ -109,6 +109,7 @@ class EnhancedModelView(ModelView):
         'ownsSprints': 'Owns sprints',
         'promoterProjects': 'Promotes projects',
         'guardianProjects': 'Guards projects',
+        'notification_emails': 'Destination'
     }
 
     def get_filter_arg_helper(self, filter_name, filter_op='equals'):
@@ -720,20 +721,33 @@ class TaskModelView(EnhancedModelView):
 
 class MessageModelView(EnhancedModelView):
     column_list = ('author', 'title', 'short_content',
-                   'company', 'contact', 'deal', 'organizaton', 'task', 'project', 'sprint', 'author', 'time_tosend', 'time_sent', *EnhancedModelView.columns_list_extra)
+                   'company', 'contact', 'deal', 'organizaton', 'task', 'project', 'sprint', 'author', 'created_at', 'time_sent', *EnhancedModelView.columns_list_extra)
     column_searchable_list = ('title', 'content')
     column_sortable_list = ('title', 'author')
 
-    column_details_list = ('id', 'title', 'destination', 'author', 'content', 'company',
-                           'contact', 'links', 'organization', 'project', 'sprint', 'deal', 'task', 'time_tosend', 'time_sent',
-                           'author_last', 'author_original', 'updated_at')
+    column_details_list = ('id', 'created_at', 'time_sent', 'state', 'title', 'notification_emails', 'author', 'content', 'company',
+                           'contact', 'links', 'organization', 'project', 'sprint', 'deal', 'task',
+                           'author_last', 'author_original', 'updated_at', 'parent', 'replies')
 
-    form_rules = column_filters = ('title', 'content', 'channel', 'time_tosend', 'time_sent',
-                                   'company', 'contact', 'author', 'organization', 'project', 'sprint', 'deal', 'task', 'event')
+    form_rules = column_filters = ('title', 'content', 'forced_destinations', 'channel',
+                                   'company', 'contact', 'organization', 'project', 'sprint', 'deal', 'task', 'event')
 
-    form_edit_rules = ('title', 'author', 'content', 'channel',
-                       'time_tosend', 'time_sent',)
 
+    def on_form_prefill(self, form, id):
+        # disable all fields in edit
+        if form._obj:
+            form.title.render_kw = {'readonly': True}
+            form.channel.render_kw = {'readonly': True}
+            form.content.render_kw = {'readonly': True}
+            form.forced_destinations.render_kw = {'readonly': True}
+            form.company.render_kw = {'disabled': True}
+            form.organization.render_kw = {'disabled': True}
+            form.contact.render_kw = {'disabled': True}
+            form.project.render_kw = {'disabled': True}
+            form.sprint.render_kw = {'disabled': True}
+            form.deal.render_kw = {'disabled': True}
+            form.task.render_kw = {'disabled': True}
+            form.event.render_kw = {'disabled': True}
 
 class TaskAssignmentModelView(EnhancedModelView):
     column_list = ('percent_completed', 'contact',

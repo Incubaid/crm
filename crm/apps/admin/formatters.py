@@ -97,7 +97,6 @@ def format_markdown(view, context, model, name):
         return markdown(value)
     return value
 
-
 def format_emails(view, context, model, name):
     value = getattr(model, name)
     if not value:
@@ -120,7 +119,7 @@ def format_telephones(view, context, model, name):
     return Markup(out)
 
 
-def format_destination_emails(view, context, model, name):
+def format_notification_emails(view, context, model, name):
     value = getattr(model, name)
     formatted_values = [
         '<a href="mailto:{email}">{email}</a>'.format(email=item) for item in value]
@@ -160,12 +159,13 @@ column_formatters = dict(
     list(zip(["users", "contacts", "companies", "organizations", "projects",  "deals", "sprints", 'events',
                                    "links", "messages", "ownsTasks", "ownsContacts", "ownsCompanies",
                                    "ownsOrganizations", "ownsSprints", "ownsAsBackupContacts", "ownsAsBackupCompanies"], cycle([format_instrumented_list]))),
-    telephones=format_telephones, website=format_url, destination=format_destination_emails,
+    telephones=format_telephones, website=format_url, destination=format_notification_emails,
     tasks=format_tasks,
     messages=format_messages, comments=format_comments, url=format_url, emails=format_emails,
     images=format_images, image=format_image,
     author_last=format_author,
     author_original=format_author,
+    replies=format_messages,
 )
 
 column_formatters = {**column_formatters, **

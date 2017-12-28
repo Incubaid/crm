@@ -1,6 +1,8 @@
 import os
 from re import match
 from inbox import Inbox
+import logging
+
 from crm.settings import ATTACHMENTS_DIR, STATIC_URL_PATH, SENDGRID_API_KEY, SUPPORT_EMAIL
 from crm.mailer import sendemail, parse_email_body
 from crm.db import RootModel, db
@@ -16,6 +18,7 @@ PATTERN_SUPPORT_EMAIL = r'support@(?P<domain>.+)'
 
 
 inbox = Inbox()
+
 
 
 @inbox.collate

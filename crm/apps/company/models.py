@@ -101,19 +101,13 @@ class Company(db.Model, BaseModel, RootModel):
         backref="company"
     )
 
+    @property
+    def notification_emails(self):
+        """
+        :return: list of all emails to send notifications to
+        :rtype: list
+        """
+        return self.emails or ''
+
     def __str__(self):
         return self.name
-
-    def notify(self, msgobj=None, attachments=[]):
-        emails = []
-        if self.emails:
-            emails = self.emails.split(",")
-            if self.contacts:
-                for c in self.contacts:
-                    emails.extend(c.emails.split(","))
-            if self.owner:
-                emails.extend(self.owner.emails.split(","))
-
-        if emails:
-            sendemail(to=emails, subject=msgobj.title,
-                      body=msgobj.content, attachments=attachments)

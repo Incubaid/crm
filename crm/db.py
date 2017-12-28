@@ -403,6 +403,18 @@ class ParentModel(AdminLinksMixin):
             serialized.extend(raw)
         return deserialized
 
+    @property
+    def notification_emails(self):
+        """
+        Return list of all email addresses for an object and related objects to it
+        This is called when sending a message to an object (i.e deal)
+        to determine all email addresses that a message should be sent to
+        for example for a deal, we need to send a message to all contacts, ...
+
+        MUST BE OVERRIDDEN FOR MODELS YOU WANT TO SEND MESSAGES
+        """
+        return ''
+
 
 class BaseModel(ParentModel):
     """

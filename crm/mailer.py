@@ -123,7 +123,7 @@ def sendemail(to=None, from_=None, subject=None, body=None, attachments=None):
         subject = "User not recognized"
 
     if not body:
-        body = "Please email support at support@localhost"
+        body = "Please email support at %s" % SUPPORT_EMAIL
 
     to = list(set(to))  # no duplicates.
     sg = sendgrid.SendGridAPIClient(apikey=SENDGRID_API_KEY)
