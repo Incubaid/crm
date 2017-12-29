@@ -331,7 +331,7 @@ class UserModelView(EnhancedModelView):
         (LinkModel, {'form_columns': [
             'id', 'url', ]}),
     ]
-    mainfilter = "Users / Id"
+    # mainfilter = "Users / Id"
 
 
 class ImageModelView(EnhancedModelView):
@@ -725,13 +725,12 @@ class MessageModelView(EnhancedModelView):
     column_searchable_list = ('title', 'content')
     column_sortable_list = ('title', 'author')
 
-    column_details_list = ('id', 'created_at', 'time_sent', 'state', 'title', 'notification_emails', 'author', 'content', 'company',
+    column_details_list = ('id', 'state', 'created_at', 'updated_at', 'time_sent', 'title', 'notification_emails', 'author', 'content', 'company',
                            'contact', 'links', 'organization', 'project', 'sprint', 'deal', 'task',
-                           'author_last', 'author_original', 'updated_at', 'parent', 'replies')
+                           'author_last', 'author_original', 'parent', 'replies')
 
     form_rules = column_filters = ('title', 'content', 'forced_destinations', 'channel',
                                    'company', 'contact', 'organization', 'project', 'sprint', 'deal', 'task', 'event')
-
 
     def on_form_prefill(self, form, id):
         # disable all fields in edit
@@ -748,6 +747,8 @@ class MessageModelView(EnhancedModelView):
             form.deal.render_kw = {'disabled': True}
             form.task.render_kw = {'disabled': True}
             form.event.render_kw = {'disabled': True}
+
+    mainfilter = 'Messages / Id'
 
 class TaskAssignmentModelView(EnhancedModelView):
     column_list = ('percent_completed', 'contact',

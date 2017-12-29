@@ -35,6 +35,7 @@ def handle_mail(to, sender, subject, body):
     If sender is in recognized senders: we get the correct object receiving the message and attach the email text body to its messages.
     If receiever is SUPPORT_EMAIL: an email will be sent to it using sendgrid.
     """
+
     _contacts_emails = ",".join(
         [c.emails for c in db.session.query(Contact).all()]
     )
@@ -45,7 +46,7 @@ def handle_mail(to, sender, subject, body):
 
     RECOGNIZED_SENDERS = _contacts_emails + _users_emails
 
-    rootclasses = RootModel.__subclasses__()
+    supported_models_to_send_to = RootModel.__subclasses__() + [Message]
 
     if sender not in RECOGNIZED_SENDERS:
         print("CANT RECOGNIZE SENDER ", sender)
@@ -63,7 +64,7 @@ def handle_mail(to, sender, subject, body):
                 objid = d['objid']
                 rootobjtype = d['rootobjtype']
                 cls = None
-                q = [x for x in rootclasses if x.__name__.lower() ==
+                q = [x for x in supported_models_to_send_to if x.__name__.lower() ==
                      rootobjtype]
                 if q:
                     cls = q[0]
@@ -71,7 +72,6 @@ def handle_mail(to, sender, subject, body):
                     continue
 
                 obj = cls.query.filter(cls.id == objid).first()
-
                 if obj:
                     body, attachments = parse_email_body(body)
                     # body, attachments [hashedfilename, hashedfilpath, hashedfileurl, originalfilename, binarycontent, type]
@@ -83,17 +83,20 @@ def handle_mail(to, sender, subject, body):
                                 hf.write(attachment.binarycontent)
                         msgobj.links.append(
                             Link(url=attachment.hashedfileurl, labels=attachment.hashedfilename + "," + attachment.originalfilename))
-                        msgobj.state = MessageState.TOSEND
-                    obj.messages.append(msgobj)
+                    if cls.__name__ ==  Message.__name__:
+                        msgobj.deal_id = obj.deal_id
+                        msgobj.company_id = obj.company_id
+                        msgobj.contact_id = obj.contact_id
+                        msgobj.user_id = obj.user_id
+                        msgobj.task_id = obj.task_id
+                        msgobj.organization_id = obj.organization_id
+                        msgobj.project_id = obj.project_id
+                        msgobj.sprint_id = obj.sprint_id
+                        msgobj.event_id = obj.event_id
+                        obj.replies.append(msgobj)
+                    else:
+                        obj.messages.append(msgobj)
                     db.session.add(obj)
-                    try:
-                        obj.notify(msgobj, attachments)
-                        msgobj.state = MessageState.SENT
-                    except:
-                        msgobj.state = MessageState.FAILED
-                    db.session.add(obj)
-
-                domain = d['domain']
                 db.session.commit()
 
 

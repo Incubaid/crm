@@ -103,7 +103,7 @@ def parse_email_body(body):
     return body, attachments
 
 
-def sendemail(to=None, from_=None, subject=None, body=None, attachments=None):
+def sendemail(to=None, from_=None, subject=None, body=None, attachments=None, reply_to=None):
     """
     Send email
 
@@ -128,9 +128,16 @@ def sendemail(to=None, from_=None, subject=None, body=None, attachments=None):
     to = list(set(to))  # no duplicates.
     sg = sendgrid.SendGridAPIClient(apikey=SENDGRID_API_KEY)
     from_email = Email(from_ or SUPPORT_EMAIL)
+
+    if reply_to is not None:
+        from_email = Email(reply_to)
+
     to_email = Email(to[0])
     content = Content("text/plain", body)
+
     mail = Mail(from_email, subject, to_email, content)
+    if reply_to is not None:
+        mail.reply_to = Email(reply_to)
 
     if len(to) > 1:
         for receiver in to[1:]:
@@ -139,9 +146,9 @@ def sendemail(to=None, from_=None, subject=None, body=None, attachments=None):
     for attachment in attachments:
         mail.add_attachment(build_attachment(attachment))
     try:
+        print('Now trying to send an email')
         response = sg.client.mail.send.post(request_body=mail.get())
-        print("Email sent..")
-        print(response.status_code, response.body)
+        print("Email sent.. %s" % response.status_code)
         return response.status_code, response.body
     except Exception as e:
         print(e)

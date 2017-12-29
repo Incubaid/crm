@@ -155,6 +155,13 @@ def format_author(view, context, model, name):
     return value
 
 
+def format_time_sent(view, context, model, name):
+    value = getattr(model, name)
+    if not value:
+        return ''
+    return value.strftime('%H:%M:%S %p %Z').strip()
+
+
 column_formatters = dict(
     list(zip(["users", "contacts", "companies", "organizations", "projects",  "deals", "sprints", 'events',
                                    "links", "messages", "ownsTasks", "ownsContacts", "ownsCompanies",
@@ -166,6 +173,7 @@ column_formatters = dict(
     author_last=format_author,
     author_original=format_author,
     replies=format_messages,
+    time_sent=format_time_sent
 )
 
 column_formatters = {**column_formatters, **
