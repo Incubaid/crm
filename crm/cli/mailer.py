@@ -36,19 +36,19 @@ def handle_mail(to, sender, subject, body):
     If receiever is SUPPORT_EMAIL: an email will be sent to it using sendgrid.
     """
 
-    _contacts_emails = ",".join(
-        [c.emails for c in db.session.query(Contact).all()]
-    )
+    # _contacts_emails = ",".join(
+    #     [c.emails for c in db.session.query(Contact).all()]
+    # )
 
     _users_emails = ",".join(
         [u.emails for u in db.session.query(User).all()]
     )
 
-    RECOGNIZED_SENDERS = _contacts_emails + _users_emails
+    RECOGNIZED_SENDERS = _users_emails  #+ _contacts_emails
 
     supported_models_to_send_to = RootModel.__subclasses__() + [Message]
 
-    if sender not in RECOGNIZED_SENDERS:
+    if sender not in RECOGNIZED_SENDERS and SUPPORT_EMAIL not in to:
         print("CANT RECOGNIZE SENDER ", sender)
         sendemail(to=[sender], from_=SUPPORT_EMAIL)
     else:
@@ -57,11 +57,13 @@ def handle_mail(to, sender, subject, body):
             mrootobj = match(PATTERN_TO_ROOTOBJ, x)
             if msupport is not None:
                 d = msupport.groupdict()
-                domain = d['domain']
-                sendemail(from_=SUPPORT_EMAIL, to=[sender], body=body)
+                sendemail(from_=[sender], to=[SUPPORT_EMAIL], body=body)
+                continue
             if mrootobj is not None:
                 d = mrootobj.groupdict()
                 objid = d['objid']
+
+
                 rootobjtype = d['rootobjtype']
                 cls = None
                 q = [x for x in supported_models_to_send_to if x.__name__.lower() ==
@@ -73,9 +75,12 @@ def handle_mail(to, sender, subject, body):
 
                 obj = cls.query.filter(cls.id == objid).first()
                 if obj:
+
+                    sender = User.query.filter(User.emails.contains(sender)).first()
+
                     body, attachments = parse_email_body(body)
                     # body, attachments [hashedfilename, hashedfilpath, hashedfileurl, originalfilename, binarycontent, type]
-                    msgobj = Message(title=subject, content=body)
+                    msgobj = Message(title=subject, content=body, author_original_id=sender.id)
 
                     for attachment in attachments:
                         if not os.path.exists(attachment.hashedfilepath):

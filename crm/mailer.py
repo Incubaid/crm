@@ -133,7 +133,7 @@ def sendemail(to=None, from_=None, subject=None, body=None, attachments=None, re
         from_email = Email(reply_to)
 
     to_email = Email(to[0])
-    content = Content("text/plain", body)
+    content = Content("text/html", body)
 
     mail = Mail(from_email, subject, to_email, content)
     if reply_to is not None:

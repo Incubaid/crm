@@ -730,7 +730,7 @@ class MessageModelView(EnhancedModelView):
                            'author_last', 'author_original', 'parent', 'replies')
 
     form_rules = column_filters = ('title', 'content', 'forced_destinations', 'channel',
-                                   'company', 'contact', 'organization', 'project', 'sprint', 'deal', 'task', 'event')
+                                   'company', 'user', 'contact', 'organization', 'project', 'sprint', 'deal', 'task', 'event')
 
     def on_form_prefill(self, form, id):
         # disable all fields in edit

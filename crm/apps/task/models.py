@@ -189,10 +189,9 @@ class Task(db.Model, BaseModel):
             if self.contact.notification_emails:
                 emails += self.contact.notification_emails + ','
 
-        elif self.users:
-            for user in self.users:
-                if user.notification_emails:
-                    emails += user.notification_emails + ','
+        elif self.user:
+            if self.user.notification_emails:
+                emails += self.user.notification_emails + ','
 
         elif self.deal:
             if self.deal.notification_emails:
