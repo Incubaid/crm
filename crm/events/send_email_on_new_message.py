@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 from sqlalchemy import event
@@ -35,13 +36,25 @@ def try_send(host, notification_emails, msg_id, subject, body, reply_to=None):
 @event.listens_for(Message, 'after_insert')
 def receive_after_insert(mapper, connection, message):
     from flask import request
-    host = request.host
+
+    # This can be executed in HTTP context after adding a message
+    # or through cli/mailer when inserting a message
+    # if executed in CRM HTTP context, we can get host
+    # otherwise we need to check for os.get_env('DOMAIN')
+
+    if request:
+        host = request.host
+    else:
+        host = os.getenv('DOMAIN')
+        if not host:
+            print('Missing DOMAIN env variable. emails are not going to be sent')
+            return
 
     body = message.content
     body += '\n\n\n'
 
     for i, link in enumerate(message.links):
-        body += "Attachment %s" % i + "<a clicktracking=off href={}>{}</a>".format(request.url_root.strip('/')  + link.admin_view_link(), link)
+        body += "Attachment %s" % i + "<a clicktracking=off href=https://{}>{}</a>".format(request.url_root.strip('/')  + link.admin_view_link(), link)
         body += "\n"
 
     message = Message.query.filter_by(id=message.id).first()
@@ -49,7 +62,7 @@ def receive_after_insert(mapper, connection, message):
     reply_to = None
 
     if message.parent_id:
-        reply_to = '%s_message@crm.greenitglobe.com' % message.parent_id
+        reply_to = '%s_message@%s' % (message.parent_id, host)
 
     notification_emails = message.notification_emails[:]
     # reply message - coming from outside source since we don't support reply via messages in crm
