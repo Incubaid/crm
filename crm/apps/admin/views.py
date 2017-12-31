@@ -674,7 +674,7 @@ class LinkModelView(EnhancedModelView):
     column_list = ('url', 'labels', *EnhancedModelView.columns_list_extra)
     column_searchable_list = ('id', 'url', 'labels')
     column_sortable_list = ('url',)
-    column_details_list = ('url', 'contact', 'user', 'company', 'organization', 'task', 'project',
+    column_details_list = ('filename', 'url', 'contact', 'user', 'company', 'organization', 'task', 'project',
                            'deal', 'sprint', 'labels', 'comments', 'author_last', 'author_original', 'updated_at')
 
     column_filters = ('url', 'contact', 'user', 'company', 'organization', 'task', 'project',
@@ -720,10 +720,10 @@ class TaskModelView(EnhancedModelView):
 
 
 class MessageModelView(EnhancedModelView):
-    column_list = ('author', 'title', 'short_content',
-                   'company', 'contact', 'deal', 'organizaton', 'task', 'project', 'sprint', 'author', 'created_at', 'time_sent', *EnhancedModelView.columns_list_extra)
+    column_list = ('author_original', 'title', 'short_content','user',
+                   'company', 'contact', 'deal', 'organizaton', 'task', 'project', 'sprint', 'author_last', 'time_sent', *EnhancedModelView.columns_list_extra)
     column_searchable_list = ('title', 'content')
-    column_sortable_list = ('title', 'author')
+    column_sortable_list = ('title', 'author_original', 'author_last', 'time_sent')
 
     column_details_list = ('id', 'state', 'created_at', 'updated_at', 'time_sent', 'title', 'notification_emails', 'author', 'content', 'company',
                            'contact', 'links', 'organization', 'project', 'sprint', 'deal', 'task',
@@ -747,8 +747,6 @@ class MessageModelView(EnhancedModelView):
             form.deal.render_kw = {'disabled': True}
             form.task.render_kw = {'disabled': True}
             form.event.render_kw = {'disabled': True}
-
-    mainfilter = 'Messages / Id'
 
 class TaskAssignmentModelView(EnhancedModelView):
     column_list = ('percent_completed', 'contact',

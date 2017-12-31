@@ -87,7 +87,7 @@ def handle_mail(to, sender, subject, body):
                             with open(attachment.hashedfilepath, "wb") as hf:
                                 hf.write(attachment.binarycontent)
                         msgobj.links.append(
-                            Link(url=attachment.hashedfileurl, labels=attachment.hashedfilename + "," + attachment.originalfilename))
+                            Link(url=attachment.hashedfileurl, labels=attachment.hashedfilename + "," + attachment.originalfilename, filename=attachment.originalfilename))
                     if cls.__name__ ==  Message.__name__:
                         msgobj.deal_id = obj.deal_id
                         msgobj.company_id = obj.company_id

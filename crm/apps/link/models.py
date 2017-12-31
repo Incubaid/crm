@@ -11,6 +11,10 @@ class Link(db.Model, BaseModel):
         index=True
     )
 
+    filename =db.Column(
+        db.String()
+    )
+
     labels = db.Column(
         db.Text(),
         index=True
@@ -80,4 +84,4 @@ class Link(db.Model, BaseModel):
     )
 
     def __str__(self):
-        return self.url
+        return self.filename or self.url
