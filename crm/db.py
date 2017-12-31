@@ -149,9 +149,15 @@ class ParentModel(AdminLinksMixin):
         if not update:
             # Add UID to newly created objects
             self.id = self.uid
-            self.author_original_id = cur_user.get('id')
+
+            # If authors is preset, leave as is, may be at some poing we want to force
+            # Author like in case of adding a new message from a command line, where no
+            # Http context and thus no HTTP context and no way to get author
+            if not self.author_original_id:
+                self.author_original_id = cur_user.get('id')
         else:
-            self.author_last_id = cur_user.get('id')
+            if not self.author_last_id:
+                self.author_last_id = cur_user.get('id')
 
     @classmethod
     def encode_graphene_id(cls, id):

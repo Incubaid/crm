@@ -54,7 +54,7 @@ def receive_after_insert(mapper, connection, message):
     body += '\n\n\n'
 
     for i, link in enumerate(message.links):
-        body += "Attachment %s" % i + "<a clicktracking=off href=https://{}>{}</a>".format(request.url_root.strip('/')  + link.admin_view_link(), link)
+        body += "Attachment %s" % i + "<a clicktracking=off href={}>{}</a>".format(request.url_root.strip('/')  + link.admin_view_link(), link)
         body += "\n"
 
     message = Message.query.filter_by(id=message.id).first()
