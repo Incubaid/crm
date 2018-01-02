@@ -35,9 +35,10 @@ class User(db.Model, BaseModel, RootModel):
     )
 
     # Comma  separated emails
-    emails = db.Column(
-        db.Text(),
-        index=True
+    emails = db.relationship(
+        'Email',
+        backref='user',
+        primaryjoin="User.id==Email.user_id"
     )
 
     # Comma separated phones

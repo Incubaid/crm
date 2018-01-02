@@ -1,4 +1,5 @@
 import os
+import time
 from datetime import datetime
 
 from sqlalchemy import event
@@ -10,6 +11,7 @@ from crm.rq import queue
 
 
 def try_send(host, notification_emails, msg_id, subject, body, reply_to=None):
+    time.sleep(1)
     now = datetime.now()
     state = MessageState.FAILED
     if notification_emails:
@@ -29,7 +31,7 @@ def try_send(host, notification_emails, msg_id, subject, body, reply_to=None):
         print('email not sent: message.notification_emails is empty list')
 
     from crm.db import db
-    Message.query.filter_by(id=msg_id).update({'state':state, 'time_sent':now})
+    Message.query.filter_by(id=msg_id).update({'state': state, 'time_sent': now})
     db.session.commit()
 
 
@@ -73,6 +75,7 @@ def receive_after_insert(mapper, connection, message):
         author_emails = message.author_original.emails.split(',')
         notification_emails = list(set(notification_emails) - set(author_emails))
 
+    print('******', message.id)
     if notification_emails:
         queue.enqueue(
             try_send,

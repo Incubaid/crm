@@ -19,10 +19,10 @@ class Organization(db.Model, BaseModel, RootModel):
         index=True
     )
 
-    # Comma  separated emails
-    emails = db.Column(
-        db.Text(),
-        index=True
+    emails = db.relationship(
+        'Email',
+        backref='organization',
+        primaryjoin="Organization.id==Email.organization_id"
     )
 
     tasks = db.relationship(

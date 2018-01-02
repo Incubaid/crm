@@ -2,7 +2,6 @@ import datetime
 from enum import Enum
 
 from crm.db import db, BaseModel, RootModel, ManyToManyBaseModel
-from crm.mailer import sendemail
 
 
 class SubgroupName(Enum):
@@ -207,10 +206,10 @@ class Contact(db.Model, BaseModel, RootModel):
         db.ForeignKey('users.id')
     )
 
-    # Comma  separated emails
-    emails = db.Column(
-        db.Text(),
-        index=True
+    emails = db.relationship(
+        'Email',
+        backref='contact',
+        primaryjoin="Contact.id==Email.contact_id"
     )
 
     # Comma separated phones
@@ -247,7 +246,7 @@ class Contact(db.Model, BaseModel, RootModel):
         :return: list of all emails to send notifications to
         :rtype: list
         """
-        return self.emails or ''
+        return ','.join([e.email for e in self.emails]) or ''
 
     @property
     def address(self):

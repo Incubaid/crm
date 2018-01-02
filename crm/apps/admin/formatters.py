@@ -102,8 +102,8 @@ def format_emails(view, context, model, name):
     if not value:
         return ''
     out = "<ul>"
-    for x in value.split(','):
-        out += '<li><a href="mailto:{email}">{email}</a></li>'.format(email=x)
+    for x in value:
+        out += '<li><a href="mailto:{email}">{email}</a></li>'.format(email=x.email)
     out += "</ul>"
     return Markup(out)
 

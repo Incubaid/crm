@@ -416,7 +416,7 @@ class ContactModelView(EnhancedModelView):
     column_list = ('firstname', 'lastname', 'emails',
                    'telephones', 'countries', 'short_description', 'gender', 'date_of_birth', *EnhancedModelView.columns_list_extra)
     column_searchable_list = ('firstname', 'lastname',
-                              'emails', 'gender', 'date_of_birth')
+                              'emails.email', 'gender', 'date_of_birth')
 
     column_sortable_list = ('firstname', 'lastname', 'gender', 'date_of_birth')
     column_details_list = (

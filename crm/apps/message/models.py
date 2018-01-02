@@ -1,6 +1,6 @@
 from enum import Enum
 from crm.db import db, BaseModel
-
+from sqlalchemy_utils import generic_relationship
 
 class MessageState(Enum):
     TOSEND = 'TOSEND'
@@ -107,11 +107,23 @@ class Message(db.Model, BaseModel):
         db.ForeignKey('messages.id')
     )
 
+    author_original_type = db.Column(
+        db.Unicode(255)
+    )
+
+    author_original_id = db.Column(
+        db.Integer,
+    )
+
+    author_original = generic_relationship(
+        author_original_type,
+        author_original_id
+    )
+
     @property
     def parent(self):
         if self.parent_id:
             return self.__class__.query.filter_by(id=self.parent_id).first()
-
 
     replies = db.relationship(
         "Message",

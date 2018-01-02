@@ -3,6 +3,8 @@ from re import match
 from inbox import Inbox
 import logging
 
+from crm.apps.company.models import Company
+from crm.apps.organization.models import Organization
 from crm.settings import ATTACHMENTS_DIR, STATIC_URL_PATH, SENDGRID_API_KEY, SUPPORT_EMAIL
 from crm.mailer import sendemail, parse_email_body
 from crm.db import RootModel, db
@@ -19,6 +21,27 @@ PATTERN_SUPPORT_EMAIL = r'support@(?P<domain>.+)'
 
 inbox = Inbox()
 
+
+def get_sender(email):
+    user = User.query.filter(User.emails.contains(email)).first()
+
+    if user:
+        return user
+
+    company = Company.query.filter(Company.emails.contains(email)).first()
+
+    if company:
+        return company
+
+    organization = Organization.query.filter(Organization.emails.contains(email)).first()
+
+    if organization:
+        return organization
+
+    contact = Contact.query.filter(Contact.emails.contains(email)).first()
+
+    if contact:
+        return contact
 
 
 @inbox.collate
@@ -76,11 +99,10 @@ def handle_mail(to, sender, subject, body):
                 obj = cls.query.filter(cls.id == objid).first()
                 if obj:
 
-                    sender = User.query.filter(User.emails.contains(sender)).first()
 
                     body, attachments = parse_email_body(body)
                     # body, attachments [hashedfilename, hashedfilpath, hashedfileurl, originalfilename, binarycontent, type]
-                    msgobj = Message(title=subject, content=body, author_original_id=sender.id)
+                    msgobj = Message(title=subject, content=body, author_original=get_sender(sender))
 
                     for attachment in attachments:
                         if not os.path.exists(attachment.hashedfilepath):

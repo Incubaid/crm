@@ -142,7 +142,7 @@ class ParentModel(AdminLinksMixin):
         Uodate author_original
         Update author_last
         """
-
+        from crm.apps.user.models import User
         from flask import session
         cur_user = session.get('user') or {} if session else {}
 
@@ -154,10 +154,16 @@ class ParentModel(AdminLinksMixin):
             # Author like in case of adding a new message from a command line, where no
             # Http context and thus no HTTP context and no way to get author
             if not self.author_original_id:
-                self.author_original_id = cur_user.get('id')
+                if self.__class__.__name__ == 'Message':
+                    self.author_original = User.query.filter_by(id=cur_user.get('id')).first()
+                else:
+                    self.author_original_id = cur_user.get('id')
         else:
             if not self.author_last_id:
-                self.author_last_id = cur_user.get('id')
+                if self.__class__.__name__ == 'Message':
+                    self.author_last = User.query.filter_by(id=cur_user.get('id')).first()
+                else:
+                    self.author_last_id = cur_user.get('id')
 
     @classmethod
     def encode_graphene_id(cls, id):
