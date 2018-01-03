@@ -172,7 +172,7 @@ class Message(db.Model, BaseModel):
         if not obj:
             return []
 
-        return list(set([d.strip().strip(',') for d in obj.notification_emails.split(',') if d]))
+        return list(set(obj.notification_emails))
 
     def __str__(self):
         return self.title

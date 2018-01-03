@@ -150,7 +150,7 @@ class User(db.Model, BaseModel, RootModel):
         :return: list of all emails to send notifications to
         :rtype: list
         """
-        return self.emails or ''
+        return [e.email for e in self.emails]
 
     def __str__(self):
         return self.username or '%s %s'.strip() % (self.firstname or '', self.lastname or '') or self.emails[0].email

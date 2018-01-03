@@ -82,31 +82,31 @@ class Project(db.Model, BaseModel, RootModel):
         :return: list of all emails to send notifications to
         :rtype: list
         """
-        emails = ''
+        emails = []
 
         if self.promoter:
             if self.promoter.notification_emails:
-                emails += self.promoter.notification_emails + ','
+                emails.extend(self.promoter.notification_emails)
 
         if self.guardian:
             if self.guardian.notification_emails:
-                emails += self.guardian.notification_emails + ','
+                emails.extend(self.guardian.notification_emails)
 
         if self.contacts:
             for contact in self.contacts:
                 if contact.notification_emails:
-                    emails += contact.notification_emails + ','
+                    emails.extend(contact.notification_emails)
 
         if self.tasks:
             for task in self.tasks:
                 if task.notification_emails:
-                    emails += task.notification_emails + ','
+                    emails.extend(task.notification_emails)
 
         elif self.sprint:
             if self.sprint.notification_emails:
-                emails += self.sprint.notification_emails + ','
+                emails.extend(self.sprint.notification_emails)
 
-        return emails
+        return list(set(emails))
 
     @property
     def percentage_done(self):

@@ -71,23 +71,23 @@ class Sprint(db.Model, BaseModel, RootModel):
         :return: list of all emails to send notifications to
         :rtype: list
         """
-        emails = ''
+        emails = []
 
         if self.contacts:
             for contact in self.contacts:
                 if contact.notification_emails:
-                    emails += contact.notification_emails + ','
+                    emails.extend(contact.notification_emails)
 
         if self.owner:
             if self.owner.notification_emails:
-                emails + self.owner.notification_emails + ','
+                emails.extend(self.owner.notification_emails)
 
         if self.tasks:
             for task in self.tasks:
                 if task.notification_emails:
-                    emails += task.notification_emails + ','
+                    emails.extend(task.notification_emails)
 
-        return emails
+        return list(set(emails))
 
     @property
     def percentage_done(self):

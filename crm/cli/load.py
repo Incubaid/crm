@@ -1,5 +1,5 @@
 from crm import app
-from crm.apps.contact.models import SubgroupName, Subgroup
+from crm.apps.contact.models import SubgroupName, Subgroup, ActivityType, Activity
 from crm.apps.currency.models import Currency
 from crm.db import db
 from crm.apps.country.countries import CountriesEnum
@@ -26,10 +26,18 @@ def load():
         s = Subgroup(groupname=subgroup)
         db.session.add(s)
 
+    for activity in ActivityType:
+        a = Activity.query.filter_by(type=activity).first()
+        if a is not None:
+            continue
+        a = Activity(type=activity)
+        db.session.add(a)
+
     for currency in ['USD', 'EUR', 'AED', 'GBP', 'BTC']:
         c = Currency.query.filter_by(name=currency).first()
         if c is not None:
             continue
         c = Currency(name=currency)
         db.session.add(c)
+
     db.session.commit()

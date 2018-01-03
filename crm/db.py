@@ -425,7 +425,7 @@ class ParentModel(AdminLinksMixin):
 
         MUST BE OVERRIDDEN FOR MODELS YOU WANT TO SEND MESSAGES
         """
-        return ''
+        return []
 
 
 class BaseModel(ParentModel):

@@ -155,7 +155,7 @@ class Deal(db.Model, BaseModel, RootModel):
             return self.contact.notification_emails
         elif self.company:
             return self.company.notification_emails
-        return ''
+        return []
 
     @property
     def value_usd(self):
