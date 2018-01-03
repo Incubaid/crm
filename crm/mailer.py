@@ -10,6 +10,8 @@ from pyblake2 import blake2b
 import sendgrid
 from sendgrid.helpers.mail import Email, Content, Mail, Attachment as SendGridAttachment
 from crm.settings import ATTACHMENTS_DIR, STATIC_URL_PATH, SENDGRID_API_KEY, SUPPORT_EMAIL
+from flask_misaka import markdown
+
 
 Attachment = namedtuple(
     'Attachment', [
@@ -72,7 +74,8 @@ def parse_email_body(body):
         if part_content_type == "text/plain":
             body += part_body
 
-        elif part_content_type == "application/octet-stream":
+        # part_content_type = "application/octet-stream" or application/json or whatever file
+        elif part_filename is not None:
             bhash = blake2b()
             part_binary_content = part.get_payload(decode=True)
             bhash.update(part_binary_content)
@@ -104,7 +107,7 @@ def parse_email_body(body):
     return body, attachments
 
 
-def sendemail(to=None, from_=None, subject=None, body=None, attachments=None):
+def sendemail(to=None, from_=None, subject=None, body=None, attachments=None, reply_to=None):
     """
     Send email
 
@@ -124,14 +127,21 @@ def sendemail(to=None, from_=None, subject=None, body=None, attachments=None):
         subject = "User not recognized"
 
     if not body:
-        body = "Please email support at support@localhost"
+        body = "Please email support at %s" % SUPPORT_EMAIL
 
     to = list(set(to))  # no duplicates.
     sg = sendgrid.SendGridAPIClient(apikey=SENDGRID_API_KEY)
     from_email = Email(from_ or SUPPORT_EMAIL)
+
+    if reply_to is not None:
+        from_email = Email(reply_to)
+
     to_email = Email(to[0])
-    content = Content("text/plain", body)
+    content = Content("text/html", markdown(body))
+
     mail = Mail(from_email, subject, to_email, content)
+    if reply_to is not None:
+        mail.reply_to = Email(reply_to)
 
     if len(to) > 1:
         for receiver in to[1:]:
@@ -140,9 +150,9 @@ def sendemail(to=None, from_=None, subject=None, body=None, attachments=None):
     for attachment in attachments:
         mail.add_attachment(build_attachment(attachment))
     try:
+        print('Now trying to send an email')
         response = sg.client.mail.send.post(request_body=mail.get())
-        print("Email sent..")
-        print(response.status_code, response.body)
+        print("Email sent.. %s" % response.status_code)
         return response.status_code, response.body
     except Exception as e:
         print(e)

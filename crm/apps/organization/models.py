@@ -19,10 +19,10 @@ class Organization(db.Model, BaseModel, RootModel):
         index=True
     )
 
-    # Comma  separated emails
-    emails = db.Column(
-        db.Text(),
-        index=True
+    emails = db.relationship(
+        'Email',
+        backref='organization',
+        primaryjoin="Organization.id==Email.organization_id"
     )
 
     tasks = db.relationship(
@@ -62,16 +62,13 @@ class Organization(db.Model, BaseModel, RootModel):
         db.ForeignKey("organizations.id")
     )
 
-    def notify(self, msgobj, attachments=[]):
-        emails = []
-        if self.emails:
-            emails.extend(self.emails.split(","))
-        for obj in [self.users]:
-            if obj is not None:
-                emails.extend(obj.emails.split(","))
-        if emails:
-            sendemail(to=emails, subject=msgobj.title,
-                      body=msgobj.content, attachments=attachments)
+    @property
+    def notification_emails(self):
+        """
+        :return: list of all emails to send notifications to
+        :rtype: list
+        """
+        return self.emails or ''
 
     def __str__(self):
         return self.name

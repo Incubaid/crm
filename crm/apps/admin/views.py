@@ -29,6 +29,8 @@ from wtforms.widgets import HTMLString
 from crm.apps.address.models import Address as AddressModel
 from crm.apps.passport.models import Passport as PassportModel
 from crm.apps.link.models import Link as LinkModel
+from crm.apps.email.models import Email as EmailModel
+from crm.apps.phone.models import Phone as PhoneModel
 from crm.db import db
 from crm.settings import IMAGES_DIR
 from .converters import CustomAdminConverter
@@ -109,6 +111,7 @@ class EnhancedModelView(ModelView):
         'ownsSprints': 'Owns sprints',
         'promoterProjects': 'Promotes projects',
         'guardianProjects': 'Guards projects',
+        'notification_emails': 'Destination'
     }
 
     def get_filter_arg_helper(self, filter_name, filter_op='equals'):
@@ -303,12 +306,12 @@ class EnhancedModelView(ModelView):
 
 class UserModelView(EnhancedModelView):
     column_list = ('firstname', 'lastname', 'username', 'emails',
-                   'telephones', *EnhancedModelView.columns_list_extra)
+                   'telephones', 'last_login', *EnhancedModelView.columns_list_extra)
 
     column_details_list = (
         'firstname', 'lastname', 'username', 'emails', 'telephones', 'description', 'message_channels',
         'ownsContacts', 'ownsTasks', 'tasks', 'ownsAsBackupContacts', 'ownsCompanies', 'ownsAsBackupCompanies',
-        'ownsOrganizations', 'ownsSprints', 'promoterProjects', 'guardianProjects', 'comments', 'messages', 'links', 'author_last', 'author_original', 'updated_at')
+        'ownsOrganizations', 'ownsSprints', 'promoterProjects', 'guardianProjects', 'comments', 'messages', 'links', 'author_last', 'author_original', 'updated_at', 'last_login')
 
     column_filters = ('firstname', 'lastname',
                       'username', 'ownsTasks',)
@@ -327,10 +330,12 @@ class UserModelView(EnhancedModelView):
         (MessageModel, {'form_columns': [
             'id', 'title', 'content', 'channel']}),
         (CommentModel, {'form_columns': ['id', 'content']}),
+        (EmailModel, {'form_columns': ['id', 'email']}),
+        (PhoneModel, {'form_columns': ['id', 'telephone']}),
         (LinkModel, {'form_columns': [
             'id', 'url', ]}),
     ]
-    mainfilter = "Users / Id"
+    # mainfilter = "Users / Id"
 
 
 class ImageModelView(EnhancedModelView):
@@ -415,7 +420,7 @@ class ContactModelView(EnhancedModelView):
     column_list = ('firstname', 'lastname', 'emails',
                    'telephones', 'countries', 'short_description', 'gender', 'date_of_birth', *EnhancedModelView.columns_list_extra)
     column_searchable_list = ('firstname', 'lastname',
-                              'emails', 'gender', 'date_of_birth')
+                              'emails.email', 'gender', 'date_of_birth')
 
     column_sortable_list = ('firstname', 'lastname', 'gender', 'date_of_birth')
     column_details_list = (
@@ -673,7 +678,7 @@ class LinkModelView(EnhancedModelView):
     column_list = ('url', 'labels', *EnhancedModelView.columns_list_extra)
     column_searchable_list = ('id', 'url', 'labels')
     column_sortable_list = ('url',)
-    column_details_list = ('url', 'contact', 'user', 'company', 'organization', 'task', 'project',
+    column_details_list = ('filename', 'url', 'contact', 'user', 'company', 'organization', 'task', 'project',
                            'deal', 'sprint', 'labels', 'comments', 'author_last', 'author_original', 'updated_at')
 
     column_filters = ('url', 'contact', 'user', 'company', 'organization', 'task', 'project',
@@ -719,21 +724,33 @@ class TaskModelView(EnhancedModelView):
 
 
 class MessageModelView(EnhancedModelView):
-    column_list = ('author', 'title', 'short_content',
-                   'company', 'contact', 'deal', 'organizaton', 'task', 'project', 'sprint', 'author', 'time_tosend', 'time_sent', *EnhancedModelView.columns_list_extra)
+    column_list = ('author_original', 'title', 'short_content','user',
+                   'company', 'contact', 'deal', 'organizaton', 'task', 'project', 'sprint', 'author_last', 'time_sent', *EnhancedModelView.columns_list_extra)
     column_searchable_list = ('title', 'content')
-    column_sortable_list = ('title', 'author')
+    column_sortable_list = ('title', 'author_original', 'author_last', 'time_sent')
 
-    column_details_list = ('id', 'title', 'destination', 'author', 'content', 'company',
-                           'contact', 'links', 'organization', 'project', 'sprint', 'deal', 'task', 'time_tosend', 'time_sent',
-                           'author_last', 'author_original', 'updated_at')
+    column_details_list = ('id', 'state', 'created_at', 'updated_at', 'time_sent', 'title', 'notification_emails', 'author', 'content', 'company',
+                           'contact', 'links', 'organization', 'project', 'sprint', 'deal', 'task',
+                           'author_last', 'author_original', 'parent', 'replies')
 
-    form_rules = column_filters = ('title', 'content', 'channel', 'time_tosend', 'time_sent',
-                                   'company', 'contact', 'author', 'organization', 'project', 'sprint', 'deal', 'task', 'event')
+    form_rules = column_filters = ('title', 'content', 'forced_destinations', 'channel',
+                                   'company', 'user', 'contact', 'organization', 'project', 'sprint', 'deal', 'task', 'event')
 
-    form_edit_rules = ('title', 'author', 'content', 'channel',
-                       'time_tosend', 'time_sent',)
-
+    def on_form_prefill(self, form, id):
+        # disable all fields in edit
+        if form._obj:
+            form.title.render_kw = {'readonly': True}
+            form.channel.render_kw = {'readonly': True}
+            form.content.render_kw = {'readonly': True}
+            form.forced_destinations.render_kw = {'readonly': True}
+            form.company.render_kw = {'disabled': True}
+            form.organization.render_kw = {'disabled': True}
+            form.contact.render_kw = {'disabled': True}
+            form.project.render_kw = {'disabled': True}
+            form.sprint.render_kw = {'disabled': True}
+            form.deal.render_kw = {'disabled': True}
+            form.task.render_kw = {'disabled': True}
+            form.event.render_kw = {'disabled': True}
 
 class TaskAssignmentModelView(EnhancedModelView):
     column_list = ('percent_completed', 'contact',

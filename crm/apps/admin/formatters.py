@@ -97,14 +97,13 @@ def format_markdown(view, context, model, name):
         return markdown(value)
     return value
 
-
 def format_emails(view, context, model, name):
     value = getattr(model, name)
     if not value:
         return ''
     out = "<ul>"
-    for x in value.split(','):
-        out += '<li><a href="mailto:{email}">{email}</a></li>'.format(email=x)
+    for x in value:
+        out += '<li><a href="mailto:{email}">{email}</a></li>'.format(email=x.email)
     out += "</ul>"
     return Markup(out)
 
@@ -114,13 +113,13 @@ def format_telephones(view, context, model, name):
     if not value:
         return ''
     out = "<ul>"
-    for x in value.split(','):
-        out += '<li>{telephone}</li>'.format(telephone=x)
+    for x in value:
+        out += '<li><a href="tel:{telephone}">{telephone}</a></li>'.format(telephone=x.telephone)
     out += "</ul>"
     return Markup(out)
 
 
-def format_destination_emails(view, context, model, name):
+def format_notification_emails(view, context, model, name):
     value = getattr(model, name)
     formatted_values = [
         '<a href="mailto:{email}">{email}</a>'.format(email=item) for item in value]
@@ -156,16 +155,30 @@ def format_author(view, context, model, name):
     return value
 
 
+def format_time_sent(view, context, model, name):
+    value = getattr(model, name)
+    if not value:
+        return ''
+    return value.strftime('%H:%M:%S %p %Z').strip()
+
+def format_last_login(view, context, model, name):
+    from flask import session
+    return session['user']['last_login'].strftime('%Y-%b-%d %H:%M:%S %p %Z').strip()
+
+
 column_formatters = dict(
     list(zip(["users", "contacts", "companies", "organizations", "projects",  "deals", "sprints", 'events',
                                    "links", "messages", "ownsTasks", "ownsContacts", "ownsCompanies",
                                    "ownsOrganizations", "ownsSprints", "ownsAsBackupContacts", "ownsAsBackupCompanies"], cycle([format_instrumented_list]))),
-    telephones=format_telephones, website=format_url, destination=format_destination_emails,
+    telephones=format_telephones, website=format_url, destination=format_notification_emails,
     tasks=format_tasks,
     messages=format_messages, comments=format_comments, url=format_url, emails=format_emails,
     images=format_images, image=format_image,
     author_last=format_author,
     author_original=format_author,
+    replies=format_messages,
+    time_sent=format_time_sent,
+    last_login=format_last_login
 )
 
 column_formatters = {**column_formatters, **

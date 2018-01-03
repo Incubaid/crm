@@ -1,6 +1,5 @@
 from crm.db import db, BaseModel, RootModel, ManyToManyBaseModel
-from crm.mailer import sendemail
-
+from datetime import datetime
 
 class User(db.Model, BaseModel, RootModel):
 
@@ -34,16 +33,16 @@ class User(db.Model, BaseModel, RootModel):
         default=''
     )
 
-    # Comma  separated emails
-    emails = db.Column(
-        db.Text(),
-        index=True
+    emails = db.relationship(
+        'Email',
+        backref='user',
+        primaryjoin="User.id==Email.user_id"
     )
 
-    # Comma separated phones
-    telephones = db.Column(
-        db.Text(),
-        index=True
+    telephones = db.relationship(
+        'Phone',
+        backref='user',
+        primaryjoin="User.id==Phone.user_id"
     )
 
     # Tasks Linked to this user (may be someone is doing it for him) like
@@ -141,15 +140,21 @@ class User(db.Model, BaseModel, RootModel):
         primaryjoin="User.id==KnowledgeBase.author_id"
     )
 
-    def notify(self, msgobj=None, attachments=[]):
-        if self.emails:
-            emails = self.emails.split(",")
-            if emails:
-                sendemail(to=emails, subject=msgobj.title,
-                          body=msgobj.content, attachments=attachments)
+    last_login = db.Column(
+        db.TIMESTAMP,
+        default=datetime.utcnow,
+    )
+
+    @property
+    def notification_emails(self):
+        """
+        :return: list of all emails to send notifications to
+        :rtype: list
+        """
+        return self.emails or ''
 
     def __str__(self):
-        return self.username or '%s %s'.strip() % (self.firstname or '', self.lastname or '')
+        return self.username or '%s %s'.strip() % (self.firstname or '', self.lastname or '') or self.emails[0].email
 
     __repr__ = __str__
 

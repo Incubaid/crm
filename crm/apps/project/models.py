@@ -76,17 +76,37 @@ class Project(db.Model, BaseModel, RootModel):
         db.ForeignKey('users.id')
     )
 
-    def notify(self, msgobj, attachments=[]):
-        emails = []
-        for c in self.contacts:
-            emails.extend(c.emails.split(","))
-        if self.promoter and self.promoter.emails:
-            emails.extend(self.promoter.emails.split(","))
-        if self.guardian and self.guardian.emails:
-            emails.extend(self.guardian.emails.split(","))
-        if emails:
-            sendemail(to=emails, subject=msgobj.title,
-                      body=msgobj.content, attachments=attachments)
+    @property
+    def notification_emails(self):
+        """
+        :return: list of all emails to send notifications to
+        :rtype: list
+        """
+        emails = ''
+
+        if self.promoter:
+            if self.promoter.notification_emails:
+                emails += self.promoter.notification_emails + ','
+
+        if self.guardian:
+            if self.guardian.notification_emails:
+                emails += self.guardian.notification_emails + ','
+
+        if self.contacts:
+            for contact in self.contacts:
+                if contact.notification_emails:
+                    emails += contact.notification_emails + ','
+
+        if self.tasks:
+            for task in self.tasks:
+                if task.notification_emails:
+                    emails += task.notification_emails + ','
+
+        elif self.sprint:
+            if self.sprint.notification_emails:
+                emails += self.sprint.notification_emails + ','
+
+        return emails
 
     @property
     def percentage_done(self):
