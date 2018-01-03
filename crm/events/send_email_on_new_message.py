@@ -75,7 +75,6 @@ def receive_after_insert(mapper, connection, message):
         author_emails = message.author_original.emails.split(',')
         notification_emails = list(set(notification_emails) - set(author_emails))
 
-    print('******', message.id)
     if notification_emails:
         queue.enqueue(
             try_send,

@@ -113,8 +113,8 @@ def format_telephones(view, context, model, name):
     if not value:
         return ''
     out = "<ul>"
-    for x in value.split(','):
-        out += '<li>{telephone}</li>'.format(telephone=x)
+    for x in value:
+        out += '<li><a href="tel:{telephone}">{telephone}</a></li>'.format(telephone=x.telephone)
     out += "</ul>"
     return Markup(out)
 
@@ -161,6 +161,10 @@ def format_time_sent(view, context, model, name):
         return ''
     return value.strftime('%H:%M:%S %p %Z').strip()
 
+def format_last_login(view, context, model, name):
+    from flask import session
+    return session['user']['last_login'].strftime('%Y-%b-%d %H:%M:%S %p %Z').strip()
+
 
 column_formatters = dict(
     list(zip(["users", "contacts", "companies", "organizations", "projects",  "deals", "sprints", 'events',
@@ -173,7 +177,8 @@ column_formatters = dict(
     author_last=format_author,
     author_original=format_author,
     replies=format_messages,
-    time_sent=format_time_sent
+    time_sent=format_time_sent,
+    last_login=format_last_login
 )
 
 column_formatters = {**column_formatters, **

@@ -4,6 +4,7 @@ from inbox import Inbox
 import logging
 
 from crm.apps.company.models import Company
+from crm.apps.email.models import Email
 from crm.apps.organization.models import Organization
 from crm.settings import ATTACHMENTS_DIR, STATIC_URL_PATH, SENDGRID_API_KEY, SUPPORT_EMAIL
 from crm.mailer import sendemail, parse_email_body
@@ -23,25 +24,17 @@ inbox = Inbox()
 
 
 def get_sender(email):
-    user = User.query.filter(User.emails.contains(email)).first()
+    sender = Email.query.filter(email=email).first()
 
-    if user:
-        return user
+    if not sender:
+        return
 
-    company = Company.query.filter(Company.emails.contains(email)).first()
-
-    if company:
-        return company
-
-    organization = Organization.query.filter(Organization.emails.contains(email)).first()
-
-    if organization:
-        return organization
-
-    contact = Contact.query.filter(Contact.emails.contains(email)).first()
-
-    if contact:
-        return contact
+    if sender.user:
+        return sender.user
+    if sender.contact:
+        return sender.contact
+    if sender.company:
+        return sender.company
 
 
 @inbox.collate
@@ -63,15 +56,11 @@ def handle_mail(to, sender, subject, body):
     #     [c.emails for c in db.session.query(Contact).all()]
     # )
 
-    _users_emails = ",".join(
-        [u.emails for u in db.session.query(User).all()]
-    )
-
-    RECOGNIZED_SENDERS = _users_emails  #+ _contacts_emails
+    sender_obj = get_sender(sender)
 
     supported_models_to_send_to = RootModel.__subclasses__() + [Message]
 
-    if sender not in RECOGNIZED_SENDERS and SUPPORT_EMAIL not in to:
+    if sender_obj is None and SUPPORT_EMAIL not in to:
         print("CANT RECOGNIZE SENDER ", sender)
         sendemail(to=[sender], from_=SUPPORT_EMAIL)
     else:
@@ -102,7 +91,7 @@ def handle_mail(to, sender, subject, body):
 
                     body, attachments = parse_email_body(body)
                     # body, attachments [hashedfilename, hashedfilpath, hashedfileurl, originalfilename, binarycontent, type]
-                    msgobj = Message(title=subject, content=body, author_original=get_sender(sender))
+                    msgobj = Message(title=subject, content=body, author_original=sender_obj)
 
                     for attachment in attachments:
                         if not os.path.exists(attachment.hashedfilepath):

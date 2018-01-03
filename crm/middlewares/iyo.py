@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import jose
 import requests
 from flask import session, request
@@ -7,8 +9,14 @@ from jose.jwt import get_unverified_claims
 from werkzeug.exceptions import abort
 
 from crm import app
+from crm.apps.email.models import Email
+from crm.apps.phone.models import Phone
 from crm.apps.user.models import User
+from crm.apps.user.tasks import update_last_login_time
 from crm.db import db
+from crm.rq import queue
+
+s = requests.Session()
 
 
 @app.errorhandler(401)
@@ -26,11 +34,17 @@ def authenticate():
     Add user info to flask.g (global context)
     so that g.user always hold current logged in user
     """
-
     # Already authenticated
+
+    last_login = datetime.now()
+
+    # User is logged in already
     if 'user' in session:
+        session['user']['last_login'] = last_login
+        queue.enqueue(update_last_login_time, session['user']['id'], last_login)
         return
 
+    # User not logged in
     jwt = request.cookies.get('caddyoauth')
 
     if jwt is None:
@@ -47,17 +61,12 @@ def authenticate():
     globalid = claims.get("globalid", None)
 
     if globalid is not None:
-        orgid = claims
-
-        users = User.query.filter(
+        user = User.query.filter(
             User.username == globalid
-        )
+        ).first()
 
-        if users.count():
-            user = users[0]
-        else:
+        if not user:
             user = User(username=globalid)
-            db.session.add(user)
     else:
         username = claims.get("username", None)
 
@@ -68,7 +77,7 @@ def authenticate():
             username
         )
 
-        response = requests.get(
+        response = s.get(
             url,
             headers={
                 'Authorization': 'bearer {}'.format(jwt)
@@ -76,53 +85,59 @@ def authenticate():
         )
 
         info = response.json()
-        emails = info['emailaddresses']
-        email = emails[0]['emailaddress'] if emails else ''
-        phones = info['phonenumbers']
-        phone = phones[0]['phonenumber'] if phones else ''
+        emails = [record['emailaddress'] for record in info['emailaddresses']]
+        phones = [record['phonenumber'] for record in info['phonenumbers']]
 
-        if not email:
+        if not emails:
             abort(401, {'message': 'Missing Email addresses from <a href="https://itsyou.online/">IYO</a>'})
-        if not phone:
+        if not phones:
             abort(401, {'message': 'Missing Phone numbers from <a href="https://itsyou.online/">IYO</a>'})
 
-        users = User.query.filter(
-            (User.username == username) | (User.telephones.contains(
-                phone)) | (User.emails.contains(email))
-        )
+        user = User.query.filter(
+            User.telephones.any(Phone.telephone.in_(phones)) |\
+            (User.emails.any(Email.email.in_(emails))) |\
+            (User.username == username)
+        ).first()
 
-        if users.count():
-            user = users[0]
-            user.username = username
-            if user.emails is None:
-                user.emails = email
-            else:
-                emailslist = [x.strip() for x in user.emails.split(",")]
-                if email not in emailslist:
-                    emailslist.append(email)
-                    user.emails = ",".join(emailslist)
-            if user.telephones is None:
-                user.telephones = phone
-            else:
-                phoneslist = [x.strip() for x in user.telephones.split(",")]
-                if phone not in phoneslist:
-                    phoneslist.append(phone)
-                    user.telephones = ",".join(phoneslist)
+        email_objs = [Email(email=e) for e in emails]
+        telephone_objs = [Phone(telephone=p) for p in phones]
 
-        else:
+        # New user
+        if not user:
             user = User(
                 username=username,
                 firstname=info['firstname'],
                 lastname=info['lastname'],
-                emails=email,
-                telephones=phone
+                emails=email_objs,
+                telephones=telephone_objs
             )
-        db.session.add(user)
 
+        # User already in system, Update user info
+        elif user:
+            # update username
+            if username and user.username != username:
+                user.username = username
+
+            # update emails
+            new_emails = set(emails) - set([e.email for e in user.emails])
+            if new_emails:
+                user.emails.extend([Email(e) for e in new_emails])
+
+            # update phones
+            new_phones = set(phones) - set([p.telephone for p in user.telephones])
+            if new_phones:
+                user.telephones.extend([Phone(p) for p in new_phones])
+
+    user.last_login = last_login
+    db.session.add(user)
     db.session.commit()
 
-    session['user'] = {'username': user.username,
-                       'firstname': user.firstname,
-                       'lastname': user.lastname,
-                       'telephones': user.telephones,
-                       'emails': user.emails, 'id': user.id}
+    session['user'] = {
+        'username': user.username,
+        'firstname': user.firstname,
+        'lastname': user.lastname,
+        'telephones': [p.telephone for p in user.telephones],
+        'emails': [e.email for e in user.emails],
+        'id': user.id,
+        'last_login': last_login
+    }

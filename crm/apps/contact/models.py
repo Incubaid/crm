@@ -212,10 +212,10 @@ class Contact(db.Model, BaseModel, RootModel):
         primaryjoin="Contact.id==Email.contact_id"
     )
 
-    # Comma separated phones
-    telephones = db.Column(
-        db.Text(),
-        index=True
+    telephones = db.relationship(
+        'Phone',
+        backref='contact',
+        primaryjoin="Contact.id==Phone.contact_id"
     )
 
     tf_app = db.Column(

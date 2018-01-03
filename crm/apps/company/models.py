@@ -49,10 +49,10 @@ class Company(db.Model, BaseModel, RootModel):
         primaryjoin="Company.id==Email.company_id"
     )
 
-    # Comma separated phones
-    telephones = db.Column(
-        db.Text(),
-        index=True
+    telephones = db.relationship(
+        'Phone',
+        backref='company',
+        primaryjoin="Company.id==Phone.company_id"
     )
 
     deals = db.relationship(

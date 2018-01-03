@@ -29,6 +29,8 @@ from wtforms.widgets import HTMLString
 from crm.apps.address.models import Address as AddressModel
 from crm.apps.passport.models import Passport as PassportModel
 from crm.apps.link.models import Link as LinkModel
+from crm.apps.email.models import Email as EmailModel
+from crm.apps.phone.models import Phone as PhoneModel
 from crm.db import db
 from crm.settings import IMAGES_DIR
 from .converters import CustomAdminConverter
@@ -304,12 +306,12 @@ class EnhancedModelView(ModelView):
 
 class UserModelView(EnhancedModelView):
     column_list = ('firstname', 'lastname', 'username', 'emails',
-                   'telephones', *EnhancedModelView.columns_list_extra)
+                   'telephones', 'last_login', *EnhancedModelView.columns_list_extra)
 
     column_details_list = (
         'firstname', 'lastname', 'username', 'emails', 'telephones', 'description', 'message_channels',
         'ownsContacts', 'ownsTasks', 'tasks', 'ownsAsBackupContacts', 'ownsCompanies', 'ownsAsBackupCompanies',
-        'ownsOrganizations', 'ownsSprints', 'promoterProjects', 'guardianProjects', 'comments', 'messages', 'links', 'author_last', 'author_original', 'updated_at')
+        'ownsOrganizations', 'ownsSprints', 'promoterProjects', 'guardianProjects', 'comments', 'messages', 'links', 'author_last', 'author_original', 'updated_at', 'last_login')
 
     column_filters = ('firstname', 'lastname',
                       'username', 'ownsTasks',)
@@ -328,6 +330,8 @@ class UserModelView(EnhancedModelView):
         (MessageModel, {'form_columns': [
             'id', 'title', 'content', 'channel']}),
         (CommentModel, {'form_columns': ['id', 'content']}),
+        (EmailModel, {'form_columns': ['id', 'email']}),
+        (PhoneModel, {'form_columns': ['id', 'telephone']}),
         (LinkModel, {'form_columns': [
             'id', 'url', ]}),
     ]
