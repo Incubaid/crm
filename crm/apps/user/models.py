@@ -142,7 +142,6 @@ class User(db.Model, BaseModel, RootModel):
 
     last_login = db.Column(
         db.TIMESTAMP,
-        default=datetime.utcnow,
     )
 
     @property
