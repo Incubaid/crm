@@ -50,7 +50,10 @@ def upgrade():
     temp_deal_states.drop(op.get_bind(), checkfirst=False)
 
     # update Old PENDING states to (SIGNED)
-    op.get_bind().execute("update deals set deal_state='SIGNED' where id in (%s)" % ', '.join(["'%s'" % d for d in deals_with_pending_states]))
+    ids = ["'%s'" % d for d in deals_with_pending_states]
+    if ids:
+        op.get_bind().execute("update deals set deal_state='SIGNED' where id in (%s)" % ', '.join(ids))
+
 
 def downgrade():
     pass
