@@ -54,6 +54,7 @@ python-http-client==3.0.0
 python-jose==1.4.0
 redis==2.10.6
 requests==2.18.4
+rq==0.9.2
 sendgrid==5.3.0
 simplegeneric==0.8.1
 singledispatch==3.4.0.3
