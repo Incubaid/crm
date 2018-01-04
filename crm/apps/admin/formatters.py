@@ -162,8 +162,10 @@ def format_time_sent(view, context, model, name):
     return value.strftime('%H:%M:%S %p %Z').strip()
 
 def format_last_login(view, context, model, name):
-    from flask import session
-    return session['user']['last_login'].strftime('%Y-%b-%d %H:%M:%S %p %Z').strip()
+    value = getattr(model, name)
+    if not value:
+        return ''
+    return value.strftime('%Y-%b-%d %H:%M:%S %p %Z').strip()
 
 
 column_formatters = dict(

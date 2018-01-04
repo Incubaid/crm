@@ -246,7 +246,7 @@ class Contact(db.Model, BaseModel, RootModel):
         :return: list of all emails to send notifications to
         :rtype: list
         """
-        return ','.join([e.email for e in self.emails]) or ''
+        return [e.email for e in self.emails]
 
     @property
     def address(self):

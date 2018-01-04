@@ -179,41 +179,41 @@ class Task(db.Model, BaseModel):
         :return: list of all emails to send notifications to
         :rtype: list
         """
-        emails = ''
+        emails = []
 
         if self.assignee:
             if self.assignee.notification_emails:
-                emails += self.assignee.notification_emails + ','
+                emails.extend(self.assignee.notification_emails)
 
         if self.contact:
             if self.contact.notification_emails:
-                emails += self.contact.notification_emails + ','
+                emails.extend(self.contact.notification_emails)
 
         elif self.user:
             if self.user.notification_emails:
-                emails += self.user.notification_emails + ','
+                emails.extend(self.user.notification_emails)
 
         elif self.deal:
             if self.deal.notification_emails:
-                emails += self.deal.notification_emails + ','
+                emails.extend(self.deal.notification_emails)
 
         elif self.company:
             if self.company.notification_emails:
-                emails += self.company.notification_emails + ','
+                emails.extend(self.company.notification_emails)
 
         elif self.organization:
             if self.organization.notification_emails:
-                emails += self.organization.notification_emails + ','
+                emails.extend(self.organization.notification_emails)
 
         elif self.event:
             if self.event.notification_emails:
-                emails += self.event.notification_emails + ','
+                emails.extend(self.event.notification_emails)
 
         elif self.sprint:
             if self.sprint.notification_emails:
-                emails += self.sprint.notification_emails + ','
+                emails.extend(self.sprint.notification_emails)
 
-        return emails
+        return list(set(emails))
 
     def __str__(self):
         return self.title

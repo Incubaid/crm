@@ -1,3 +1,8 @@
+import random
+import string
+
+import datetime
+
 from crm.apps.comment.models import Comment
 from crm.apps.company.models import Company
 from crm.apps.contact.models import Contact, Gender, SubgroupName, Subgroup, ActivityType, Activity
@@ -5,9 +10,11 @@ from crm.apps.country.countries import CountriesEnum
 from crm.apps.country.models import Country
 from crm.apps.currency.models import Currency
 from crm.apps.deal.models import Deal
+from crm.apps.email.models import Email
 from crm.apps.event.models import Event
 from crm.apps.message.models import Message
 from crm.apps.organization.models import Organization
+from crm.apps.phone.models import Phone
 from crm.apps.project.models import Project
 from crm.apps.sprint.models import Sprint
 from crm.apps.task.models import Task
@@ -20,20 +27,37 @@ from random import choice
 from crm.apps.link.models import Link
 from crm.db import db
 
+LEN_UIDS = 8000
+
 fake = Faker()
 
 
 def generate_fixtures():
+    uids = set()
+
+    while len(uids) != LEN_UIDS:
+        uid = ''.join(random.sample(string.ascii_lowercase + string.digits, 5))
+        uids.add(uid)
+
+    print('Generating %s unique ids .. Consider increasing this number if you get pop() from empty set error' % str(LEN_UIDS))
+
 
     def newemails():
-        return ','.join([fake.email(), fake.email()])
+        return [
+            Email(id=uids.pop(), email=fake.email()),
+            Email(id=uids.pop(), email=fake.email())
+        ]
 
     def newphones():
-        return ','.join([fake.phone_number(), fake.phone_number()])
+        return [
+            Phone(id=uids.pop(), telephone=fake.phone_number()),
+            Phone(id=uids.pop(), telephone=fake.phone_number())
+        ]
+
 
     def newlink():
         labels = "critical, minor, urgent, fixed, inprogress"
-        l = Link(url=fake.url(), labels=labels)
+        l = Link(id=uids.pop(), url=fake.url(), labels=labels)
         l.comments = [newcomment() for i in range(2)]
         db.session.add(l)
 
@@ -45,16 +69,19 @@ def generate_fixtures():
 
         if country:
             return country
-        country = Country(name=name)
+        country = Country(id=uids.pop(), name=name)
         db.session.add(country)
         return country
 
     def newpassport():
 
-        passport = Passport(passport_fullname="{} {}".format(fake.first_name(), fake.last_name()),
-                            passport_number="{}{}".format(
-                                fake.numerify(), fake.numerify()),
-                            country=newcountry())
+        passport = Passport(
+            passport_fullname="{} {}".format(fake.first_name(), fake.last_name()),
+            passport_number="{}{}".format(fake.numerify(), fake.numerify()),
+            country=newcountry(),
+            id = uids.pop()
+        )
+
         db.session.add(passport)
         return passport
 
@@ -62,7 +89,12 @@ def generate_fixtures():
         firstname = fake.first_name()
         lastname = fake.last_name()
 
-        u = Contact(firstname=firstname, lastname=lastname)
+        u = Contact(
+            id=uids.pop(),
+            firstname=firstname,
+            lastname=lastname
+        )
+
         u.subgroups = [newsubgroup(), newsubgroup()]
         u.activities = [newactivity(), newactivity()]
         u.telephones = newphones()
@@ -82,7 +114,13 @@ def generate_fixtures():
     def newuser():
         firstname = fake.first_name()
         lastname = fake.last_name()
-        u = User(firstname=firstname, lastname=lastname)
+        u = User(
+            firstname=firstname,
+            lastname=lastname,
+            id=uids.pop(),
+            last_login=datetime.datetime.now()
+        )
+
         u.description = fake.paragraph()
         u.telephones = newphones()
         u.emails = newemails()
@@ -98,8 +136,12 @@ def generate_fixtures():
     def newcompany():
         companyname = fake.company()
         description = fake.catch_phrase()
-        company = Company(name=companyname,
-                          description=description)
+        company = Company(
+            name=companyname,
+            description=description,
+            id=uids.pop(),
+        )
+
         company.contacts = [newcontact() for i in range(2)]
         company.telephones = newphones()
         company.emails = newemails()
@@ -116,8 +158,11 @@ def generate_fixtures():
         orgname = fake.company() + "org"
         description = fake.catch_phrase()
 
-        org = Organization(name=orgname,
-                           description=description)
+        org = Organization(
+            name=orgname,
+            description=description,
+            id = uids.pop(),
+        )
 
         org.promotor = newuser()
         org.guardian = newuser()
@@ -134,7 +179,11 @@ def generate_fixtures():
     def newproj():
         projname = fake.name() + "proj"
         projdesc = fake.paragraph()
-        proj = Project(name=projname, description=projdesc)
+        proj = Project(
+            name=projname,
+            description=projdesc,
+            id = uids.pop(),
+        )
         proj.comments = [newcomment() for i in range(3)]
         proj.promotor = newuser()
         proj.guardian = newuser()
@@ -149,7 +198,13 @@ def generate_fixtures():
     def newsprint():
         sprintname = fake.name() + "sprint"
         sprintdesc = fake.paragraph()
-        sprint = Sprint(name=sprintname, description=sprintdesc)
+
+        sprint = Sprint(
+            name=sprintname,
+            description=sprintdesc,
+            id=uids.pop(),
+        )
+
         sprint.users = [newuser() for i in range(2)]
         sprint.contacts = [newcontact() for i in range(2)]
         sprint.org = neworg()
@@ -168,7 +223,12 @@ def generate_fixtures():
         dealname = fake.name() + "deal"
         dealvalue = 3000
 
-        deal = Deal(name=dealname, value=dealvalue)
+        deal = Deal(
+            id=uids.pop(),
+            name=dealname,
+            value=dealvalue
+        )
+
         deal.currency = newcurrency()
         deal.comments = [newcomment() for i in range(3)]
         deal.tasks = [newtask() for i in range(3)]
@@ -180,24 +240,38 @@ def generate_fixtures():
         return deal
 
     def newcomment():
-        com = Comment(content=fake.paragraph())
+        com = Comment(
+            content=fake.paragraph(),
+            id = uids.pop(),
+        )
         db.session.add(com)
         return com
 
     def newtask():
-        t = Task(title=fake.sentence(3) + "task", description=fake.paragraph())
+        t = Task(
+            title=fake.sentence(3) + "task",
+            description=fake.paragraph(),
+            id = uids.pop(),
+        )
         t.comments = [newcomment() for i in range(3)]
         db.session.add(t)
         return t
 
     def newmsg():
-        m = Message(title=fake.sentence(3), content=fake.paragraph())
+        m = Message(
+            title=fake.sentence(3),
+            content=fake.paragraph(),
+            id = uids.pop(),
+        )
         db.session.add(m)
         return m
 
     def newevent():
-        e = Event(title=fake.sentence(3) + " event",
-                  description=fake.paragraph())
+        e = Event(
+            title=fake.sentence(3) + " event",
+            description=fake.paragraph(),
+            id = uids.pop(),
+        )
         e.contacts = [newcontact(), newcontact()]
         e.tasks = [newtask(), newtask()]
         db.session.add(e)
@@ -208,7 +282,7 @@ def generate_fixtures():
         c = Currency.query.filter_by(name=name).first()
         if c:
             return c
-        c = Currency(name=name)
+        c = Currency(id=uids.pop(), name=name)
         db.session.add(c)
         return c
 
@@ -217,7 +291,7 @@ def generate_fixtures():
         s = Subgroup.query.filter_by(groupname=name).first()
         if s:
             return s
-        s = Subgroup(groupname=name)
+        s = Subgroup(id=uids.pop(), groupname=name)
         db.session.add(s)
         return s
 
@@ -226,10 +300,9 @@ def generate_fixtures():
         a = Activity.query.filter_by(type=type).first()
         if a:
             return a
-        a = Activity(type=type)
+        a = Activity(type=type, id=uids.pop(), )
         db.session.add(a)
         return a
-
 
     for i in range(3):
         newuser()

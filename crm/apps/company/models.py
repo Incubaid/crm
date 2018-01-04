@@ -107,7 +107,7 @@ class Company(db.Model, BaseModel, RootModel):
         :return: list of all emails to send notifications to
         :rtype: list
         """
-        return self.emails or ''
+        return [e.email for e in self.emails]
 
     def __str__(self):
         return self.name
