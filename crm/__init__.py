@@ -288,7 +288,7 @@ app.graphql_schema = crm.graphql_schema
 
 db.app = app
 db.init_app(app)
-
+db.session.autocommit = True
 migrate = Migrate(app, db)
 
 manager = Manager(app)

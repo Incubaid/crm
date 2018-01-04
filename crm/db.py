@@ -15,7 +15,6 @@ from sqlalchemy.sql.sqltypes import TIMESTAMP
 from crm.apps.admin.mixins import AdminLinksMixin
 
 db = SQLAlchemy()
-db.session.autocommit = True
 
 
 class RootModel(object):
