@@ -10,7 +10,7 @@ from sqlalchemy import and_
 from sqlalchemy import inspect
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm.collections import InstrumentedList
-from sqlalchemy.sql.sqltypes import TIMESTAMP
+from sqlalchemy.sql.sqltypes import TIMESTAMP, Date
 
 from crm.apps.admin.mixins import AdminLinksMixin
 
@@ -388,7 +388,7 @@ class ParentModel(AdminLinksMixin):
                 # we want to deserialize some objects that was serialized into dictionaries
                 # using as_dict()
                 prop = getattr(all_models[model_name], field).property
-                if hasattr(prop, 'columns') and isinstance(prop.columns[0].type, TIMESTAMP):
+                if hasattr(prop, 'columns') and (isinstance(prop.columns[0].type, TIMESTAMP) or isinstance(prop.columns[0].type, Date)):
                     if value:
                         if isinstance(value, (datetime, date)):
                             setattr(model, field, value)
