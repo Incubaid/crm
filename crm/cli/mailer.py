@@ -24,7 +24,7 @@ inbox = Inbox()
 
 
 def get_sender(email):
-    sender = Email.query.filter(email=email).first()
+    sender = Email.query.filter_by(email=email).first()
 
     if not sender:
         return

@@ -459,6 +459,8 @@ class ContactModelView(EnhancedModelView):
         (DealModel, {'form_columns': [
             'id', 'name', 'value', 'currency', 'deal_type', 'description']}),
         (CommentModel, {'form_columns': ['id', 'content']}),
+        (EmailModel, {'form_columns': ['id', 'email']}),
+        (PhoneModel, {'form_columns': ['id', 'telephone']}),
         (LinkModel, {'form_columns': [
             'id', 'url', ]}), ]
 
