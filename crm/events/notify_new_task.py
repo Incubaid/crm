@@ -23,7 +23,7 @@ def receive_after_insert(mapper, connection, task):
             content='Title: {}<br>Description:{}<br/><br/>Task Link: <a clicktracking=off href={}>{}</a>'.format(task.title, task.description, url_root  + task.admin_view_link(), task),
             user=task.assignee,
             task=task,
-            forced_destinations=task.assignee.emails
+            forced_destinations=','.join([e.email for e in task.assignee.emails])
         )
 
         message_tbl = Message.__table__
@@ -56,7 +56,7 @@ def receive_after_update(mapper, connection, task):
             content='Title: {}<br>Description:{}<br/><br/>Task Link: <a clicktracking=off href={}>{}</a>'.format(task.title, task.description, url_root  + task.admin_view_link(), task),
             user=task.assignee,
             task=task,
-            forced_destinations=task.assignee.emails
+            forced_destinations=','.join([e.email for e in task.assignee.emails])
         )
 
         message_tbl = Message.__table__
