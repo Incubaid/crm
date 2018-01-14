@@ -1,5 +1,5 @@
 import graphene
-from graphene import relay
+from graphene import relay, ObjectType
 from graphene_sqlalchemy.types import SQLAlchemyObjectType
 
 from crm.apps.deal.models import Deal
@@ -16,3 +16,11 @@ class DealType(SQLAlchemyObjectType):
         model = Deal
         interfaces = (relay.Node,)
         name = model.__name__
+
+
+class DealStatsType(ObjectType):
+    total = graphene.Float()
+
+    class Meta:
+        interfaces = (relay.Node,)
+        name = 'dealStats'

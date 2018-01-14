@@ -158,8 +158,12 @@ class Deal(db.Model, BaseModel, RootModel):
         return []
 
     @property
+    def to_usd(self):
+        return round(Decimal(self.value) * Decimal(self.currency.value_usd), 2) if self.value else Decimal(0.0)
+
+    @property
     def value_usd(self):
-        return '%s' % str(round(Decimal(self.value) * Decimal(self.currency.value_usd), 2)) if self.value else 0.0
+        return '%s' % str(self.to_usd)
 
     def __str__(self):
         return self.name

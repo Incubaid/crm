@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Reporting APP</title>
+  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/apollo-client-browser@1.9.0"></script>
+<script src="https://unpkg.com/vue-apollo@2.1.0-beta.19"></script>
+</head>
+<body>
+  <!-- App -->
+<div id="app">
+  <h1>CRM Reports</h1>
+  <div>
+    <div v-if="loading" class="loading">Loading...</div>
+    <article v-for="dealsStats">
+      <div class="total"> <b>Deals Total ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.total ]]</div>
+    </article>
+  </div>
+</div>
+
+  <script>
+    console.clear()
+
+const apolloClient = new Apollo.lib.ApolloClient({
+  networkInterface: Apollo.lib.createNetworkInterface({
+    uri: '/graphql',
+    transportBatching: true,
+  }),
+  connectToDevTools: true,
+})
+
+const apolloProvider = new VueApollo.ApolloProvider({
+  defaultClient: apolloClient,
+})
+
+const POSTS_QUERY = Apollo.gql`
+{
+    dealsStats{
+      total
+    }
+}
+`
+
+// New VueJS instance
+const app = new Vue({
+  // CSS selector of the root DOM element
+  el: '#app',
+  delimiters : ['[[', ']]'],
+  data: {
+  	dealsStats: {},
+    loading: 0,
+  },
+  // Apollo GraphQL
+  apolloProvider,
+  apollo: {
+    dealsStats: {
+    	query: POSTS_QUERY,
+      loadingKey: 'loading',
+    },
+  },
+})
+  </script>
+</body>
+</html>

@@ -457,7 +457,7 @@ class ContactModelView(EnhancedModelView):
         (MessageModel, {'form_columns': [
             'id', 'title', 'content', 'channel']}),
         (DealModel, {'form_columns': [
-            'id', 'name', 'value', 'currency', 'deal_type', 'description']}),
+            'id', 'name', 'value', 'currency', 'deal_type', 'deal_state', 'description']}),
         (CommentModel, {'form_columns': ['id', 'content']}),
         (EmailModel, {'form_columns': ['id', 'email']}),
         (PhoneModel, {'form_columns': ['id', 'telephone']}),
@@ -565,7 +565,7 @@ class DealModelView(EnhancedModelView):
                    'deal_type', 'deal_state', *EnhancedModelView.columns_list_extra)
 
     column_searchable_list = (
-        'id', 'name', 'value', 'currency.name', 'deal_type', 'deal_state',)
+        'id', 'name', 'value', 'currency.name', 'deal_type', 'deal_state', 'contact.firstname', 'contact.lastname')
 
     column_sortable_list = ('name', 'value', 'currency.name',
                             'deal_type', 'deal_state', 'updated_at')
