@@ -2,9 +2,13 @@
 <html>
 <head>
   <title>Reporting APP</title>
-  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 <script src="https://unpkg.com/apollo-client-browser@1.9.0"></script>
 <script src="https://unpkg.com/vue-apollo@2.1.0-beta.19"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+  <script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.min.js"></script>
+
+
 </head>
 <body>
   <!-- App -->
@@ -12,11 +16,29 @@
   <h1>CRM Reports</h1>
   <div>
     <div v-if="loading" class="loading">Loading...</div>
-    <article v-for="dealsStats">
+    <suma v="dealsStats">
       <div class="total"> <b>Deals Total ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.total ]]</div>
-    </article>
+      <div class="ambassador"> <b>Ambassadors ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.ambassador ]]</div>
+      <div class="new"> <b>Leads ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.new ]]</div>
+      <div class="interested"> <b>Interested ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.interested ]]</div>
+      <div class="confirmed"> <b>Confirmed ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.confirmed ]]</div>
+      <div class="created"> <b>Created ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.created ]]</div>
+      <div class="signed"> <b>Signed ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.signed ]]</div>
+      <div class="paid"> <b>Paid($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.paid ]]</div>
+      <div class="closed"> <b>Closed($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.closed ]]</div>
+      <div class="hoster"> <b>Hoster($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.hoster ]]</div>
+      <div class="ito"> <b>ITO ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.ito ]]</div>
+      <div class="pto"> <b>PTO ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.pto ]]</div>
+      <div class="prepto"> <b>Pre-PTO ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.itft ]]</div>
+      <div class="itft"> <b>ITFT ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.prepto ]]</div>
+      <div class="lost"> <b>Lost ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.lost ]]</div>
+    </suma>
+
+
+    <bar-chart></bar-chart>
   </div>
 </div>
+
 
   <script>
     console.clear()
@@ -37,6 +59,20 @@ const POSTS_QUERY = Apollo.gql`
 {
     dealsStats{
       total
+      ambassador
+      new
+      interested
+      confirmed
+      created
+      signed
+      paid
+      closed
+      hoster
+      ito
+      pto
+      itft
+      prepto
+      lost
     }
 }
 `
@@ -59,6 +95,56 @@ const app = new Vue({
     },
   },
 })
+
+
+Vue.component('bar-chart', {
+  extends: VueChartJs.Bar,
+  mounted () {
+    this.renderChart({
+      labels: ['Ambassadors',
+               'New',
+               'Interested',
+                'Confirmed',
+                'Created',
+                'Signed',
+                'Paid',
+                'Closed',
+                'Hoster',
+                'ITO',
+                'PTO',
+                'PRE-PTO',
+                'ITFT',
+                'Lost'
+               ],
+
+      datasets: [
+        {
+          label: 'Deals Stats',
+          backgroundColor: '#f87979',
+          data: [
+            app.dealsStats.ambassador,
+            app.dealsStats.new,
+            app.dealsStats.interested,
+            app.dealsStats.confirmed,
+            app.dealsStats.created,
+            app.dealsStats.signed,
+            app.dealsStats.paid,
+            app.dealsStats.closed,
+            app.dealsStats.hoster,
+            app.dealsStats.ito,
+            app.dealsStats.pto,
+            app.dealsStats.itft,
+            app.dealsStats.prepto,
+            app.dealsStats.lost,
+          ]
+        }
+      ]
+    }, {responsive: true, maintainAspectRatio: false})
+  }
+
+})
+
+
   </script>
 </body>
 </html>

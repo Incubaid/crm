@@ -20,6 +20,20 @@ class DealType(SQLAlchemyObjectType):
 
 class DealStatsType(ObjectType):
     total = graphene.Float()
+    ambassador = graphene.Float()
+    new = graphene.Float()
+    interested = graphene.Float()
+    confirmed = graphene.Float()
+    created = graphene.Float()
+    signed = graphene.Float()
+    paid = graphene.Float()
+    closed = graphene.Float()
+    hoster = graphene.Float()
+    ito = graphene.Float()
+    pto = graphene.Float()
+    itft = graphene.Float()
+    prepto = graphene.Float()
+    lost = graphene.Float()
 
     class Meta:
         interfaces = (relay.Node,)

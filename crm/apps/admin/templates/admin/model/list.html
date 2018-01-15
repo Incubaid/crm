@@ -78,7 +78,7 @@
                     {% endif %}
                     {% block list_row_actions_header %}
                         {% if admin_view.column_display_actions %}
-                        <th class="col-md-1">&nbsp;</th>
+                        <th class="col-md-1">&nbsp;View&nbsp;&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;&nbsp;&nbsp;Delete</th>
                         {% endif %}
                     {% endblock %}
                     {% for c, name in list_columns %}
@@ -124,7 +124,7 @@
                     <td class="list-buttons-column">
                         {% block list_row_actions scoped %}
                           {% for action in list_row_actions %}
-                          {{ action.render_ctx(get_pk_value(row), row) }}
+                          {{ action.render_ctx(get_pk_value(row), row) }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                           {% endfor %}
                         {% endblock %}
                     </td>
