@@ -161,6 +161,11 @@ def format_time_sent(view, context, model, name):
         return ''
     return value.strftime('%H:%M:%S %p %Z').strip()
 
+
+format_start = format_datetime
+format_end=  format_datetime
+
+
 def format_last_login(view, context, model, name):
     value = getattr(model, name)
     if not value:
@@ -180,7 +185,9 @@ column_formatters = dict(
     author_original=format_author,
     replies=format_messages,
     time_sent=format_time_sent,
-    last_login=format_last_login
+    last_login=format_last_login,
+    start=format_start,
+    end=format_end,
 )
 
 column_formatters = {**column_formatters, **

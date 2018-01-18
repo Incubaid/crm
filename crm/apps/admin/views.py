@@ -846,3 +846,15 @@ class KnowledgeBaseCategoryModelView(EnhancedModelView):
     form_rules = ('name', 'description',
                   'knowledge_bases')
 
+
+class FundRoundModelView(EnhancedModelView):
+    column_list = ('title', 'start', 'end', *EnhancedModelView.columns_list_extra)
+    column_searchable_list = ('title',)
+    column_sortable_list = ('title', 'start', 'end')
+
+    column_details_list = ('title', 'start', 'end', 'deals',
+                           'author_last', 'author_original', 'updated_at')
+
+    column_filters = ('title', 'start', 'end')
+
+    form_rules = ('title', 'start', 'end')
