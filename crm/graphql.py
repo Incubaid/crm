@@ -1,4 +1,6 @@
 import graphene
+from graphene import AbstractType
+from graphene_sqlalchemy import SQLAlchemyObjectType
 from graphene_sqlalchemy.fields import SQLAlchemyConnectionField
 
 from sqlalchemy import and_, or_
@@ -24,7 +26,7 @@ class CRMConnectionField(SQLAlchemyConnectionField):
         output like:
         {
             'firstname': 'null',
-            'tasks.name': 'task' 
+            'tasks.name': 'task'
         }
 
         :param prefix: when parsing a dict field we pass the parent field name i.e 'tasks'
@@ -49,14 +51,14 @@ class CRMConnectionField(SQLAlchemyConnectionField):
 
         query_str examples:
 
-        'or(ali,toto)' 
-        'and(contains(ali), ~alii)' 
+        'or(ali,toto)'
+        'and(contains(ali), ~alii)'
         'contains(ali)'
         'like(ali%)'
         'sss'
         '~sss'
-        'null' 
-        '~null' 
+        'null'
+        '~null'
         'in(ali, 'soso')'
         '~in(ali, 'soso')'
         '>=(1999-02-02)'
@@ -64,11 +66,11 @@ class CRMConnectionField(SQLAlchemyConnectionField):
             '[4, 10] => >= 4, & <= 10 inclusive
             ']4, 10[' => >4 & < 10
             '[4, 10[ => >=4 & <10'
-            ']4, 10]' => > 4 & < 10 
+            ']4, 10]' => > 4 & < 10
 
 
         :param model_cls: Model class
-        :param query: 
+        :param query:
         :type query: str
         :return: SqlAlchemy query
         :rtype: flask_sqlalchemy.BaseQuery
@@ -222,3 +224,9 @@ class BaseArgument(object):
 
             d[attr] = v
         return d
+
+
+class CrmType(AbstractType):
+    uid = graphene.String()
+    author_original = graphene.Field('crm.apps.user.graphql.types.UserType')
+    author_last = graphene.Field('crm.apps.user.graphql.types.UserType')

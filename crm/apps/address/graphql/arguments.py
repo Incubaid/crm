@@ -2,9 +2,10 @@ import graphene
 from graphene.types.inputobjecttype import InputObjectType
 
 from crm.apps.country.graphql.arguments import CountryArguments
+from crm.graphql import BaseArgument
 
 
-class AddressArguments(InputObjectType):
+class AddressArguments(InputObjectType, BaseArgument):
     """
     Address Arguments
     """

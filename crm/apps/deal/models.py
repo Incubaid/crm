@@ -2,7 +2,6 @@ from enum import Enum
 from decimal import Decimal
 
 from crm.db import db, BaseModel, RootModel
-from crm.mailer import sendemail
 
 
 class DealState(Enum):

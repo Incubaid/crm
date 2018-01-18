@@ -21,22 +21,9 @@ def api():
                 # BAD REQUEST ON ERRORS
                 return jsonify(errors=[str(e) for e in execresult.errors]), 400
             result = list(execresult.data.items())[0][1]
-
-            if result and 'edges' in result:
-                edges = result.get('edges')
-                page_info = result.get('pageInfo')
-
-                result = {'items': []}
-
-                if page_info:
-                    result['page_info'] = page_info
-
-                for item in edges:
-                    node = item.get('node')
-                    if item.get('cursor'):
-                        node['cursor'] = item.get('cursor')
-                    result['items'].append(node)
-            return jsonify(result), 200 if result is not None else 404
+            if result is None:
+                return '', 404
+            return jsonify(execresult.data), 200
 
         except Exception as ex:
             return jsonify(errors=[str(ex)]), 400

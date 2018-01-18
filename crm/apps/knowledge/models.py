@@ -36,6 +36,9 @@ class KnowledgeBase(db.Model, BaseModel):
         backref="knowledge_base"
     )
 
+    def __str__(self):
+        return self.title
+
 
 class KnowledgeBaseCategory(db.Model, BaseModel):
 
@@ -55,3 +58,6 @@ class KnowledgeBaseCategory(db.Model, BaseModel):
         "KnowledgeBase",
         backref="category"
     )
+
+    def __str__(self):
+        return self.name

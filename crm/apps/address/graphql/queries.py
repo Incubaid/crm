@@ -1,12 +1,15 @@
-import graphene
+from graphene import relay
 
+from crm.apps.address.graphql.arguments import AddressArguments
 from crm.apps.address.graphql.types import AddressType
-from crm.graphql import BaseQuery
+from crm.graphql import BaseQuery, CRMConnectionField
 
 
 class AddressQuery(BaseQuery):
-    addresses = graphene.List(AddressType)
+    addresses = CRMConnectionField(
+        AddressType,
+        **AddressArguments.fields()
+    )
 
-    def resolve_links(self, args, context, info):
-        query = AddressType.get_query(context)
-        return query.all()
+    class Meta:
+        interfaces = (relay.Node,)
