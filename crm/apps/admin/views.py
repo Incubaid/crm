@@ -568,7 +568,7 @@ class DealModelView(EnhancedModelView):
     column_searchable_list = (
         'id', 'name', 'value', 'currency.name', 'deal_type', 'deal_state', 'contact.firstname', 'contact.lastname')
 
-    column_sortable_list = ('name', 'value', 'currency.name',
+    column_sortable_list = ('name', 'value', 'currency.name', 'sponsor', 'author_last',
                             'deal_type', 'deal_state', 'updated_at')
     column_details_list = ('id', 'name', 'description', 'currency', 'value', 'value_usd', 'deal_type', 'deal_state', 'shipping_address', 'is_paid',
                            'contact', 'referrer1', 'referrer2', 'company', 'closed_at', 'referral_code', 'tasks', 'messages', 'links', 'comments', 'author_last', 'author_original', 'updated_at')
