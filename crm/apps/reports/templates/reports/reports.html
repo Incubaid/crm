@@ -1,40 +1,25 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Reporting APP</title>
-  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-<script src="https://unpkg.com/apollo-client-browser@1.9.0"></script>
-<script src="https://unpkg.com/vue-apollo@2.1.0-beta.19"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+
+{% block head %}
+   <title>Reporting APP</title>
+   <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script src="https://unpkg.com/apollo-client-browser@1.9.0"></script>
+  <script src="https://unpkg.com/vue-apollo@2.1.0-beta.19"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
   <script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.min.js"></script>
+{% endblock %}
+
+{%  block body %}
 
 
-</head>
-<body>
+
+
   <!-- App -->
 <div id="app">
-  <h1>CRM Reports</h1>
+  <h1 align="center">Deals Reports</h1>
   <div>
     <div v-if="loading" class="loading">Loading...</div>
-    <suma v="dealsStats">
-      <div class="total"> <b>Deals Total ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.total ]]</div>
-      <div class="ambassador"> <b>Ambassadors ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.ambassador ]]</div>
-      <div class="new"> <b>Leads ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.new ]]</div>
-      <div class="interested"> <b>Interested ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.interested ]]</div>
-      <div class="confirmed"> <b>Confirmed ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.confirmed ]]</div>
-      <div class="created"> <b>Created ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.created ]]</div>
-      <div class="signed"> <b>Signed ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.signed ]]</div>
-      <div class="paid"> <b>Paid($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.paid ]]</div>
-      <div class="closed"> <b>Closed($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.closed ]]</div>
-      <div class="hoster"> <b>Hoster($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.hoster ]]</div>
-      <div class="ito"> <b>ITO ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.ito ]]</div>
-      <div class="pto"> <b>PTO ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.pto ]]</div>
-      <div class="prepto"> <b>Pre-PTO ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.itft ]]</div>
-      <div class="itft"> <b>ITFT ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.prepto ]]</div>
-      <div class="lost"> <b>Lost ($)</b> &nbsp;&nbsp;&nbsp;  [[ dealsStats.lost ]]</div>
-    </suma>
-
-
     <bar-chart></bar-chart>
   </div>
 </div>
@@ -57,23 +42,49 @@ const apolloProvider = new VueApollo.ApolloProvider({
 
 const POSTS_QUERY = Apollo.gql`
 {
-    dealsStats{
-      total
-      ambassador
-      new
-      interested
-      confirmed
-      created
-      signed
-      paid
-      closed
-      hoster
-      ito
-      pto
-      itft
-      prepto
-      lost
-    }
+     dealsStats{
+  currentRound{
+    total
+    ambassador
+    new
+    interested
+    confirmed
+    created
+    signed
+    paid
+    closed
+    hoster
+    ito
+    pto
+    itft
+    prepto
+    lost
+    start
+    end
+    target
+  },
+
+  oldRounds{
+    total
+    ambassador
+    new
+    interested
+    confirmed
+    created
+    signed
+    paid
+    closed
+    hoster
+    ito
+    pto
+    itft
+    prepto
+    lost
+    start
+    end
+    target
+  }
+}
 }
 `
 
@@ -117,34 +128,35 @@ Vue.component('bar-chart', {
                 'Lost'
                ],
 
-      datasets: [
-        {
-          label: 'Deals Stats',
+      datasets: [{
+          label: 'Current Round (' + '$ ' + app.dealsStats.currentRound.target + ')',
           backgroundColor: '#f87979',
           data: [
-            app.dealsStats.ambassador,
-            app.dealsStats.new,
-            app.dealsStats.interested,
-            app.dealsStats.confirmed,
-            app.dealsStats.created,
-            app.dealsStats.signed,
-            app.dealsStats.paid,
-            app.dealsStats.closed,
-            app.dealsStats.hoster,
-            app.dealsStats.ito,
-            app.dealsStats.pto,
-            app.dealsStats.itft,
-            app.dealsStats.prepto,
-            app.dealsStats.lost,
+            app.dealsStats.currentRound.ambassador,
+            app.dealsStats.currentRound.new,
+            app.dealsStats.currentRound.interested,
+            app.dealsStats.currentRound.confirmed,
+            app.dealsStats.currentRound.created,
+            app.dealsStats.currentRound.signed,
+            app.dealsStats.currentRound.paid,
+            app.dealsStats.currentRound.closed,
+            app.dealsStats.currentRound.hoster,
+            app.dealsStats.currentRound.ito,
+            app.dealsStats.currentRound.pto,
+            app.dealsStats.currentRound.itft,
+            app.dealsStats.currentRound.prepto,
+            app.dealsStats.currentRound.lost,
           ]
-        }
-      ]
+        }]
     }, {responsive: true, maintainAspectRatio: false})
+
+
   }
 
 })
 
 
+
+
   </script>
-</body>
-</html>
+{% endblock %}

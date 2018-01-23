@@ -112,7 +112,8 @@ class EnhancedModelView(ModelView):
         'ownsSprints': 'Owns sprints',
         'promoterProjects': 'Promotes projects',
         'guardianProjects': 'Guards projects',
-        'notification_emails': 'Destination'
+        'notification_emails': 'Destination',
+        'sponsor': 'Sponsor/Owner'
     }
 
     def get_filter_arg_helper(self, filter_name, filter_op='equals'):
@@ -562,8 +563,7 @@ class CurrencyModelView(EnhancedModelView):
 
 class DealModelView(EnhancedModelView):
 
-    column_list = ('name', 'currency.name', 'value', 'value_usd',
-                   'deal_type', 'deal_state', *EnhancedModelView.columns_list_extra)
+    column_list = ('name', 'currency.name', 'value', 'value_usd','deal_type', 'deal_state', 'sponsor' ,*EnhancedModelView.columns_list_extra)
 
     column_searchable_list = (
         'id', 'name', 'value', 'currency.name', 'deal_type', 'deal_state', 'contact.firstname', 'contact.lastname')
@@ -797,6 +797,7 @@ class EventModelView(EnhancedModelView):
 
     mainfilter = "Events / Id"
 
+
 # class AlertModelView(EnhancedModelView):
 #     pass
 #
@@ -848,13 +849,13 @@ class KnowledgeBaseCategoryModelView(EnhancedModelView):
 
 
 class FundRoundModelView(EnhancedModelView):
-    column_list = ('title', 'start', 'end', *EnhancedModelView.columns_list_extra)
+    column_list = ('title', 'start', 'end', 'target', *EnhancedModelView.columns_list_extra)
     column_searchable_list = ('title',)
-    column_sortable_list = ('title', 'start', 'end')
+    column_sortable_list = ('title', 'start', 'end', 'target')
 
-    column_details_list = ('title', 'start', 'end', 'deals',
+    column_details_list = ('title', 'start', 'end', 'target', 'deals',
                            'author_last', 'author_original', 'updated_at')
 
-    column_filters = ('title', 'start', 'end')
+    column_filters = ('title', 'start', 'end', 'target')
 
-    form_rules = ('title', 'start', 'end')
+    form_rules = ('title', 'start', 'end', 'target')

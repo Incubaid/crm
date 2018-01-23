@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy_utils import InstrumentedList
 
 from crm.apps.deal.models import Deal
@@ -35,6 +37,16 @@ class FundRound(db.Model, BaseModel, RootModel):
 
     def __str__(self):
         return self.title
+
+    @staticmethod
+    def current_round():
+        now = datetime.now()
+        return FundRound.query.filter(FundRound.end >= now.date()).order_by(FundRound.start.asc()).first()
+
+    @staticmethod
+    def old_rounds():
+        now = datetime.now()
+        return FundRound.query.filter(FundRound.end < now).all()
 
     @property
     def deals(self):
