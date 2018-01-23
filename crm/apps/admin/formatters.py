@@ -172,6 +172,11 @@ def format_last_login(view, context, model, name):
         return ''
     return value.strftime('%Y-%b-%d %H:%M:%S %p %Z').strip()
 
+def format_user(view, context, model, name):
+    value = getattr(model, name)
+    if not value:
+        return ''
+    return Markup('<a href="/user/details/?id={id}">{username}</a>'.format(id=value.id, username=value.username))
 
 column_formatters = dict(
     list(zip(["users", "contacts", "companies", "organizations", "projects",  "deals", "sprints", 'events',
@@ -181,13 +186,14 @@ column_formatters = dict(
     tasks=format_tasks,
     messages=format_messages, comments=format_comments, url=format_url, emails=format_emails,
     images=format_images, image=format_image,
-    author_last=format_author,
+    author_last=format_user,
     author_original=format_author,
     replies=format_messages,
     time_sent=format_time_sent,
     last_login=format_last_login,
     start=format_start,
     end=format_end,
+    sponsor=format_user,
 )
 
 column_formatters = {**column_formatters, **
