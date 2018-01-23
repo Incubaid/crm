@@ -1,6 +1,6 @@
 import graphene
-from graphene.types.inputobjecttype import InputObjectType
 
+from graphene.types.inputobjecttype import InputObjectType
 from crm.apps.address.graphql.arguments import AddressArguments
 from crm.apps.comment.graphql.arguments import CommentArguments
 from crm.apps.contact.models import Gender
@@ -20,10 +20,10 @@ class ContactArguments(InputObjectType, BaseArgument):
     uid = graphene.String()
     firstname = graphene.String()
     lastname = graphene.String()
-    gender = graphene.Enum.from_enum(Gender)()
     description = graphene.String()
     bio = graphene.String()
     belief_statement = graphene.String()
+    gender = graphene.Enum.from_enum(Gender)()
     message_channels = graphene.String()
     owner = graphene.Argument('crm.apps.user.graphql.arguments.UserArguments')
     ownerbackup = graphene.Argument('crm.apps.user.graphql.arguments.UserArguments')

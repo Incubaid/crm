@@ -2,14 +2,14 @@
 
 - Our end point where Graphql API is exposed is ```/api```
 - We have the following constraints on users who can access CRM graphql API on production
-    - API users Must be users of ```threefold.crm_users``` organization on [IYO](https://itsyou.online) or users of sub organizations of  ```threefold.crm_users```
+    - API users Must be users of this organization ```threefold.crm_users``` or its sub organizations on [IYO](https://itsyou.online)
 
 - ```/api``` expects the following headers:
     - ```Content-Type:Application/json```
     - ```Authorization: bearer {your-jwt-token}``` replace ```your-jwt-token``` with your actual token
 
 - If you want to use the API directly **without bothering about authentication** nor [IYO](https://itsyou.online) during Development mode or testing
-    - *Disable the ```authenticate``` middleware or comment it out totally in the module ```middlewares.py```*
+    - *Disable the ```iyo``` middleware* by setting this environment variable before running application `export EXCLUDED_MIDDLEWARES=iyo`
     - *Don't send Authentication headers in your requests*
 
 - **How to get a JWT token from [IYO](https://itsyou.online) manually**
@@ -64,9 +64,9 @@
             jwt = response.content.decode()
             ```
 - **How to get a JWT token from [IYO](https://itsyou.online) using [Jumpscale framework](https://github.com/Jumpscale/bash)**
-```python3
-j.clients.openvcloud.getJWTTokenFromItsYouOnline(applicationId, secret, validity=3600)
-```
+    ```python3
+    j.clients.openvcloud.getJWTTokenFromItsYouOnline(applicationId, secret, validity=3600)
+    ```
 
 
 # Using the HTTP client
@@ -74,250 +74,71 @@ j.clients.openvcloud.getJWTTokenFromItsYouOnline(applicationId, secret, validity
 
 ### Python
 
-- **Example on a mutation (Adding contacts)**
+- **Examples**
     - Example on errors
         ```python
-        import requests
-
-        create_contact_mutation = """
-            mutation{
-                     createContacts(records: [{first_name: "john", emails:"a@s.com", telephones: "01228934568"}, {firstname: "peter", emails:"b2e@.com", telephones: "01228934562"}]){
-                         ok
-                         ids
-                     }
-         }
-         """
-        payload = {'query':create_contact_mutation}
-        headers = {'Content-Type':'application/json', 'Authorization': 'bearer your-jwt-token'} # replace 'your-jwt-token' with actual token
-        data = requests.post('http://127.0.0.1:5000/api', json=payload, headers=headers)
-
-        data.ok # False
-
-        data.json()
-
-        # Result looks like
-        {'errors': ['Argument "records" has invalid value [{first_name: "john", emails: "a@s.com", telephones: "01228934568"}, {firstname: "peter", emails: "b2e@.com", telephones: "01228934562"}].\nIn element #0: In field "first_name": Unknown field.\nIn element #0: In field "firstname": Expected "String!", found null.']}
-        ```
-    - Example on success
-        ```python
-
-        import requests
-
-        create_contact_mutation = """
-            mutation{
-                     createContacts(records: [{firstname: "john", emails:"a@s.com", telephones: "01228934568"}, {firstname: "peter", emails:"b2e@.com", telephones: "01228934562"}]){
-                         ok
-                         ids
-                     }
-            }
-            """
-
-        payload = {'query':create_contact_mutation}
-        headers = {'Content-Type':'application/json', 'Authorization': 'bearer your-jwt-token'} # replace 'your-jwt-token' with actual token
-        data = requests.post('http://127.0.0.1:5000/api', json=payload, headers=headers)
-
-        data.ok # True
-        data.json()
-
-        {'ids': ['isudb', 'g3nkl'], 'ok': True}
-
-        ```
-
-- **Example on a mutation (Updating contacts)**
-
-        ```python
-
-        import requests
-
-        create_contact_mutation = """
-            mutation{
-                     updateContacts(records: [{uid: "isudb", firstname: "BigJohn"}, {uid: "g3nkl", firstname: "BigPeter"}]){
-                         ok
-                         ids
-                     }
-            }
-            """
-
-        payload = {'query':create_contact_mutation}
-        headers = {'Content-Type':'application/json', 'Authorization': 'bearer your-jwt-token'} # replace 'your-jwt-token' with actual token
-        data = requests.post('http://127.0.0.1:5000/api', json=payload, headers=headers)
-
-        data.ok # True
-        data.json()
-
-        {'ids': ['isudb', 'g3nkl'], 'ok': True}
-        ```
-
-- **Example on a mutation (Deleting contacts)**
-
-        ```python
-
-        import requests
-
-        create_contact_mutation = """
-            mutation{
-                     deleteContacts(uids: ["isudb", "g3nkl"]){
-                         ok
-                     }
-            }
-            """
-
-        payload = {'query':create_contact_mutation}
-        headers = {'Content-Type':'application/json', 'Authorization': 'bearer your-jwt-token'} # replace 'your-jwt-token' with actual token
-        data = requests.post('http://127.0.0.1:5000/api', json=payload, headers=headers)
-
-        data.ok # True
-        data.json()
-
-        {'ok': True}
-        ```
-
-
-- **Examples on a queries**
-
-     ```python
-        import requests
-
-        query = """
-            {
-                contacts(first: 3){
-                    edges{
-                        nodes{
-                            firstname
-                            lastname
-                            uid
-                        }
-                    }
-                 }
-            }"""
-
-
-        payload = {'query':query}
-        headers = {'Content-Type':'application/json', 'Authorization': 'bearer your-jwt-token'} # replace 'your-jwt-token' with actual token
-        data = requests.post('http://127.0.0.1:5000/api', json=payload, headers=headers)
-
-        data.ok # True
-        data.json()
-
-        {
-        'items': [
-                    {'firstname': 'fathy', 'lastname': '', 'uid': 'qkted'},
-                    {'firstname': 'fathy3', 'lastname': '', 'uid': '0urxf'},
-                    {'firstname': 'fathy4', 'lastname': '', 'uid': '3yfbt'}
-
-                 ]
-         }
-     ```
-
-
-     ```python
-        import requests
-
-        query = """
-            {
-                contacts{
+            q = """
+                {
+                  countries(name:Belgium){
                     edges{
                       node{
-                        firstname
-                        lastname
-                        uid
+                        invalidField
                       }
-                     cursor
                     }
-                     pageInfo{
-                         hasNextPage
-                         hasPreviousPage
-                         startCursor
-                         endCursor
-                     }
                   }
                 }
-        """
+            """
 
-        payload = {'query':query}
-        headers = {'Content-Type':'application/json', 'Authorization': 'bearer your-jwt-token'} # replace 'your-jwt-token' with actual token
-        data = requests.post('http://127.0.0.1:5000/api', json=payload, headers=headers)
+            import requests
+            payload = {'query':q}
+            headers = {'Content-Type':'application/json', 'Authorization': 'bearer your-jwt-token'} # replace 'your-jwt-token' with actual token
+            data = requests.post('http://127.0.0.1:5000/api', json=payload, headers=headers)
+            data.ok #False
+            data.json()
+            {'errors': ['Cannot query field "invalidField" on type "Country".']}
+        ```
+    - Examples on success
+        ```
+            q = """
+                {
+                    country(uid: "g9w57"){
+                        authorOriginal{
+                            username
+                        }
+                        name
+                    }
+                }
+            """
 
-        data.ok # True
-        data.json()
+            import requests
+            payload = {'query':q}
+            headers = {'Content-Type':'application/json', 'Authorization': 'bearer your-jwt-token'} # replace 'your-jwt-token' with actual token
+            data = requests.post('http://127.0.0.1:5000/api', json=payload, headers=headers)
+            data.json()
+            {'country': {'authorOriginal': None, 'name': 'Saudi Arabia'}}
+        ```
 
-        {
-            'items': [
-                    {
-                        'cursor': 'YXJyYXljb25uZWN0aW9uOjA=',
-                        'firstname': 'fathy',
-                        'lastname': '',
-                        'uid': 'qkted'
-                    },
+        ```
+            q = """
+                {
+                  countries(name:Belgium){
+                    edges{
+                      node{
+                        name
+                      }
+                    }
+                  }
+                }
+            """
 
-                    {
-                        'cursor': 'YXJyYXljb25uZWN0aW9uOjE=',
-                        'firstname': 'fathy3',
-                        'lastname': '',
-                        'uid': '0urxf'
-                    },
-                    {
-                        'cursor': 'YXJyYXljb25uZWN0aW9uOjI=',
-                        'firstname': 'fathy4',
-                        'lastname': '',
-                        'uid': '3yfbt'
-                    },
-                    ....
-                    ....
-            ]
-
-            'page_info': {
-                'endCursor': 'YXJyYXljb25uZWN0aW9uOjE3',
-                'hasNextPage': False,
-                'hasPreviousPage': False,
-                'startCursor': 'YXJyYXljb25uZWN0aW9uOjA='
-             }
-         }
-
-     ```
-
-
-     ```python
-        import requests
-
-        query = """
-            {
-                contact(uid: "qkted"){
-                    firstname
-                    lastname
-                    uid
-                 }
-            }"""
+            import requests
+            payload = {'query':q}
+            headers = {'Content-Type':'application/json', 'Authorization': 'bearer your-jwt-token'} # replace 'your-jwt-token' with actual token
+            data = requests.post('http://127.0.0.1:5000/api', json=payload, headers=headers)
+            data.json()
+            {'countries': {'edges': [{'node': {'name': 'Belgium'}}]}}
+        ```
 
 
-        payload = {'query':query}
-        headers = {'Content-Type':'application/json', 'Authorization': 'bearer your-jwt-token'} # replace 'your-jwt-token' with actual token
-        data = requests.post('http://127.0.0.1:5000/api', json=payload, headers=headers)
-
-        data.ok # True
-        data.json()
-
-        {'firstname': 'fathy', 'lastname': '', 'uid': 'qkted'}
-     ```
-
-
-     ```python
-        import requests
-
-        query = """
-            {
-                contact(uid: "non-existent-uid"){
-                    firstname
-                    lastname
-                    uid
-                 }
-            }"""
-
-
-        payload = {'query':query}
-        headers = {'Content-Type':'application/json', 'Authorization': 'bearer your-jwt-token'} # replace 'your-jwt-token' with actual token
-        data = requests.post('http://127.0.0.1:5000/api', json=payload, headers=headers)
-
-        data.ok # False
-        data.status_code # 404
-     ```
+Everything Goes the same as if you're using `/graphql` endpoint
+Please refer to [CRM API General overview](GraphqlQueriesAndMutations.md)

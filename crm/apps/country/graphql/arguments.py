@@ -3,11 +3,12 @@ import graphene
 from graphene.types.inputobjecttype import InputObjectType
 
 from crm.apps.country.countries import countries
-from crm.apps.country.countries import CountriesEnum
+from crm.graphql import BaseArgument
 
-countries = enum.Enum('CountriesEnum', {k:k for k,v in countries.items()})
+countries = enum.Enum('CountriesEnum', {v.replace(' ', '').replace('-', '').replace(',', '').replace("'", '').replace('.', '').replace('(', '').replace(')',''):k for k,v in countries.items()})
 
-class CountryArguments(InputObjectType):
+
+class CountryArguments(InputObjectType, BaseArgument):
     """
     Country Arguments
     """

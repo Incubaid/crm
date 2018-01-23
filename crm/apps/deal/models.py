@@ -2,7 +2,6 @@ from enum import Enum
 from decimal import Decimal
 
 from crm.db import db, BaseModel, RootModel
-from crm.mailer import sendemail
 
 
 class DealState(Enum):
@@ -158,8 +157,16 @@ class Deal(db.Model, BaseModel, RootModel):
         return []
 
     @property
+    def to_usd(self):
+        return round(Decimal(self.value) * Decimal(self.currency.value_usd), 2) if self.value else Decimal(0.0)
+
+    @property
     def value_usd(self):
-        return '%s' % str(round(Decimal(self.value) * Decimal(self.currency.value_usd), 2)) if self.value else 0.0
+        return '%s' % str(self.to_usd)
+
+    @property
+    def sponsor(self):
+        return self.contact.owner if self.contact else None
 
     def __str__(self):
         return self.name

@@ -1,0 +1,162 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+
+{% block head %}
+   <title>Reporting APP</title>
+   <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script src="https://unpkg.com/apollo-client-browser@1.9.0"></script>
+  <script src="https://unpkg.com/vue-apollo@2.1.0-beta.19"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+  <script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.min.js"></script>
+{% endblock %}
+
+{%  block body %}
+
+
+
+
+  <!-- App -->
+<div id="app">
+  <h1 align="center">Deals Reports</h1>
+  <div>
+    <div v-if="loading" class="loading">Loading...</div>
+    <bar-chart></bar-chart>
+  </div>
+</div>
+
+
+  <script>
+    console.clear()
+
+const apolloClient = new Apollo.lib.ApolloClient({
+  networkInterface: Apollo.lib.createNetworkInterface({
+    uri: '/graphql',
+    transportBatching: true,
+  }),
+  connectToDevTools: true,
+})
+
+const apolloProvider = new VueApollo.ApolloProvider({
+  defaultClient: apolloClient,
+})
+
+const POSTS_QUERY = Apollo.gql`
+{
+     dealsStats{
+  currentRound{
+    total
+    ambassador
+    new
+    interested
+    confirmed
+    created
+    signed
+    paid
+    closed
+    hoster
+    ito
+    pto
+    itft
+    prepto
+    lost
+    start
+    end
+    target
+  },
+
+  oldRounds{
+    total
+    ambassador
+    new
+    interested
+    confirmed
+    created
+    signed
+    paid
+    closed
+    hoster
+    ito
+    pto
+    itft
+    prepto
+    lost
+    start
+    end
+    target
+  }
+}
+}
+`
+
+// New VueJS instance
+const app = new Vue({
+  // CSS selector of the root DOM element
+  el: '#app',
+  delimiters : ['[[', ']]'],
+  data: {
+  	dealsStats: {},
+    loading: 0,
+  },
+  // Apollo GraphQL
+  apolloProvider,
+  apollo: {
+    dealsStats: {
+    	query: POSTS_QUERY,
+      loadingKey: 'loading',
+    },
+  },
+})
+
+
+Vue.component('bar-chart', {
+  extends: VueChartJs.Bar,
+  mounted () {
+    this.renderChart({
+      labels: ['Ambassadors',
+               'New',
+               'Interested',
+                'Confirmed',
+                'Created',
+                'Signed',
+                'Paid',
+                'Closed',
+                'Hoster',
+                'ITO',
+                'PTO',
+                'PRE-PTO',
+                'ITFT',
+                'Lost'
+               ],
+
+      datasets: [{
+          label: 'Current Round (' + '$ ' + app.dealsStats.currentRound.target + ')',
+          backgroundColor: '#f87979',
+          data: [
+            app.dealsStats.currentRound.ambassador,
+            app.dealsStats.currentRound.new,
+            app.dealsStats.currentRound.interested,
+            app.dealsStats.currentRound.confirmed,
+            app.dealsStats.currentRound.created,
+            app.dealsStats.currentRound.signed,
+            app.dealsStats.currentRound.paid,
+            app.dealsStats.currentRound.closed,
+            app.dealsStats.currentRound.hoster,
+            app.dealsStats.currentRound.ito,
+            app.dealsStats.currentRound.pto,
+            app.dealsStats.currentRound.itft,
+            app.dealsStats.currentRound.prepto,
+            app.dealsStats.currentRound.lost,
+          ]
+        }]
+    }, {responsive: true, maintainAspectRatio: false})
+
+
+  }
+
+})
+
+
+
+
+  </script>
+{% endblock %}

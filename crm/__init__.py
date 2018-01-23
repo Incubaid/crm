@@ -8,6 +8,7 @@ import jinja2
 from flask import Flask
 from flask_admin import Admin
 from flask_admin.helpers import get_url
+from flask_admin.menu import MenuLink
 from flask_cache import Cache
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
@@ -186,6 +187,9 @@ class CRM(object):
                 viewcls = getattr(admin_views, viewname)
                 admin.add_view(
                     viewcls(all_models[extra_model], db.session, category="Extra"))
+
+        admin.add_link(MenuLink(name='reports', url='/reports', category="Extra"))
+        self._app.admin = admin
 
     @staticmethod
     def initialize_logger():

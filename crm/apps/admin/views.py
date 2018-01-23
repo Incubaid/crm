@@ -4,6 +4,7 @@ import uuid
 from crm.apps.comment.models import Comment as CommentModel
 from crm.apps.company.models import Company as CompanyModel
 from crm.apps.contact.models import Contact as ContactModel
+from crm.apps.knowledge.models import KnowledgeBaseCategory as KnowledgeBaseCategoryModel
 from crm.apps.deal.models import Deal as DealModel
 from crm.apps.event.models import Event as EventModel
 from crm.apps.image.models import Image as ImageModel
@@ -111,7 +112,8 @@ class EnhancedModelView(ModelView):
         'ownsSprints': 'Owns sprints',
         'promoterProjects': 'Promotes projects',
         'guardianProjects': 'Guards projects',
-        'notification_emails': 'Destination'
+        'notification_emails': 'Destination',
+        'sponsor': 'Sponsor/Owner'
     }
 
     def get_filter_arg_helper(self, filter_name, filter_op='equals'):
@@ -457,7 +459,7 @@ class ContactModelView(EnhancedModelView):
         (MessageModel, {'form_columns': [
             'id', 'title', 'content', 'channel']}),
         (DealModel, {'form_columns': [
-            'id', 'name', 'value', 'currency', 'deal_type', 'description']}),
+            'id', 'name', 'value', 'currency', 'deal_type', 'deal_state', 'description']}),
         (CommentModel, {'form_columns': ['id', 'content']}),
         (EmailModel, {'form_columns': ['id', 'email']}),
         (PhoneModel, {'form_columns': ['id', 'telephone']}),
@@ -561,13 +563,12 @@ class CurrencyModelView(EnhancedModelView):
 
 class DealModelView(EnhancedModelView):
 
-    column_list = ('name', 'currency.name', 'value', 'value_usd',
-                   'deal_type', 'deal_state', *EnhancedModelView.columns_list_extra)
+    column_list = ('name', 'currency.name', 'value', 'value_usd','deal_type', 'deal_state', 'sponsor' ,*EnhancedModelView.columns_list_extra)
 
     column_searchable_list = (
-        'id', 'name', 'value', 'currency.name', 'deal_type', 'deal_state',)
+        'id', 'name', 'value', 'currency.name', 'deal_type', 'deal_state', 'contact.firstname', 'contact.lastname')
 
-    column_sortable_list = ('name', 'value', 'currency.name',
+    column_sortable_list = ('name', 'value', 'currency.name', 'sponsor', 'author_last',
                             'deal_type', 'deal_state', 'updated_at')
     column_details_list = ('id', 'name', 'description', 'currency', 'value', 'value_usd', 'deal_type', 'deal_state', 'shipping_address', 'is_paid',
                            'contact', 'referrer1', 'referrer2', 'company', 'closed_at', 'referral_code', 'tasks', 'messages', 'links', 'comments', 'author_last', 'author_original', 'updated_at')
@@ -661,18 +662,18 @@ class SprintModelView(EnhancedModelView):
 class CommentModelView(EnhancedModelView):
     column_list = ('id', 'short_content', *
                    EnhancedModelView.columns_list_extra)
-    column_searchable_list = ('id', 'content')
+    column_searchable_list = ('id', 'content', 'knowledge_base.title')
     column_sortable_list = ('content',)
 
     column_details_list = ('id', 'content',
                            'company', 'contact', 'user', 'organization', 'project', 'sprint', 'task',
-                           'link', 'deal', 'author_last', 'author_original', 'updated_at')
+                           'link', 'deal', 'knowledge_base','author_last', 'author_original', 'updated_at')
     column_filters = ('id', 'content',
                       'company', 'contact', 'user', 'organization', 'project', 'sprint', 'task', 'event',
-                      'link', 'deal', )
+                      'link', 'deal', 'knowledge_base')
     form_rules = ('content', 'user',
                   'company', 'contact', 'organization', 'project', 'sprint', 'task',
-                  'link', 'deal',)
+                  'link', 'deal', 'knowledge_base')
     form_edit_rules = ('content',)
 
 
@@ -695,24 +696,24 @@ class LinkModelView(EnhancedModelView):
 
 class TaskModelView(EnhancedModelView):
     column_list = ('title', 'type', 'priority', 'state', 'assignee', 'user', 'contact',
-                   'organization', 'company', 'project', 'sprint', 'deal', *EnhancedModelView.columns_list_extra)
+                   'organization', 'company', 'project', 'sprint', 'deal', 'knowledge_base',*EnhancedModelView.columns_list_extra)
     column_searchable_list = ('id', 'title', 'description', 'event.title', 'event.description',
-                              'type', 'priority', 'assignee.firstname', 'assignee.lastname', 'assignee.username')
+                              'type', 'priority', 'assignee.firstname', 'assignee.lastname', 'assignee.username', 'knowledge_base.title')
     column_sortable_list = (['priority', 'updated_at'])
     column_details_list = ('id', 'title', 'description', 'type', 'priority', 'eta', 'deadline', 'state',
                            'time_done', 'time_estimate', 'assignee', 'user', 'contact', 'event',
-                           'company', 'organization', 'project', 'sprint', 'deal',
+                           'company', 'organization', 'project', 'sprint', 'deal','knowledge_base',
                            'comments', 'messages', 'links', 'author_last', 'author_original', 'updated_at')
 
     column_filters = ('id', 'title', 'description', 'type', 'priority', 'eta', 'deadline', 'time_done',
                       'contact', 'user', 'assignee.username', 'assignee.id', 'assignee.firstname', 'assignee.lastname',
-                      'company', 'organization', 'event', 'project', 'sprint', 'deal',
+                      'company', 'organization', 'event', 'project', 'sprint', 'deal','knowledge_base',
                       'comments', 'messages')
     form_rules = ('title', 'description',
                   'type', 'priority', 'eta', 'deadline', 'assignee',
-                  'user', 'contact', 'event', 'company', 'organization', 'project', 'sprint', 'deal')
+                  'user', 'contact', 'event', 'company', 'organization', 'project', 'sprint', 'deal','knowledge_base')
 
-    form_edit_rules = ('title', 'description', 'eta', 'deadline', 'assignee', 'user', 'contact', 'event', 'state',
+    form_edit_rules = ('title', 'description', 'eta', 'deadline', 'assignee', 'user', 'contact', 'event', 'state','knowledge_base'
                        'type', 'priority', 'time_done', 'comments', 'messages', 'links')
 
     inline_models = [
@@ -796,6 +797,7 @@ class EventModelView(EnhancedModelView):
 
     mainfilter = "Events / Id"
 
+
 # class AlertModelView(EnhancedModelView):
 #     pass
 #
@@ -808,9 +810,52 @@ class EventModelView(EnhancedModelView):
 
 
 class KnowledgeBaseModelView(EnhancedModelView):
-    pass
+    column_list = ('title', 'category', 'content',*EnhancedModelView.columns_list_extra)
+    column_searchable_list = ('title', 'content')
+    column_sortable_list = ('title', 'category.name')
+
+    column_details_list = ('title', 'category', 'content',
+                           'tasks', 'comments',
+                           'author_last', 'author_original', 'updated_at')
+
+    column_filters = ('id', 'title', 'content',
+                      'tasks', 'comments', 'category')
+
+    form_rules = ('title', 'content',
+                  'category', 'tasks', 'comments')
+
+    inline_models = [
+        (TaskModel, {'form_columns': [
+            'id', 'title', 'description', 'type', 'priority', 'assignee', 'eta', 'deadline']}),
+
+        (CommentModel, {'form_columns': ['id', 'content']}),
+    ]
 #
 
 
 class KnowledgeBaseCategoryModelView(EnhancedModelView):
-    pass
+    column_list = ('name', 'description', *EnhancedModelView.columns_list_extra)
+    column_searchable_list = ('name', 'description', 'knowledge_bases.title')
+    column_sortable_list = ('name', 'description', 'knowledge_bases.title')
+
+    column_details_list = ('name', 'description', 'knowledge_bases',
+                           'author_last', 'author_original', 'updated_at')
+
+    column_filters = ('id', 'name', 'description',
+                      'knowledge_bases')
+
+    form_rules = ('name', 'description',
+                  'knowledge_bases')
+
+
+class FundRoundModelView(EnhancedModelView):
+    column_list = ('title', 'start', 'end', 'target', *EnhancedModelView.columns_list_extra)
+    column_searchable_list = ('title',)
+    column_sortable_list = ('title', 'start', 'end', 'target')
+
+    column_details_list = ('title', 'start', 'end', 'target', 'deals',
+                           'author_last', 'author_original', 'updated_at')
+
+    column_filters = ('title', 'start', 'end', 'target')
+
+    form_rules = ('title', 'start', 'end', 'target')

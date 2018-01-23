@@ -273,14 +273,14 @@
         - ok is boolean means success of failure
 
         - Example
-        ```
-        mutation{
-            createContacts(records: [{firstname: "john", emails:"a@s.com", telephones: "01228934568"}, {firstname: "peter", emails:"b2e@.com", telephones: "01228934562"}]){
-                ok
-                ids
+            ```
+            mutation{
+                createContacts(records: [{firstname: "john", emails:"a@s.com", telephones: "01228934568"}, {firstname: "peter", emails:"b2e@.com", telephones: "01228934562"}]){
+                    ok
+                    ids
+                }
             }
-        }
-        ```
+            ```
         - Result looks like
             ```
             {
@@ -298,28 +298,28 @@
     - **delete contact(s)**
         - We do delete objects if uids are found, otherwise we ignore, we don't check if uids exist or not
         - Example
-        ```
+            ```
 
-        mutation{
-          deleteContacts(uids: ["id1", "id2", "id3"]) {
-            contact {
-              id
+            mutation{
+              deleteContacts(uids: ["id1", "id2", "id3"]) {
+                contact {
+                  id
+                }
+                ok
+              }
             }
-            ok
-          }
-        }
-        ```
+            ```
 
     - **Update contact(s)**
         - Example
-        ```
-        mutation{
-          updateContacts(records: [{uid: "d7y2t", firstname: "BigJohn"}, {uid: "g30ty", firstname: "BigPeter"}]){
-            ok
+            ```
+            mutation{
+              updateContacts(records: [{uid: "d7y2t", firstname: "BigJohn"}, {uid: "g30ty", firstname: "BigPeter"}]){
+                ok
 
-          }
-        }
-        ```
+              }
+            }
+            ```
         - Result looks like
           ```
             {
