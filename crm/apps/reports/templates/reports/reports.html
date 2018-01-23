@@ -3,11 +3,11 @@
 
 {% block head %}
    <title>Reporting APP</title>
-   <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-  <script src="https://unpkg.com/apollo-client-browser@1.9.0"></script>
-  <script src="https://unpkg.com/vue-apollo@2.1.0-beta.19"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
-  <script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.min.js"></script>
+   <script src="/static/js/vue.min.js"></script>
+  <script src="/static/js/apollo.min.js"></script>
+  <script src="/static/js/vue-apollo.min.js"></script>
+  <script src="/static/js/chart.min.js"></script>
+  <script src="/static/js/vue-chart.min.js"></script>
 {% endblock %}
 
 {%  block body %}
@@ -27,13 +27,16 @@
 
   <script>
     console.clear()
-
 const apolloClient = new Apollo.lib.ApolloClient({
   networkInterface: Apollo.lib.createNetworkInterface({
     uri: '/graphql',
     transportBatching: true,
+    opts: {
+        credentials: 'include'
+    },
   }),
   connectToDevTools: true,
+
 })
 
 const apolloProvider = new VueApollo.ApolloProvider({
@@ -154,6 +157,7 @@ Vue.component('bar-chart', {
   }
 
 })
+
 
 
 

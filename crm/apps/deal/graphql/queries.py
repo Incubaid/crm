@@ -97,7 +97,7 @@ class DealQuery(BaseQuery):
         current_round_stats = DealQuery._get_stats(curr_round)
 
         old_rounds_stats = []
-        old_rounds = FundRound.old_rounds()
+        old_rounds = FundRound.old_rounds() or []
 
         for round in old_rounds:
             old_rounds_stats.append(DealQuery._get_stats(round))
