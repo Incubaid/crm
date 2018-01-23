@@ -151,8 +151,15 @@ def format_author(view, context, model, name):
     value = getattr(model, name)
     if not value:
         return ''
-
     return value
+
+
+def format_user_no_markup(view, context, model, name):
+    value = getattr(model, name)
+    if not value:
+        return ''
+
+    return '{firstname} {lastname}'.format(firstname=value.firstname, lastname=value.lastname).strip() or value
 
 
 def format_time_sent(view, context, model, name):
@@ -186,14 +193,14 @@ column_formatters = dict(
     tasks=format_tasks,
     messages=format_messages, comments=format_comments, url=format_url, emails=format_emails,
     images=format_images, image=format_image,
-    author_last=format_user,
+    author_last=format_author,
     author_original=format_author,
     replies=format_messages,
     time_sent=format_time_sent,
     last_login=format_last_login,
     start=format_start,
     end=format_end,
-    sponsor=format_user,
+    sponsor=format_user_no_markup,
 )
 
 column_formatters = {**column_formatters, **
