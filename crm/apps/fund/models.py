@@ -57,3 +57,4 @@ class FundRound(db.Model, BaseModel, RootModel):
         # but since this is a property, we do the change to InstrumentedList so we get formatting out of the box
         if q.count():
             return InstrumentedList(q.all())
+        return InstrumentedList([])
