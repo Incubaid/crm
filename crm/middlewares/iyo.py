@@ -99,8 +99,21 @@ def authenticate():
             (User.username == username)
         ).first()
 
-        email_objs = [Email(email=e) for e in emails]
-        telephone_objs = [Phone(telephone=p) for p in phones]
+        email_objs = []
+        for e in emails:
+            o = Email.query.filter_by(email=e).first()
+            if o is None:
+                email_objs.append(Email(email=e))
+            else:
+                email_objs.append(o)
+
+        telephone_objs = []
+        for p in phones:
+            o = Phone.query.filter_by(telephone=p).first()
+            if o is None:
+                telephone_objs.append(Email(email=e))
+            else:
+                telephone_objs.append(o)
 
         # New user
         if not user:
