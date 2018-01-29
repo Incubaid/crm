@@ -689,7 +689,7 @@ class LinkModelView(EnhancedModelView):
 
     form_rules = ('url', 'user', 'contact', 'company', 'organization', 'task', 'project',
                   'deal', 'sprint', 'labels',)
-    form_edit_rules = ('url', 'labels')
+
 
     mainfilter = 'Links / Id'
 
