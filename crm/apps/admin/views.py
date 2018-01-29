@@ -848,14 +848,3 @@ class KnowledgeBaseCategoryModelView(EnhancedModelView):
                   'knowledge_bases')
 
 
-# class FundRoundModelView(EnhancedModelView):
-#     column_list = ('title', 'start', 'end', 'target', *EnhancedModelView.columns_list_extra)
-#     column_searchable_list = ('title',)
-#     column_sortable_list = ('title', 'start', 'end', 'target')
-#
-#     column_details_list = ('title', 'start', 'end', 'target', 'deals',
-#                            'author_last', 'author_original', 'updated_at')
-#
-#     column_filters = ('title', 'start', 'end', 'target')
-#
-#     form_rules = ('title', 'start', 'end', 'target')
