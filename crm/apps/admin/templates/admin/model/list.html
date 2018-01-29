@@ -78,7 +78,7 @@
                     {% endif %}
                     {% block list_row_actions_header %}
                         {% if admin_view.column_display_actions %}
-                        <th class="col-md-1">&nbsp;View&nbsp;&nbsp;&nbsp;&nbsp;Edit&nbsp;&nbsp;&nbsp;&nbsp;Delete</th>
+                        <th class="col-md-1">&nbsp;View&nbsp;&nbsp;&nbsp;&nbsp;{%- if admin_view.can_edit -%}Edit&nbsp;&nbsp;&nbsp;&nbsp;{%- endif -%}{%- if admin_view.can_delete -%}Delete{%- endif -%}</th>
                         {% endif %}
                     {% endblock %}
                     {% for c, name in list_columns %}

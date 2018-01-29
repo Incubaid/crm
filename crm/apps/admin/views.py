@@ -548,6 +548,8 @@ class OrganizationModelView(EnhancedModelView):
 
 
 class CurrencyModelView(EnhancedModelView):
+    can_create = True
+    can_edit = False
     column_list = ('name', 'value_usd', *EnhancedModelView.columns_list_extra)
     column_details_list = ('name', 'value_usd', )
     form_rules = ('name', 'value_usd',)
@@ -739,21 +741,8 @@ class MessageModelView(EnhancedModelView):
     form_rules = column_filters = ('title', 'content', 'forced_destinations', 'channel',
                                    'company', 'user', 'contact', 'organization', 'project', 'sprint', 'deal', 'task', 'event')
 
-    def on_form_prefill(self, form, id):
-        # disable all fields in edit
-        if form._obj:
-            form.title.render_kw = {'readonly': True}
-            form.channel.render_kw = {'readonly': True}
-            form.content.render_kw = {'readonly': True}
-            form.forced_destinations.render_kw = {'readonly': True}
-            form.company.render_kw = {'disabled': True}
-            form.organization.render_kw = {'disabled': True}
-            form.contact.render_kw = {'disabled': True}
-            form.project.render_kw = {'disabled': True}
-            form.sprint.render_kw = {'disabled': True}
-            form.deal.render_kw = {'disabled': True}
-            form.task.render_kw = {'disabled': True}
-            form.event.render_kw = {'disabled': True}
+    can_edit = False
+    can_delete = False
 
 class TaskAssignmentModelView(EnhancedModelView):
     column_list = ('percent_completed', 'contact',
