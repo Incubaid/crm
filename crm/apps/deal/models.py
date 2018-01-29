@@ -19,6 +19,7 @@ DealState.__str__ = lambda self: self.name
 
 
 class DealType(Enum):
+    FARMer = 'FARMER'
     HOSTER = 'HOSTER'
     ITO = 'ITO'
     PTO = 'PTO'
