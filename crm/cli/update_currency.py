@@ -4,7 +4,7 @@ import requests
 
 from crm import app
 from crm.apps.currency.models import Currency
-
+from crm.db import db
 
 session = requests.Session()
 
@@ -33,6 +33,6 @@ def update_currency_rates():
         Currency.query.filter_by(name='EUR').update({'value_usd': EUR})
         Currency.query.filter_by(name='BTC').update({'value_usd': BTC})
         print('Last update : ', datetime.datetime.now())
-
+        db.session.commit()
         print('Now sleeping for 6 hours')
         time.sleep(21600)
