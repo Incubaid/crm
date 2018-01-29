@@ -1,14 +1,10 @@
 import graphene
 from graphene import relay
-from decimal import Decimal
 
 from crm.apps.deal.graphql.arguments import DealArguments
-from crm.apps.deal.graphql.types import OverAllDealStatsType, DealsStatsType
-from crm.apps.fund.models import FundRound
 from .types import DealType
 from crm.graphql import BaseQuery, CRMConnectionField
-from crm.apps.deal.models import DealType as DealTypeEnum
-from crm.apps.deal.models import DealState as DealStateEnum
+
 
 
 class DealQuery(BaseQuery):
@@ -26,7 +22,6 @@ class DealQuery(BaseQuery):
     # Deal query to return one Deal and takes (uid) argument
     # uid is the original object.id in db
     deal = graphene.Field(DealType, uid=graphene.String())
-    deals_stats = graphene.Field(OverAllDealStatsType)
 
     def resolve_deal(self, context, uid):
         return DealType.get_query(context).filter_by(id=uid).first()

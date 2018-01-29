@@ -1,6 +1,4 @@
-import graphene
-from graphene.types.datetime import DateTime
-from graphene import relay, ObjectType
+from graphene import relay
 from graphene_sqlalchemy.types import SQLAlchemyObjectType
 
 from crm.apps.deal.models import Deal
