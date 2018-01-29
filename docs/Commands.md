@@ -24,18 +24,20 @@ Options:
   --help     Show this message and exit.
 
 Commands:
-  createdb               Create DB
+ createdb               Create DB
   db                     Perform database migrations.
   dumpcache              Dump root objects in Cache We support only...
   dumpdata               Dump data table models into filesystem.
   generate_graphql_docs  Generates schema.graphql IDL file and the...
+  load                   Add missing enum data to tables that use...
   loaddata               Load tables with data from filesystem.
   loadfixtures           populate DB with Test/Random Data
-  mailer                 Start mailin/out services.
+  mailer                 Start mail in/out services.
+  rq_worker
   run                    Runs a development server.
   shell                  Runs a shell in the app context.
   syncdata               Sync Cached DB changes in Redis to file...
-
+  update_currency_rates  Updates Currencies exchange rates to USD
 ```
 
 - To get help about some command use `flask {command} --help` forexample to get more info about `flask db` which
