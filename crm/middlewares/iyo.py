@@ -111,7 +111,7 @@ def authenticate():
         for p in phones:
             o = Phone.query.filter_by(telephone=p).first()
             if o is None:
-                telephone_objs.append(Email(email=e))
+                telephone_objs.append(Phone(telephone=p))
             else:
                 telephone_objs.append(o)
 
@@ -134,12 +134,26 @@ def authenticate():
             # update emails
             new_emails = set(emails) - set([e.email for e in user.emails])
             if new_emails:
-                user.emails.extend([Email(e) for e in new_emails])
+                email_objs = []
+                for e in new_emails:
+                    o = Email.query.filter_by(email=e).first()
+                    if o is None:
+                        email_objs.append(Email(email=e))
+                    else:
+                        email_objs.append(o)
+                user.emails.extend(email_objs)
 
             # update phones
             new_phones = set(phones) - set([p.telephone for p in user.telephones])
             if new_phones:
-                user.telephones.extend([Phone(p) for p in new_phones])
+                telephone_objs = []
+                for p in phones:
+                    o = Phone.query.filter_by(telephone=p).first()
+                    if o is None:
+                        telephone_objs.append(Phone(telephone=p))
+                    else:
+                        telephone_objs.append(o)
+                user.telephones.extend(telephone_objs)
 
     user.last_login = last_login
     db.session.add(user)
