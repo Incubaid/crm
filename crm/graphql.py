@@ -226,7 +226,7 @@ class BaseArgument(object):
         return d
 
 
-class CrmType(AbstractType):
+class CrmType(object):
     uid = graphene.String()
     author_original = graphene.Field('crm.apps.user.graphql.types.UserType')
     author_last = graphene.Field('crm.apps.user.graphql.types.UserType')
