@@ -28,7 +28,6 @@ def update_currency_rates():
         BTC = round(1.0/res['USDBTC'], 2)
 
 
-        import ipdb; ipdb.set_trace()
         Currency.query.filter_by(name='AED').update({'value_usd': AED})
         Currency.query.filter_by(name='GBP').update({'value_usd': GBP})
         Currency.query.filter_by(name='EUR').update({'value_usd': EUR})
