@@ -5,6 +5,8 @@ from crm.apps.comment.models import Comment as CommentModel
 from crm.apps.company.models import Company as CompanyModel
 from crm.apps.contact.models import Contact as ContactModel
 from crm.apps.knowledge.models import KnowledgeBaseCategory as KnowledgeBaseCategoryModel
+from crm.apps.knowledge.models import KnowledgeBase as KnowledgeBaseModel
+
 from crm.apps.deal.models import Deal as DealModel
 from crm.apps.event.models import Event as EventModel
 from crm.apps.image.models import Image as ImageModel
@@ -715,7 +717,7 @@ class TaskModelView(EnhancedModelView):
                   'type', 'priority', 'eta', 'deadline', 'assignee',
                   'user', 'contact', 'event', 'company', 'organization', 'project', 'sprint', 'deal','knowledge_base')
 
-    form_edit_rules = ('title', 'description', 'eta', 'deadline', 'assignee', 'user', 'contact', 'event', 'state','knowledge_base'
+    form_edit_rules = ('title', 'description', 'eta', 'deadline', 'assignee', 'user', 'contact', 'event', 'state','knowledge_base',
                        'type', 'priority', 'time_done', 'comments', 'messages', 'links')
 
     inline_models = [
@@ -725,6 +727,7 @@ class TaskModelView(EnhancedModelView):
             'id', 'title', 'content', 'channel']}),
         (LinkModel, {'form_columns': [
             'id', 'url', ]}),
+
     ]
 
 
