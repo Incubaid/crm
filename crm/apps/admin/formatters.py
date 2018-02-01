@@ -200,7 +200,6 @@ column_formatters = dict(
     last_login=format_last_login,
     start=format_start,
     end=format_end,
-    sponsor=format_user_no_markup,
 )
 
 column_formatters = {**column_formatters, **
