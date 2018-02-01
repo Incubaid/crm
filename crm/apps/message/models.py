@@ -120,6 +120,15 @@ class Message(db.Model, BaseModel):
         author_original_id
     )
 
+    author_last_id = db.Column(
+        db.Integer,
+    )
+
+    author_last = generic_relationship(
+        author_original_type,
+        author_original_id
+    )
+
     @property
     def parent(self):
         if self.parent_id:

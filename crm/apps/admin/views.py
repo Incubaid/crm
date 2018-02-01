@@ -709,7 +709,7 @@ class TaskModelView(EnhancedModelView):
                            'company', 'organization', 'project', 'sprint', 'deal','knowledge_base',
                            'comments', 'messages', 'links', 'author_last', 'author_original', 'updated_at')
 
-    column_filters = ('id', 'title', 'description', 'type', 'priority', 'eta', 'deadline', 'time_done',
+    column_filters = ('id', 'title', 'description', 'type', 'state', 'priority', 'eta', 'deadline', 'time_done',
                       'contact', 'user', 'assignee.username', 'assignee.id', 'assignee.firstname', 'assignee.lastname',
                       'company', 'organization', 'event', 'project', 'sprint', 'deal','knowledge_base',
                       'comments', 'messages')
@@ -745,7 +745,6 @@ class MessageModelView(EnhancedModelView):
                                    'company', 'user', 'contact', 'organization', 'project', 'sprint', 'deal', 'task', 'event')
 
     can_edit = False
-    can_delete = False
 
 class TaskAssignmentModelView(EnhancedModelView):
     column_list = ('percent_completed', 'contact',

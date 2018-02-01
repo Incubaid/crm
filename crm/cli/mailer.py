@@ -109,6 +109,8 @@ def handle_mail(to, sender, subject, body):
                         msgobj.project_id = obj.project_id
                         msgobj.sprint_id = obj.sprint_id
                         msgobj.event_id = obj.event_id
+                        msgobj.author_last = sender_obj
+                        msgobj.author_last_id = sender_obj.id
                         obj.replies.append(msgobj)
                     else:
                         obj.messages.append(msgobj)

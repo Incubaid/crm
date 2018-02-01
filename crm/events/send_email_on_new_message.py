@@ -72,7 +72,7 @@ def receive_after_insert(mapper, connection, message):
     # reply message - coming from outside source since we don't support reply via messages in crm
     # so we need to exclude the author emails from notification emails
     if message.parent_id is not None:
-        author_emails = message.author_original.emails.split(',')
+        author_emails = message.author_original.emails
         notification_emails = list(set(notification_emails) - set(author_emails))
 
     if notification_emails:
