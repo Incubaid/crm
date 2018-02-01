@@ -115,7 +115,7 @@ class EnhancedModelView(ModelView):
         'promoterProjects': 'Promotes projects',
         'guardianProjects': 'Guards projects',
         'notification_emails': 'Destination',
-        'sponsor': 'Sponsor/Owner'
+        'contact.owner': 'Sponsor/Owner'
     }
 
     def get_filter_arg_helper(self, filter_name, filter_op='equals'):
@@ -567,18 +567,18 @@ class CurrencyModelView(EnhancedModelView):
 
 class DealModelView(EnhancedModelView):
 
-    column_list = ('name', 'currency.name', 'value', 'value_usd','deal_type', 'deal_state', 'sponsor' ,*EnhancedModelView.columns_list_extra)
+    column_list = ('name', 'currency.name', 'value', 'value_usd','deal_type', 'deal_state', 'contact.owner' ,*EnhancedModelView.columns_list_extra)
 
     column_searchable_list = (
         'id', 'name', 'value', 'currency.name', 'deal_type', 'deal_state', 'contact.firstname', 'contact.lastname')
 
     column_sortable_list = ('name', 'value', 'currency.name', 'author_last',
-                            'deal_type', 'deal_state', 'updated_at')
+                            'deal_type', 'deal_state', 'updated_at', 'to_usd')
     column_details_list = ('id', 'name', 'description', 'currency', 'value', 'value_usd', 'deal_type', 'deal_state', 'shipping_address', 'is_paid',
                            'contact', 'referrer1', 'referrer2', 'company', 'closed_at', 'referral_code', 'tasks', 'messages', 'links', 'comments', 'author_last', 'author_original', 'updated_at')
 
     column_filters = ('id', 'name', 'value', 'currency', 'deal_type', 'deal_state', 'closed_at', 'is_paid', 'referral_code', 'updated_at',
-                      'contact', 'company', 'tasks', 'messages', 'comments', )
+                      'contact', 'company', 'tasks', 'messages', 'comments', 'contact.owner')
 
     form_rules = ('name', 'value', 'currency', 'deal_type', 'deal_state', 'shipping_address',
                   'contact', 'referrer1', 'referrer2', 'company', 'referral_code', 'comments')
@@ -596,6 +596,15 @@ class DealModelView(EnhancedModelView):
         (LinkModel, {'form_columns': [
             'id', 'url', ]}),
     ]
+
+    def scaffold_filters(self, name):
+        filters = super().scaffold_filters(name)
+
+        for f in filters:
+            if f.name.startswith('Users'):
+                f.name = f.name.replace('Users', 'Sponsors')
+        return filters
+
 
     mainfilter = "Deals / Id"
 

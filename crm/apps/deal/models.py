@@ -165,9 +165,6 @@ class Deal(db.Model, BaseModel, RootModel):
     def value_usd(self):
         return '%s' % str(self.to_usd)
 
-    @property
-    def sponsor(self):
-        return self.contact.owner if self.contact else None
 
-    def __str__(self):
+def __str__(self):
         return self.name
