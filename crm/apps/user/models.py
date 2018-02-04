@@ -116,6 +116,12 @@ class User(db.Model, BaseModel, RootModel):
         primaryjoin="User.id==Sprint.owner_id"
     )
 
+    ownsDeals = db.relationship(
+        "Deal",
+        backref="owner",
+        primaryjoin="User.id==Deal.owner_id"
+    )
+
     # ownsAlerts = db.relationship(
     #     "Alert",
     #     backref="owner",

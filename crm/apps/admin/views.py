@@ -115,7 +115,7 @@ class EnhancedModelView(ModelView):
         'promoterProjects': 'Promotes projects',
         'guardianProjects': 'Guards projects',
         'notification_emails': 'Destination',
-        'contact.owner': 'Sponsor/Owner'
+        'referrer1': 'Referrer'
     }
 
     def get_filter_arg_helper(self, filter_name, filter_op='equals'):
@@ -567,24 +567,24 @@ class CurrencyModelView(EnhancedModelView):
 
 class DealModelView(EnhancedModelView):
 
-    column_list = ('name', 'currency.name', 'value', 'value_usd','deal_type', 'deal_state', 'contact.owner' ,*EnhancedModelView.columns_list_extra)
+    column_list = ('name', 'currency.name', 'value', 'value_usd','deal_type', 'deal_state', 'owner', 'referrer1' ,*EnhancedModelView.columns_list_extra)
 
     column_searchable_list = (
-        'id', 'name', 'value', 'currency.name', 'deal_type', 'deal_state', 'contact.firstname', 'contact.lastname')
+        'id', 'name', 'value', 'currency.name', 'deal_type', 'deal_state', 'owner.username', 'owner.firstname', 'owner.lastname', 'referrer1.firstname', 'referrer1.lastname', 'contact.firstname', 'contact.lastname')
 
     column_sortable_list = ('name', 'value', 'currency.name', 'author_last',
-                            'deal_type', 'deal_state', 'updated_at', 'to_usd')
+                            'deal_type', 'deal_state', 'owner', 'referrer1', 'updated_at', 'to_usd')
     column_details_list = ('id', 'name', 'description', 'currency', 'value', 'value_usd', 'deal_type', 'deal_state', 'shipping_address', 'is_paid',
-                           'contact', 'referrer1', 'referrer2', 'company', 'closed_at', 'referral_code', 'tasks', 'messages', 'links', 'comments', 'author_last', 'author_original', 'updated_at')
+                           'contact', 'referrer1', 'owner', 'company', 'closed_at', 'referral_code', 'tasks', 'messages', 'links', 'comments', 'author_last', 'author_original', 'updated_at')
 
     column_filters = ('id', 'name', 'value', 'currency', 'deal_type', 'deal_state', 'closed_at', 'is_paid', 'referral_code', 'updated_at',
-                      'contact', 'company', 'tasks', 'messages', 'comments', 'contact.owner')
+                      'contact', 'company', 'tasks', 'messages', 'comments', 'owner', 'referrer1')
 
     form_rules = ('name', 'value', 'currency', 'deal_type', 'deal_state', 'shipping_address',
-                  'contact', 'referrer1', 'referrer2', 'company', 'referral_code', 'comments')
+                  'contact', 'referrer1', 'owner', 'company', 'referral_code', 'comments')
 
     form_edit_rules = ('name', 'description', 'value', 'currency', 'deal_type', 'deal_state', 'shipping_address',
-                       'contact', 'referrer1', 'referrer2', 'company', 'tasks', 'messages', 'links', 'comments', 'is_paid', 'closed_at', 'referral_code')
+                       'contact', 'referrer1', 'owner', 'company', 'tasks', 'messages', 'links', 'comments', 'is_paid', 'closed_at', 'referral_code')
 
     inline_models = [
         (TaskModel, {'form_columns': [

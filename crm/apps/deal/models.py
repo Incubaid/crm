@@ -95,10 +95,7 @@ class Deal(db.Model, BaseModel, RootModel):
         db.ForeignKey("contacts.id")
     )
 
-    referrer2_id = db.Column(
-        db.String(5),
-        db.ForeignKey("contacts.id")
-    )
+
 
     referrer1 = db.relationship(
         "Contact",
@@ -106,11 +103,11 @@ class Deal(db.Model, BaseModel, RootModel):
         foreign_keys=[referrer1_id]
     )
 
-    referrer2 = db.relationship(
-        "Contact",
-        backref="referrer2_deals",
-        foreign_keys=[referrer2_id]
+    owner_id = db.Column(
+        db.String(5),
+        db.ForeignKey("users.id")
     )
+
     tasks = db.relationship(
         "Task",
         backref="deal"
