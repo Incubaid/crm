@@ -473,7 +473,6 @@ class ContactModelView(EnhancedModelView):
         'ownerbackup': {'label': 'Backup Owner'},
     }
 
-    mainfilter = "Contacts / Id"
 
 
 class CompanyModelView(EnhancedModelView):
