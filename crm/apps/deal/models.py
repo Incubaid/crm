@@ -163,5 +163,5 @@ class Deal(db.Model, BaseModel, RootModel):
         return '%s' % str(self.to_usd)
 
 
-def __str__(self):
-        return self.name
+    def __str__(self):
+            return self.name
