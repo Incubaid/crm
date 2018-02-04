@@ -115,7 +115,8 @@ class EnhancedModelView(ModelView):
         'promoterProjects': 'Promotes projects',
         'guardianProjects': 'Guards projects',
         'notification_emails': 'Destination',
-        'referrer1': 'Referrer'
+        'referrer1': 'Referrer',
+        'referrer1_deals': 'Deals sponsored by'
     }
 
     def get_filter_arg_helper(self, filter_name, filter_op='equals'):
@@ -314,7 +315,7 @@ class UserModelView(EnhancedModelView):
 
     column_details_list = (
         'firstname', 'lastname', 'username', 'emails', 'telephones', 'description', 'message_channels',
-        'ownsContacts', 'ownsTasks', 'tasks', 'ownsAsBackupContacts', 'ownsCompanies', 'ownsAsBackupCompanies',
+        'ownsContacts', 'ownsDeals','ownsTasks', 'tasks', 'ownsAsBackupContacts', 'ownsCompanies', 'ownsAsBackupCompanies',
         'ownsOrganizations', 'ownsSprints', 'promoterProjects', 'guardianProjects', 'comments', 'messages', 'links', 'author_last', 'author_original', 'updated_at', 'last_login')
 
     column_filters = ('firstname', 'lastname',
@@ -326,7 +327,7 @@ class UserModelView(EnhancedModelView):
         'firstname', 'lastname', 'username', 'emails', 'telephones', 'description', 'message_channels',)
 
     form_edit_rules = ('firstname', 'lastname', 'username', 'description',
-                       'emails', 'telephones', 'message_channels', 'ownsTasks', 'tasks', 'messages', 'comments', 'links')
+                       'emails', 'telephones', 'message_channels', 'ownsTasks', 'ownsDeals', 'tasks', 'messages', 'comments', 'links')
 
     inline_models = [
         (TaskModel, {'form_columns': [
@@ -431,7 +432,7 @@ class ContactModelView(EnhancedModelView):
         'firstname', 'lastname', 'description', 'countries', 'images', 'bio', 'belief_statement',
         'addresses',
         'emails', 'telephones', 'gender', 'date_of_birth', 'passports', 'companies', 'message_channels', 'subgroups', 'tf_app', 'tf_web', 'referral_code',
-        'deals', 'events', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'activities', 'owner', 'ownerbackup', 'author_last', 'author_original', 'updated_at')
+        'deals', 'referrer1_deals', 'events', 'comments', 'tasks', 'projects', 'messages', 'sprints', 'links', 'activities', 'owner', 'ownerbackup', 'author_last', 'author_original', 'updated_at')
 
     column_filters = ('id', 'firstname', 'lastname', 'gender', 'countries', 'passports', 'activities', 'date_of_birth', 'description', 'emails', 'telephones', 'addresses.country', 'message_channels', 'referral_code',
                       'deals', 'comments', 'tasks', 'projects', 'companies', 'messages', 'sprints', 'links', 'owner', 'events',
@@ -602,7 +603,9 @@ class DealModelView(EnhancedModelView):
 
         for f in filters:
             if f.name.startswith('Users'):
-                f.name = f.name.replace('Users', 'Sponsors')
+                f.name = f.name.replace('Users', 'Owners')
+            if f.name.startswith('Contacts'):
+                f.name = f.name.replace('Contacts', 'Referrer')
         return filters
 
 
