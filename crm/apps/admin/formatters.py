@@ -74,6 +74,22 @@ def format_messages(view, context, model, name):
     out += "</ul>"
     return Markup(out)
 
+def format_referrer1_deals(view, context, model, name):
+    value = getattr(model, name)
+    out = ""
+    if isinstance(value, InstrumentedList):
+        out = "<ul>"
+        for x in value:
+            if x is None:
+                continue
+            if hasattr(x, "admin_view_link"):
+                out += "<li><a href='{}'>{}</a></li>".format(
+                    getattr(x, "admin_view_link")(), x)
+            else:
+                out += str(x)
+        out += "</ul>"
+    return Markup(out)
+
 
 def format_comments(view, context, model, name):
     value = getattr(model, name)
@@ -200,6 +216,8 @@ column_formatters = dict(
     last_login=format_last_login,
     start=format_start,
     end=format_end,
+    referrer1_deals=format_referrer1_deals,
+    ownsDeals=format_referrer1_deals,
 )
 
 column_formatters = {**column_formatters, **
