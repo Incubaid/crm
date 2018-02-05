@@ -119,6 +119,8 @@ class EnhancedModelView(ModelView):
         'referrer1_deals': 'Deals sponsored by'
     }
 
+    page_size = 200
+
     def get_filter_arg_helper(self, filter_name, filter_op='equals'):
         filters = self._filter_groups[filter_name].filters
         position = list(self._filter_groups.keys()).index(filter_name)
@@ -573,7 +575,8 @@ class DealModelView(EnhancedModelView):
         'id', 'name', 'value', 'currency.name', 'deal_type', 'deal_state', 'owner.username', 'owner.firstname', 'owner.lastname', 'referrer1.firstname', 'referrer1.lastname', 'contact.firstname', 'contact.lastname')
 
     column_sortable_list = ('name', 'value', 'currency.name', 'author_last',
-                            'deal_type', 'deal_state', 'owner', 'referrer1', 'updated_at', 'to_usd')
+                            'deal_type', 'deal_state', ('owner', 'owner.firstname'), ('referrer1', 'referrer1.firstname'), 'updated_at', 'to_usd')
+
     column_details_list = ('id', 'name', 'description', 'currency', 'value', 'value_usd', 'deal_type', 'deal_state', 'shipping_address', 'is_paid',
                            'contact', 'referrer1', 'owner', 'company', 'closed_at', 'referral_code', 'tasks', 'messages', 'links', 'comments', 'author_last', 'author_original', 'updated_at')
 
