@@ -323,7 +323,7 @@ class UserModelView(EnhancedModelView):
         'ownsOrganizations', 'ownsSprints', 'promoterProjects', 'guardianProjects', 'comments', 'messages', 'links', 'author_last', 'author_original', 'updated_at', 'last_login')
 
     column_filters = ('firstname', 'lastname',
-                      'username', 'ownsTasks',)
+                      'username', 'ownsTasks', 'messages', 'comments')
     column_sortable_list = ('firstname', 'lastname', 'username')
     column_searchable_list = ('firstname', 'lastname', 'username')
 
@@ -344,7 +344,7 @@ class UserModelView(EnhancedModelView):
         (LinkModel, {'form_columns': [
             'id', 'url', ]}),
     ]
-    # mainfilter = "Users / Id"
+    mainfilter = "Users / Id"
 
 
 class ImageModelView(EnhancedModelView):
