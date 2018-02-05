@@ -60,8 +60,12 @@ def format_messages(view, context, model, name):
     value = getattr(model, name)
     out = "<ul>"
 
+    auto_tasks = []
     if isinstance(value, InstrumentedList):
         for x in value:
+            if x.title.startswith('You have a new assigned task'):
+                auto_tasks.append(x)
+                continue
             if hasattr(x, "admin_view_link"):
                 out += "<li>({authorname}/{messagetitle}/{createdate}) wrote: <br/> {messagecontent}<a href='{messageadminlink}'> Read more...</a></li>".format(
                     authorname=str(x.user),
@@ -72,6 +76,7 @@ def format_messages(view, context, model, name):
             else:
                 out += str(x)
     out += "</ul>"
+
     return Markup(out)
 
 def format_referrer1_deals(view, context, model, name):
