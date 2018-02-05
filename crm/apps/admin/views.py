@@ -1,6 +1,8 @@
 import os
 import uuid
 
+from flask_admin.contrib.sqla.filters import FilterEqual
+
 from crm.apps.comment.models import Comment as CommentModel
 from crm.apps.company.models import Company as CompanyModel
 from crm.apps.contact.models import Contact as ContactModel
@@ -569,19 +571,19 @@ class CurrencyModelView(EnhancedModelView):
 
 class DealModelView(EnhancedModelView):
 
-    column_list = ('name', 'currency.name', 'value', 'value_usd','deal_type', 'deal_state', 'owner', 'referrer1' ,*EnhancedModelView.columns_list_extra)
+    column_list = ('name', 'currency.name', 'value', 'value_usd', 'contact',  'deal_type', 'deal_state', 'owner', 'referrer1' ,*EnhancedModelView.columns_list_extra)
 
     column_searchable_list = (
-        'id', 'name', 'value', 'currency.name', 'deal_type', 'deal_state', 'owner.username', 'owner.firstname', 'owner.lastname', 'referrer1.firstname', 'referrer1.lastname', 'contact.firstname', 'contact.lastname')
+        'id', 'name', 'value', 'currency.name', 'deal_type', 'contact.firstname', 'contact.lastname','deal_state', 'owner.username', 'owner.firstname', 'owner.lastname', 'referrer1.firstname', 'referrer1.lastname', 'contact.firstname', 'contact.lastname')
 
     column_sortable_list = ('name', 'value', 'currency.name', 'author_last',
-                            'deal_type', 'deal_state', ('owner', 'owner.firstname'), ('referrer1', 'referrer1.firstname'), 'updated_at', 'to_usd')
+                            'deal_type', 'deal_state', ('contact', 'contact.firstname'), ('owner', 'owner.firstname'), ('referrer1', 'referrer1.firstname'), 'updated_at', 'to_usd')
 
     column_details_list = ('id', 'name', 'description', 'currency', 'value', 'value_usd', 'deal_type', 'deal_state', 'shipping_address', 'is_paid',
                            'contact', 'referrer1', 'owner', 'company', 'closed_at', 'referral_code', 'tasks', 'messages', 'links', 'comments', 'author_last', 'author_original', 'updated_at')
 
     column_filters = ('id', 'name', 'value', 'currency', 'deal_type', 'deal_state', 'closed_at', 'is_paid', 'referral_code', 'updated_at',
-                      'contact', 'company', 'tasks', 'messages', 'comments', 'owner', 'referrer1')
+                      'company', 'tasks', 'messages', 'comments', 'owner', 'referrer1')
 
     form_rules = ('name', 'value', 'currency', 'deal_type', 'deal_state', 'shipping_address',
                   'contact', 'referrer1', 'owner', 'company', 'referral_code', 'comments')
@@ -603,10 +605,11 @@ class DealModelView(EnhancedModelView):
     def scaffold_filters(self, name):
         filters = super().scaffold_filters(name)
 
+
         for f in filters:
             if f.name.startswith('Users'):
                 f.name = f.name.replace('Users', 'Owners')
-            if f.name.startswith('Contacts'):
+            elif f.name.startswith('Contacts') and name == 'referrer1':
                 f.name = f.name.replace('Contacts', 'Referrer')
         return filters
 
