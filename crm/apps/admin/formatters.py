@@ -63,7 +63,7 @@ def format_messages(view, context, model, name):
     auto_tasks = []
     if isinstance(value, InstrumentedList):
         for x in value:
-            if x.title.startswith('You have a new assigned task'):
+            if x.title.startswith('You have a new assigned task') or x.title.startswith('Your assigned task has been updated'):
                 auto_tasks.append(x)
                 continue
             if hasattr(x, "admin_view_link"):
