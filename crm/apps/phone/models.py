@@ -7,7 +7,6 @@ class Phone(db.Model, BaseModel):
     telephone = db.Column(
         db.String(255),
         index=True,
-        unique=True,
         nullable=False,
     )
 
