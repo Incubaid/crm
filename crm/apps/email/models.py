@@ -7,7 +7,6 @@ class Email(db.Model, BaseModel):
     email = db.Column(
         db.String(255),
         index=True,
-        unique=True,
         nullable=False,
     )
 

@@ -105,7 +105,8 @@ class Deal(db.Model, BaseModel, RootModel):
 
     owner_id = db.Column(
         db.String(5),
-        db.ForeignKey("users.id")
+        db.ForeignKey("users.id"),
+        nullable=False
     )
 
     tasks = db.relationship(
