@@ -87,7 +87,8 @@ class Deal(db.Model, BaseModel, RootModel):
 
     contact_id = db.Column(
         db.String(5),
-        db.ForeignKey("contacts.id")
+        db.ForeignKey("contacts.id"),
+        index=True
     )
 
     referrer1_id = db.Column(
@@ -106,7 +107,8 @@ class Deal(db.Model, BaseModel, RootModel):
     owner_id = db.Column(
         db.String(5),
         db.ForeignKey("users.id"),
-        nullable=False
+        nullable=False,
+        index=True,
     )
 
     tasks = db.relationship(

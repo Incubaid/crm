@@ -466,7 +466,7 @@ class ContactModelView(EnhancedModelView):
         (MessageModel, {'form_columns': [
             'id', 'title', 'content', 'channel']}),
         (DealModel, {'form_columns': [
-            'id', 'name', 'value', 'currency', 'deal_type', 'deal_state', 'description']}),
+            'id', 'name', 'value', 'currency', 'deal_type', 'deal_state', 'description', 'owner']}),
         (CommentModel, {'form_columns': ['id', 'content']}),
         (EmailModel, {'form_columns': ['id', 'email']}),
         (PhoneModel, {'form_columns': ['id', 'telephone']}),
@@ -511,7 +511,7 @@ class CompanyModelView(EnhancedModelView):
         (MessageModel, {'form_columns': [
             'id', 'title', 'content', 'channel']}),
         (DealModel, {'form_columns': [
-            'id', 'name', 'value', 'currency', 'deal_type', 'description', ]}),
+            'id', 'name', 'value', 'currency', 'deal_type', 'description', 'owner']}),
         (CommentModel, {'form_columns': ['id', 'content']}),
         (LinkModel, {'form_columns': ['id', 'url', ]}),
     ]
