@@ -571,15 +571,15 @@ class CurrencyModelView(EnhancedModelView):
 
 class DealModelView(EnhancedModelView):
 
-    column_list = ('name', 'currency.name', 'value', 'value_usd', 'contact',  'deal_type', 'deal_state', 'owner', 'referrer1' ,*EnhancedModelView.columns_list_extra)
+    column_list = ('name', 'currency.name', 'value', 'value_usd', 'contact',  'deal_type', 'migrated','deal_state', 'owner', 'referrer1' ,*EnhancedModelView.columns_list_extra)
 
     column_searchable_list = (
         'id', 'name', 'value', 'currency.name', 'deal_type', 'contact.firstname', 'contact.lastname','deal_state', 'owner.username', 'owner.firstname', 'owner.lastname', 'referrer1.firstname', 'referrer1.lastname', 'contact.firstname', 'contact.lastname')
 
     column_sortable_list = ('name', 'value', 'currency.name', 'author_last',
-                            'deal_type', 'deal_state', ('contact', 'contact.firstname'), ('owner', 'owner.firstname'), ('referrer1', 'referrer1.firstname'), 'updated_at', 'to_usd')
+                            'deal_type', 'migrated','deal_state', ('contact', 'contact.firstname'), ('owner', 'owner.firstname'), ('referrer1', 'referrer1.firstname'), 'updated_at', 'to_usd')
 
-    column_details_list = ('id', 'name', 'description', 'currency', 'value', 'value_usd', 'deal_type', 'deal_state', 'shipping_address', 'is_paid',
+    column_details_list = ('id', 'name', 'description', 'currency', 'value', 'value_usd', 'deal_type','migrated', 'deal_state', 'shipping_address', 'is_paid',
                            'contact', 'referrer1', 'owner', 'company', 'closed_at', 'referral_code', 'tasks', 'messages', 'links', 'comments', 'author_last', 'author_original', 'updated_at')
 
     column_filters = ('id', 'name', 'value', 'currency', 'deal_type', 'migrated', 'deal_state', 'closed_at', 'is_paid', 'referral_code', 'updated_at',
