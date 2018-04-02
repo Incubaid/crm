@@ -40,8 +40,8 @@ def authenticate():
 
     # User is logged in already
     if 'user' in session:
-        session['user']['last_login'] = last_login
-        queue.enqueue(update_last_login_time, session['user']['id'], last_login)
+        # session['user']['last_login'] = last_login
+        # queue.enqueue(update_last_login_time, session['user']['id'], last_login)
         return
 
     # User not logged in
