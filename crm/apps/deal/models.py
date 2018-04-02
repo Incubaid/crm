@@ -68,6 +68,10 @@ class Deal(db.Model, BaseModel, RootModel):
         nullable=False
     )
 
+    migrated = db.Column(
+        db.Boolean()
+    )
+
     deal_state = db.Column(
         db.Enum(DealState),
         default=DealState.NEW,
