@@ -585,10 +585,10 @@ class DealModelView(EnhancedModelView):
     column_filters = ('id', 'name', 'value', 'currency', 'deal_type', 'deal_state', 'closed_at', 'is_paid', 'referral_code', 'updated_at',
                       'company', 'tasks', 'messages', 'comments', 'owner', 'referrer1')
 
-    form_rules = ('name', 'value', 'currency', 'deal_type', 'deal_state', 'shipping_address',
+    form_rules = ('name', 'value', 'currency', 'deal_type', 'migrated', 'deal_state', 'shipping_address',
                   'contact', 'referrer1', 'owner', 'company', 'referral_code', 'comments')
 
-    form_edit_rules = ('name', 'description', 'value', 'currency', 'deal_type', 'deal_state', 'shipping_address',
+    form_edit_rules = ('name', 'description', 'value', 'currency', 'deal_type', 'migrated', 'deal_state', 'shipping_address',
                        'contact', 'referrer1', 'owner', 'company', 'tasks', 'messages', 'links', 'comments', 'is_paid', 'closed_at', 'referral_code')
 
     inline_models = [
