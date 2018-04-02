@@ -315,12 +315,12 @@ class EnhancedModelView(ModelView):
 
 class UserModelView(EnhancedModelView):
     column_list = ('firstname', 'lastname', 'username', 'emails',
-                   'telephones', 'last_login', *EnhancedModelView.columns_list_extra)
+                   'telephones', *EnhancedModelView.columns_list_extra)
 
     column_details_list = (
         'firstname', 'lastname', 'username', 'emails', 'telephones', 'description', 'message_channels',
         'ownsContacts', 'ownsDeals','ownsTasks', 'tasks', 'ownsAsBackupContacts', 'ownsCompanies', 'ownsAsBackupCompanies',
-        'ownsOrganizations', 'ownsSprints', 'promoterProjects', 'guardianProjects', 'comments', 'messages', 'links', 'author_last', 'author_original', 'updated_at', 'last_login')
+        'ownsOrganizations', 'ownsSprints', 'promoterProjects', 'guardianProjects', 'comments', 'messages', 'links', 'author_last', 'author_original', 'updated_at')
 
     column_filters = ('firstname', 'lastname',
                       'username', 'ownsTasks', 'messages', 'comments')
