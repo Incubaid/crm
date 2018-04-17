@@ -26,6 +26,7 @@ class DealType(Enum):
     AMBASSADOR = 'AMBASSADOR'
     ITFT = 'ITFT'
     PREPTO = 'PREPTO'
+    TFT = 'TFT'
 
 
 DealType.__str__ = lambda self: self.name
@@ -37,7 +38,7 @@ class Deal(db.Model, BaseModel, RootModel):
     name = db.Column(
         db.String(255),
         nullable=False,
-        index=True
+        index=True,
     )
 
     # should be markdown.
